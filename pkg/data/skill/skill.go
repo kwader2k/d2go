@@ -1,19 +1,22 @@
 package skill
 
 type ID int16
+type SkillDesc string
 
 type Description struct {
-	Name    string
-	Page    int
-	Row     int
-	Column  int
-	ListRow int
-	IconCel int
+	Name      string
+	SkillDesc SkillDesc
+	Page      int
+	Row       int
+	Column    int
+	ListRow   int
+	IconCel   int
 }
 
 type Skill struct {
 	ID
 	Name       string
+	SkillDesc  SkillDesc
 	LeftSkill  bool
 	RightSkill bool
 }
@@ -24,8 +27,8 @@ type Points struct {
 	Charges  uint
 }
 
-func (sk ID) Desc() Description {
-	return Desc[sk]
+func (skillId ID) Desc() Description {
+	return Desc[Skills[skillId].SkillDesc]
 }
 
 const (
