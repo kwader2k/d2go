@@ -2,10 +2,13 @@ package memory
 
 import (
 	"fmt"
+	"log"
 	"math"
+	"strings"
 	"time"
 
 	"github.com/hectorgimenez/d2go/pkg/data"
+	"github.com/hectorgimenez/d2go/pkg/data/skill"
 	"github.com/hectorgimenez/d2go/pkg/data/stat"
 )
 
@@ -20,6 +23,16 @@ type GameReader struct {
 	cachedMonsters  data.Monsters
 	cachedInventory data.Inventory
 	cachedObjects   []data.Object
+}
+
+type MercOption struct {
+	Index   int
+	Name    string
+	Skill   skill.Skill
+	Level   int
+	Life    int
+	Defense int
+	Cost    int
 }
 
 var WidgetStateFlags = map[string]uint64{
@@ -333,6 +346,58 @@ func (gd *GameReader) GetCharacterList() []string {
 	}
 
 	return characterNames
+}
+
+// GetMercList returns the list of mercenaries available for hire in the Hire Menu
+// Only works if the Hire Menu is open in legacy graphics mode
+func (gd *GameReader) GetMercList() []MercOption {
+	panel := gd.GetPanel("HireMenuPanel", "ListContainer", "View", "Container")
+
+	if panel.PanelName == "" || panel.NumChildren == 0 {
+		return []MercOption{}
+	}
+
+	mercOptions := make([]MercOption, panel.NumChildren)
+
+	for i := 0; i < panel.NumChildren; i++ {
+		merc := panel.PanelChildren[fmt.Sprintf("ListItem%d", i)].PanelChildren["TextBox"].ExtraText3
+
+		var name, skillName string
+		var level, life, def, cost int
+
+		n, err := fmt.Sscanf(merc, "%s - Lvl: %d  Life: %d  Def: %d  Cost: %d\n", &name, &level, &life, &def, &cost)
+		if err != nil || n < 5 {
+			continue
+		}
+
+		lines := strings.Split(merc, "\n")
+		skillName = strings.TrimSpace(lines[1])
+		sk := skill.Skill{}
+
+		for _, s := range skill.Skills {
+			if s.Name == skillName {
+				sk = s
+				break
+			}
+		}
+
+		if sk.Name == "" {
+			log.Printf("Unknown merc skill: %s", skillName)
+			continue
+		}
+
+		mercOptions[i] = MercOption{
+			Index:   i,
+			Name:    name,
+			Skill:   sk,
+			Level:   level,
+			Life:    life,
+			Defense: def,
+			Cost:    cost,
+		}
+	}
+
+	return mercOptions
 }
 
 // IsBlocking checks if there's a blocking popup or loading screen present
