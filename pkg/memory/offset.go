@@ -15,6 +15,8 @@ type Offset struct {
 	WidgetStatesOffset          uintptr
 	WaypointsOffset             uintptr
 	FPS                         uintptr
+	KeyBindingsOffset           uintptr
+	KeyBindingsSkillsOffset     uintptr
 }
 
 func calculateOffsets(process Process) Offset {
@@ -71,6 +73,16 @@ func calculateOffsets(process Process) Offset {
 	fpsOffsetPtr := uintptr(process.ReadUInt(pattern+2, Uint32))
 	fpsOffset := pattern - process.moduleBaseAddressPtr + 6 + fpsOffsetPtr
 
+	// Keybindings
+	pattern = process.FindPattern(memory, "\x00\xA8\x00\x00\x00\x00\x7F\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x0F\x00\x00\x00\x00\x00\x00\x80\x4C\x6F\x00\x00\x79\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x52", "xx????x?xx????xxxxxxxxxxxxx??x?xxxxxxxxxxx")
+	keyBindingsOffset := pattern + 0x65
+
+	// KeyBindings Skills
+	pattern = process.FindPattern(memory, "\x0F\x10\x04\x24\x48\x6B\xC8\x1C\x48\x8D\x05", "xxxxxxxxxxx")
+	var keyBindingsSkillsOffset uintptr
+	bytes = process.ReadBytesFromMemory(pattern+11, 4)
+	relativeOffset := int32(binary.LittleEndian.Uint32(bytes))
+	keyBindingsSkillsOffset = uintptr(int64(pattern) + 15 + int64(relativeOffset))
 
 	return Offset{
 		GameData:                    gameDataOffset,
@@ -83,5 +95,7 @@ func calculateOffsets(process Process) Offset {
 		WidgetStatesOffset:          WidgetStatesOffset,
 		WaypointsOffset:             WaypointsOffset,
 		FPS:                         fpsOffset,
+		KeyBindingsOffset:           keyBindingsOffset,
+		KeyBindingsSkillsOffset:     keyBindingsSkillsOffset,
 	}
 }
