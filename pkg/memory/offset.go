@@ -19,7 +19,7 @@ type Offset struct {
 	KeyBindingsSkillsOffset     uintptr
 }
 
-func calculateOffsets(process Process) Offset {
+func calculateOffsets(process *Process) Offset {
 	// ignoring errors, always best practices
 	memory, _ := process.getProcessMemory()
 
