@@ -14,7 +14,7 @@ import (
 
 type GameReader struct {
 	offset Offset
-	Process
+	*Process
 
 	monstersLastUpdate  time.Time
 	inventoryLastUpdate time.Time
@@ -39,7 +39,7 @@ var WidgetStateFlags = map[string]uint64{
 	"WeaponSwap": 0xF2D7CF8E9CC08212,
 }
 
-func NewGameReader(process Process) *GameReader {
+func NewGameReader(process *Process) *GameReader {
 	return &GameReader{
 		offset:              calculateOffsets(process),
 		Process:             process,

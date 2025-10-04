@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"strings"
+	"sync"
 	"syscall"
 	"unsafe"
 
@@ -18,27 +19,29 @@ type Process struct {
 	pid                  uint32
 	moduleBaseAddressPtr uintptr
 	moduleBaseSize       uint32
+	sendPacket           *sendPacketState
+	sendPacketMu         sync.Mutex
 }
 
 const (
-	Int8  = 1 // signed 8-bit integer
-	Int16 = 2 // signed 16-bit integer
-	Int32 = 4 // signed 32-bit integer
-	Int64 = 8 // signed 64-bit integer
+	Int8  = 1
+	Int16 = 2
+	Int32 = 4
+	Int64 = 8
 )
 
-func NewProcess() (Process, error) {
+func NewProcess() (*Process, error) {
 	module, err := getGameModule()
 	if err != nil {
-		return Process{}, err
+		return nil, err
 	}
 
 	h, err := windows.OpenProcess(0x0010, false, module.ProcessID)
 	if err != nil {
-		return Process{}, err
+		return nil, err
 	}
 
-	return Process{
+	return &Process{
 		handler:              h,
 		pid:                  module.ProcessID,
 		moduleBaseAddressPtr: module.ModuleBaseAddress,
@@ -46,18 +49,18 @@ func NewProcess() (Process, error) {
 	}, nil
 }
 
-func NewProcessForPID(pid uint32) (Process, error) {
+func NewProcessForPID(pid uint32) (*Process, error) {
 	module, found := getMainModule(pid)
 	if !found {
-		return Process{}, errors.New("no module found for the specified PID")
+		return nil, errors.New("no module found for the specified PID")
 	}
 
 	h, err := windows.OpenProcess(0x0010, false, module.ProcessID)
 	if err != nil {
-		return Process{}, err
+		return nil, err
 	}
 
-	return Process{
+	return &Process{
 		handler:              h,
 		pid:                  module.ProcessID,
 		moduleBaseAddressPtr: module.ModuleBaseAddress,
@@ -65,7 +68,7 @@ func NewProcessForPID(pid uint32) (Process, error) {
 	}, nil
 }
 
-func (p Process) Close() error {
+func (p *Process) Close() error {
 	return windows.CloseHandle(p.handler)
 }
 
@@ -101,7 +104,7 @@ func getMainModule(pid uint32) (ModuleInfo, bool) {
 	return ModuleInfo{}, false
 }
 
-func (p Process) getProcessMemory() ([]byte, error) {
+func (p *Process) getProcessMemory() ([]byte, error) {
 	var data = make([]byte, p.moduleBaseSize)
 	err := windows.ReadProcessMemory(p.handler, p.moduleBaseAddressPtr, &data[0], uintptr(p.moduleBaseSize), nil)
 	if err != nil {
@@ -111,7 +114,7 @@ func (p Process) getProcessMemory() ([]byte, error) {
 	return data, nil
 }
 
-func (p Process) ReadBytesFromMemory(address uintptr, size uint) []byte {
+func (p *Process) ReadBytesFromMemory(address uintptr, size uint) []byte {
 	var data = make([]byte, size)
 	windows.ReadProcessMemory(p.handler, address, &data[0], uintptr(size), nil)
 
@@ -127,7 +130,7 @@ const (
 	Uint64 = 8
 )
 
-func (p Process) ReadUInt(address uintptr, size IntType) uint {
+func (p *Process) ReadUInt(address uintptr, size IntType) uint {
 	bytes := p.ReadBytesFromMemory(address, uint(size))
 
 	return bytesToUint(bytes, size)
@@ -168,7 +171,7 @@ func bytesToInt(bytes []byte, size IntType) int {
 	return 0
 }
 
-func (p Process) ReadStringFromMemory(address uintptr, size uint) string {
+func (p *Process) ReadStringFromMemory(address uintptr, size uint) string {
 	if size == 0 {
 		for i := 1; true; i++ {
 			data := p.ReadBytesFromMemory(address, uint(i))
@@ -181,7 +184,7 @@ func (p Process) ReadStringFromMemory(address uintptr, size uint) string {
 	return string(bytes.Trim(p.ReadBytesFromMemory(address, size), "\x00"))
 }
 
-func (p Process) findPattern(memory []byte, pattern, mask string) int {
+func (p *Process) findPattern(memory []byte, pattern, mask string) int {
 	patternLength := len(pattern)
 	for i := 0; i < int(p.moduleBaseSize)-patternLength; i++ {
 		found := true
@@ -200,7 +203,7 @@ func (p Process) findPattern(memory []byte, pattern, mask string) int {
 	return 0
 }
 
-func (p Process) FindPattern(memory []byte, pattern, mask string) uintptr {
+func (p *Process) FindPattern(memory []byte, pattern, mask string) uintptr {
 	if offset := p.findPattern(memory, pattern, mask); offset != 0 {
 		return p.moduleBaseAddressPtr + uintptr(offset)
 	}
@@ -208,7 +211,7 @@ func (p Process) FindPattern(memory []byte, pattern, mask string) uintptr {
 	return 0
 }
 
-func (p Process) FindPatternByOperand(memory []byte, pattern, mask string) uintptr {
+func (p *Process) FindPatternByOperand(memory []byte, pattern, mask string) uintptr {
 	if offset := p.findPattern(memory, pattern, mask); offset != 0 {
 		// Adjust the address based on the operand value
 		operandAddress := p.moduleBaseAddressPtr + uintptr(offset)
@@ -220,7 +223,7 @@ func (p Process) FindPatternByOperand(memory []byte, pattern, mask string) uintp
 	return 0
 }
 
-func (p Process) GetPID() uint32 {
+func (p *Process) GetPID() uint32 {
 	return p.pid
 }
 
@@ -280,7 +283,7 @@ func (p *Process) ReadPointer(address uintptr, size int) (uintptr, error) {
 	return uintptr(*(*uint64)(unsafe.Pointer(&buffer[0]))), nil
 }
 
-func (p Process) ReadIntoBuffer(address uintptr, buffer []byte) error {
+func (p *Process) ReadIntoBuffer(address uintptr, buffer []byte) error {
 	return windows.ReadProcessMemory(p.handler, address, &buffer[0], uintptr(len(buffer)), nil)
 }
 
