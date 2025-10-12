@@ -246,7 +246,9 @@ func (gd *GameReader) getStatsList(statListPtr uintptr) stat.Stats {
 			stat.ManaPerLevel:
 			value = int(math.Max(float64(statValue/2048), 1))
 		case stat.ReplenishDurability, stat.ReplenishQuantity:
-			value = int(math.Max(float64(2/statValue), 1))
+			if statValue > 0 {
+				value = int(math.Max(float64(2/statValue), 1))
+			}
 		case stat.RegenStaminaPerLevel:
 			value = int(statValue) * 10
 
