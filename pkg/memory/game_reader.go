@@ -139,6 +139,12 @@ func (gd *GameReader) GetData() data.Data {
 	return d
 }
 
+func (gd *GameReader) GetInventory() data.Inventory {
+	rawPlayerUnits := gd.GetRawPlayerUnits()
+	hover := gd.HoveredData()
+	return gd.Inventory(rawPlayerUnits, hover)
+}
+
 func (gd *GameReader) InGame() bool {
 	player := gd.GetRawPlayerUnits().GetMainPlayer()
 
