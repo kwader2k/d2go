@@ -21,28 +21,32 @@ const (
 
 var (
 	sendPacketStubBase = []byte{
-		0x48, 0x89, 0xC8,
-		0x49, 0x89, 0xC0,
-		0x48, 0x83, 0xEC, 0x28,
-		0x48, 0x8B, 0x48, 0x08,
-		0x48, 0x8B, 0x50, 0x10,
-		0x48, 0x8B, 0x00,
+		0xF3, 0x0F, 0x1E, 0xFA,
+		0x53,
+		0x48, 0x89, 0xCB,
+		0x48, 0x83, 0xEC, 0x20,
+		0x48, 0x8B, 0x03,
+		0x48, 0x8B, 0x4B, 0x08,
+		0x48, 0x8B, 0x53, 0x10,
+		0x45, 0x33, 0xC0,
 		0xFF, 0xD0,
-		0x41, 0xC7, 0x40, 0x18,
-		0x01, 0x00, 0x00, 0x00,
+		0xC7, 0x43, 0x18, 0x01, 0x00, 0x00, 0x00,
 		0xB8, 0x01, 0x00, 0x00, 0x00,
-		0x48, 0x83, 0xC4, 0x28,
+		0x48, 0x83, 0xC4, 0x20,
+		0x5B,
 		0xC3,
 	}
 
-	kernel32              = windows.NewLazySystemDLL("kernel32.dll")
-	procVirtualAllocEx    = kernel32.NewProc("VirtualAllocEx")
-	procVirtualFreeEx     = kernel32.NewProc("VirtualFreeEx")
-	procQueueUserAPC      = kernel32.NewProc("QueueUserAPC")
-	procSuspendThread     = kernel32.NewProc("SuspendThread")
-	procResumeThread      = kernel32.NewProc("ResumeThread")
-	procGetExitCodeThread = kernel32.NewProc("GetExitCodeThread")
-	procGetThreadTimes    = kernel32.NewProc("GetThreadTimes")
+	kernel32                       = windows.NewLazySystemDLL("kernel32.dll")
+	procVirtualAllocEx             = kernel32.NewProc("VirtualAllocEx")
+	procVirtualFreeEx              = kernel32.NewProc("VirtualFreeEx")
+	procQueueUserAPC               = kernel32.NewProc("QueueUserAPC")
+	procSuspendThread              = kernel32.NewProc("SuspendThread")
+	procResumeThread               = kernel32.NewProc("ResumeThread")
+	procGetExitCodeThread          = kernel32.NewProc("GetExitCodeThread")
+	procGetThreadTimes             = kernel32.NewProc("GetThreadTimes")
+	procVirtualProtectEx           = kernel32.NewProc("VirtualProtectEx")
+	procSetProcessValidCallTargets = kernel32.NewProc("SetProcessValidCallTargets")
 
 	d2gsCachedFn uintptr
 	d2gsCacheMu  sync.RWMutex
@@ -67,6 +71,8 @@ const (
 	sendPacketMetaSize     = 32
 
 	threadStillActive = 259
+
+	cfgCallTargetValid = 0x1
 )
 
 type sendPacketState struct {
@@ -82,6 +88,11 @@ type sendPacketState struct {
 	processPID          uint32
 	threadLastValidated time.Time
 	leakedBuffers       []uintptr
+}
+
+type cfgCallTargetInfo struct {
+	Offset uintptr
+	Flags  uintptr
 }
 
 func findPatternOffset(memory []byte, pattern, mask string) int {
@@ -155,6 +166,16 @@ func (s *sendPacketState) ensureStub(handle windows.Handle) error {
 	if err := writeRemoteMemory(handle, addr, sendPacketStubBase); err != nil {
 		virtualFreeEx(handle, addr)
 		return fmt.Errorf("write remote stub: %w", err)
+	}
+
+	if err := markCallTargetValid(handle, addr, stubSize); err != nil {
+		virtualFreeEx(handle, addr)
+		return fmt.Errorf("register call target: %w", err)
+	}
+
+	if err := virtualProtectEx(handle, addr, stubSize, windows.PAGE_EXECUTE_READ); err != nil {
+		virtualFreeEx(handle, addr)
+		return fmt.Errorf("set stub protection: %w", err)
 	}
 
 	s.stub = addr
@@ -630,4 +651,70 @@ func virtualFreeEx(handle windows.Handle, address uintptr) error {
 		return errors.New("VirtualFreeEx failed")
 	}
 	return nil
+}
+
+func virtualProtectEx(handle windows.Handle, address uintptr, size uintptr, protect uint32) error {
+	if address == 0 || size == 0 {
+		return errors.New("attempt to protect invalid region")
+	}
+
+	if err := procVirtualProtectEx.Find(); err != nil {
+		return nil
+	}
+
+	var oldProtect uint32
+	ret, _, err := procVirtualProtectEx.Call(
+		uintptr(handle),
+		address,
+		size,
+		uintptr(protect),
+		uintptr(unsafe.Pointer(&oldProtect)),
+	)
+	if ret == 0 {
+		if err != nil {
+			return fmt.Errorf("VirtualProtectEx: %w", err)
+		}
+		return errors.New("VirtualProtectEx failed")
+	}
+	return nil
+}
+
+func markCallTargetValid(handle windows.Handle, address uintptr, size uintptr) error {
+	if err := procSetProcessValidCallTargets.Find(); err != nil {
+		return nil
+	}
+
+	if address == 0 {
+		return errors.New("attempt to register null call target")
+	}
+
+	regionSize := alignUp(size, 0x1000)
+	info := cfgCallTargetInfo{
+		Offset: 0,
+		Flags:  cfgCallTargetValid,
+	}
+
+	ret, _, err := procSetProcessValidCallTargets.Call(
+		uintptr(handle),
+		address,
+		regionSize,
+		1,
+		uintptr(unsafe.Pointer(&info)),
+	)
+	if ret == 0 {
+		if err != nil {
+			return fmt.Errorf("SetProcessValidCallTargets: %w", err)
+		}
+		return errors.New("SetProcessValidCallTargets failed")
+	}
+
+	return nil
+}
+
+func alignUp(value, alignment uintptr) uintptr {
+	if alignment == 0 {
+		return value
+	}
+	mask := alignment - 1
+	return (value + mask) &^ mask
 }
