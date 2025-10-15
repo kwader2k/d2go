@@ -310,11 +310,11 @@ func (gd *GameReader) InCharacterSelectionScreen() bool {
 }
 
 func (gd *GameReader) GetSelectedCharacterName() string {
-	return gd.Process.ReadStringFromMemory(gd.Process.moduleBaseAddressPtr+0x222D0A8, 0)
+	return gd.Process.ReadStringFromMemory(gd.Process.moduleBaseAddressPtr+0x21D31A8, 0)
 }
 
 func (gd *GameReader) LegacyGraphics() bool {
-	return gd.ReadUInt(gd.moduleBaseAddressPtr+0x2227998, Uint64) == 1
+	return gd.ReadUInt(gd.Process.moduleBaseAddressPtr+0x1DE6295, Uint8) == 1
 }
 
 func (gd *GameReader) IsOnline() bool {
@@ -323,7 +323,7 @@ func (gd *GameReader) IsOnline() bool {
 }
 
 func (gd *GameReader) IsIngame() bool {
-	return gd.ReadUInt(gd.moduleBaseAddressPtr+0x22E51D0, 1) == 1
+	return gd.ReadUInt(gd.Process.moduleBaseAddressPtr+gd.offset.UI-0xA, 1) == 1
 }
 
 func (gd *GameReader) IsInLobby() bool {
@@ -442,7 +442,7 @@ func (gd *GameReader) FPS() int {
 }
 
 func (gd *GameReader) HasMerc() bool {
-	return gd.ReadUInt(gd.moduleBaseAddressPtr+0x22e51d0+0x12, Uint8) != 0
+	return gd.ReadUInt(gd.Process.moduleBaseAddressPtr+gd.offset.UI+0x8, Uint8) != 0
 }
 
 // GetWidgetState reference : https://github.com/ResurrectedTrader/ResurrectedTrade/blob/f121ec02dd3fbe1c574f713e5a0c2db92ccca821/ResurrectedTrade.AgentBase/Capture.cs#L618
