@@ -1,6 +1,6 @@
 package memory
 
 const (
-	tzOffline = 0x22D6D44
-	tzOnline  = 0x29CCAF0
+	tzOffline = 0x29B3208
+	tzOnline  = 0x29B3188
 )
