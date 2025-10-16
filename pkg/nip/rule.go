@@ -65,6 +65,31 @@ func (r Rules) EvaluateAll(it data.Item) (Rule, RuleResult) {
 	return bestMatchingRule, bestMatch
 }
 
+func (r Rules) EvaluateAllIgnoreTiers(it data.Item) (Rule, RuleResult) {
+	bestMatch := RuleResultNoMatch
+	bestMatchingRule := Rule{}
+	for _, rule := range r {
+		if rule.Enabled {
+			if rule.tier > 0 || rule.mercTier > 0 {
+				continue
+			}
+			result, err := rule.Evaluate(it)
+			if err != nil {
+				continue
+			}
+			if result == RuleResultFullMatch {
+				return rule, result
+			}
+			if result == RuleResultPartial {
+				bestMatch = result
+				bestMatchingRule = rule
+			}
+		}
+	}
+
+	return bestMatchingRule, bestMatch
+}
+
 func (r Rules) EvaluateTiers(it data.Item, tierRulesIndexes []int) (Rule, Rule) {
 	highestTierRule := Rule{}
 	highestMercTierRule := Rule{}
