@@ -5,7 +5,7 @@ import (
 )
 
 func (gd *GameReader) TerrorZones() (areas []area.ID) {
-	tzPtr := uintptr(gd.ReadUInt(gd.moduleBaseAddressPtr+tzOnline, Uint64))
+	tzPtr := uintptr(gd.ReadUInt(gd.moduleBaseAddressPtr+gd.offset.TZ, Uint64))
 
 	for i := 0; i < 8; i++ {
 		tzArea := gd.ReadUInt(tzPtr+uintptr(i*Uint32), Uint32)
