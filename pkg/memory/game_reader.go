@@ -430,11 +430,11 @@ func (gd *GameReader) IsDismissableModalPresent() (bool, string) {
 }
 
 func (gd *GameReader) LastGameName() string {
-	return gd.ReadStringFromMemory(gd.moduleBaseAddressPtr+0x2587FB8, 0)
+	return gd.ReadStringFromMemory(gd.moduleBaseAddressPtr+0x256E668, 0)
 }
 
 func (gd *GameReader) LastGamePass() string {
-	return gd.ReadStringFromMemory(gd.moduleBaseAddressPtr+0x2588018, 0)
+	return gd.ReadStringFromMemory(gd.moduleBaseAddressPtr+0x256E6C8, 0)
 }
 
 func (gd *GameReader) FPS() int {
