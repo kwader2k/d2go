@@ -94,11 +94,9 @@ func (gd *GameReader) GetData() data.Data {
 	openMenus := gd.OpenMenus()
 
 	// Quests
-	// q1 := uintptr(gd.Process.ReadUInt(gd.moduleBaseAddressPtr+0x22E2978, Uint64))
-	// q2 := uintptr(gd.Process.ReadUInt(q1, Uint64))
-	// q2 := uintptr(gd.Process.ReadUInt(gd.moduleBaseAddressPtr+0x22F1E79, Uint64))
-	gameQuestsBytes := gd.Process.ReadBytesFromMemory(gd.moduleBaseAddressPtr+0x22D8369, 85)
-	// gameQuestsBytes = gameQuestsBytes[3:]
+	questDataPtr := uintptr(gd.Process.ReadUInt(gd.moduleBaseAddressPtr+gd.offset.QuestInfo, Uint64))
+	flagsBufferPtr := uintptr(gd.Process.ReadUInt(questDataPtr, Uint64))
+	gameQuestsBytes := gd.Process.ReadBytesFromMemory(flagsBufferPtr, 82)
 
 	d := data.Data{
 		Corpse: data.Corpse{
