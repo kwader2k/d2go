@@ -97,7 +97,7 @@ func (gd *GameReader) GetData() data.Data {
 	// q1 := uintptr(gd.Process.ReadUInt(gd.moduleBaseAddressPtr+0x22E2978, Uint64))
 	// q2 := uintptr(gd.Process.ReadUInt(q1, Uint64))
 	// q2 := uintptr(gd.Process.ReadUInt(gd.moduleBaseAddressPtr+0x22F1E79, Uint64))
-	gameQuestsBytes := gd.Process.ReadBytesFromMemory(gd.moduleBaseAddressPtr+0x22D8369, 85)
+	gameQuestsBytes := gd.Process.ReadBytesFromMemory(gd.moduleBaseAddressPtr+gd.offset.Quests, 85)
 	// gameQuestsBytes = gameQuestsBytes[3:]
 
 	d := data.Data{
