@@ -5,10 +5,10 @@ import (
 )
 
 func (gd *GameReader) TerrorZones() (areas []area.ID) {
-	tz := gd.moduleBaseAddressPtr + tzOnline
+	tzPtr := uintptr(gd.ReadUInt(gd.moduleBaseAddressPtr+tzOnline, Uint64))
 
 	for i := 0; i < 8; i++ {
-		tzArea := gd.ReadUInt(tz+uintptr(i*Uint32), Uint32)
+		tzArea := gd.ReadUInt(tzPtr+uintptr(i*Uint32), Uint32)
 		if tzArea != 0 {
 			areas = append(areas, area.ID(tzArea))
 		}
