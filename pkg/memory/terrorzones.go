@@ -5,7 +5,7 @@ import (
 )
 
 func (gd *GameReader) TerrorZones() (areas []area.ID) {
-	structPtr := gd.moduleBaseAddressPtr + tzOnline
+	structPtr := gd.moduleBaseAddressPtr + gd.offset.TZ
 	zonesPtr := uintptr(gd.ReadUInt(structPtr, Uint64))
 	actualActiveZoneCount := int(gd.ReadUInt(structPtr+0x8, Uint8))
 
