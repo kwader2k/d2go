@@ -5,10 +5,12 @@ import (
 )
 
 func (gd *GameReader) TerrorZones() (areas []area.ID) {
-	tzPtr := uintptr(gd.ReadUInt(gd.moduleBaseAddressPtr+gd.offset.TZ, Uint64))
+	structPtr := gd.moduleBaseAddressPtr + gd.offset.TZ
+	zonesPtr := uintptr(gd.ReadUInt(structPtr, Uint64))
+	actualActiveZoneCount := int(gd.ReadUInt(structPtr+0x8, Uint8))
 
-	for i := 0; i < 8; i++ {
-		tzArea := gd.ReadUInt(tzPtr+uintptr(i*Uint32), Uint32)
+	for i := 0; i < actualActiveZoneCount; i++ {
+		tzArea := gd.ReadUInt(zonesPtr+uintptr(i*Uint32), Uint32)
 		if tzArea != 0 {
 			areas = append(areas, area.ID(tzArea))
 		}
