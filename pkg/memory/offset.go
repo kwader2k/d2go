@@ -17,6 +17,7 @@ type Offset struct {
 	FPS                         uintptr
 	KeyBindingsOffset           uintptr
 	KeyBindingsSkillsOffset     uintptr
+	Quests                      uintptr
 }
 
 func calculateOffsets(process *Process) Offset {
@@ -84,6 +85,12 @@ func calculateOffsets(process *Process) Offset {
 	relativeOffset := int32(binary.LittleEndian.Uint32(bytes))
 	keyBindingsSkillsOffset = uintptr(int64(pattern) + 15 + int64(relativeOffset))
 
+	// Quest Bytes Data
+	pattern = process.FindPattern(memory, "\x42\xc6\x84\x28\x00\x00\x00\x00\x00\x49\xff\xc5\x49\x83\xfd\x29", "xxxx?????xxxxxxx")
+	bytes = process.ReadBytesFromMemory(pattern+4, 4)
+	questOffset := uintptr(binary.LittleEndian.Uint32(bytes))
+	questDataOffset := questOffset + 1
+
 	return Offset{
 		GameData:                    gameDataOffset,
 		UnitTable:                   unitTableOffset,
@@ -97,5 +104,6 @@ func calculateOffsets(process *Process) Offset {
 		FPS:                         fpsOffset,
 		KeyBindingsOffset:           keyBindingsOffset,
 		KeyBindingsSkillsOffset:     keyBindingsSkillsOffset,
+		Quests:                      questDataOffset,
 	}
 }
