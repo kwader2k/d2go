@@ -66,6 +66,7 @@ type OnlineGame struct {
 	LastGameName     string
 	LastGamePassword string
 	FPS              int
+	Ping             int
 }
 
 type Panel struct {
