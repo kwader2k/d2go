@@ -133,10 +133,20 @@ func (gd *GameReader) getSkills(skillListPtr uintptr) map[skill.ID]skill.Points 
 		quantity := gd.Process.ReadUInt(skillPtr+0x40, Uint16)
 		charges := gd.Process.ReadUInt(skillPtr+0x48, Uint16)
 
-		skills[skill.ID(skillTxt)] = skill.Points{
-			Level:    lvl,
-			Quantity: quantity,
-			Charges:  charges,
+		shouldSetSkill := true
+		existingSkill, exists := skills[skill.ID(skillTxt)]
+		if exists {
+			if existingSkill.Charges == 0 && charges > 0 {
+				shouldSetSkill = false
+			}
+		}
+
+		if shouldSetSkill {
+			skills[skill.ID(skillTxt)] = skill.Points{
+				Level:    lvl,
+				Quantity: quantity,
+				Charges:  charges,
+			}
 		}
 
 		skillPtr = uintptr(gd.Process.ReadUInt(skillPtr+0x08, Uint64))
