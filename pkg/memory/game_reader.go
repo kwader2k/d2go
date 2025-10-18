@@ -111,6 +111,7 @@ func (gd *GameReader) GetData() data.Data {
 			LastGameName:     gd.LastGameName(),
 			LastGamePassword: gd.LastGamePass(),
 			FPS:              gd.FPS(),
+			Ping:             gd.Ping(),
 		},
 		Monsters:       monsters,
 		Corpses:        gd.Corpses(pu.Position, hover),
@@ -439,6 +440,12 @@ func (gd *GameReader) LastGamePass() string {
 
 func (gd *GameReader) FPS() int {
 	return int(gd.ReadUInt(gd.moduleBaseAddressPtr+gd.offset.FPS, Uint32))
+}
+
+func (gd *GameReader) Ping() int {
+	ptrToStructPtr := gd.moduleBaseAddressPtr + gd.offset.Ping
+	structPtrAddr := gd.ReadUInt(ptrToStructPtr, Uint64)
+	return int(gd.ReadUInt(uintptr(structPtrAddr+36), Uint32))
 }
 
 func (gd *GameReader) HasMerc() bool {
