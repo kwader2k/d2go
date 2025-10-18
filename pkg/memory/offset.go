@@ -19,6 +19,7 @@ type Offset struct {
 	KeyBindingsSkillsOffset     uintptr
 	TZ                          uintptr
 	Quests                      uintptr
+	LegacyGraphics              uintptr
 }
 
 func calculateOffsets(process *Process) Offset {
@@ -99,6 +100,11 @@ func calculateOffsets(process *Process) Offset {
 	questOffset := uintptr(binary.LittleEndian.Uint32(bytes))
 	questDataOffset := questOffset + 1
 
+	// LegacyGraphics
+	pattern = process.FindPattern(memory, "\x80\x3D\x00\x00\x00\x00\x00\x48\x8D\x54\x24\x30", "xx?????xxxxx")
+	legacyGfxPtr := uintptr(process.ReadUInt(pattern+2, Uint32))
+	legacyGfxOffset := pattern - process.moduleBaseAddressPtr + 7 + legacyGfxPtr
+
 	return Offset{
 		GameData:                    gameDataOffset,
 		UnitTable:                   unitTableOffset,
@@ -114,5 +120,6 @@ func calculateOffsets(process *Process) Offset {
 		KeyBindingsSkillsOffset:     keyBindingsSkillsOffset,
 		TZ:                          tzOffset,
 		Quests:                      questDataOffset,
+		LegacyGraphics:              legacyGfxOffset,
 	}
 }
