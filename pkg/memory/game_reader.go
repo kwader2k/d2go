@@ -315,7 +315,7 @@ func (gd *GameReader) GetSelectedCharacterName() string {
 }
 
 func (gd *GameReader) LegacyGraphics() bool {
-	return gd.ReadUInt(gd.Process.moduleBaseAddressPtr+0x22D845F, Uint8) != 0
+	return gd.ReadUInt(gd.Process.moduleBaseAddressPtr+gd.offset.LegacyGraphics, Uint8) != 0
 }
 
 func (gd *GameReader) IsOnline() bool {
