@@ -109,6 +109,7 @@ func (gd *GameReader) GetData() data.Data {
 			LastGameName:     gd.LastGameName(),
 			LastGamePassword: gd.LastGamePass(),
 			FPS:              gd.FPS(),
+			Ping:             gd.Ping(),
 		},
 		Monsters:       monsters,
 		Corpses:        gd.Corpses(pu.Position, hover),
@@ -312,7 +313,7 @@ func (gd *GameReader) GetSelectedCharacterName() string {
 }
 
 func (gd *GameReader) LegacyGraphics() bool {
-	return gd.ReadUInt(gd.Process.moduleBaseAddressPtr+0x22D845F, Uint8) != 0
+	return gd.ReadUInt(gd.Process.moduleBaseAddressPtr+gd.offset.LegacyGraphics, Uint8) != 0
 }
 
 func (gd *GameReader) IsOnline() bool {
@@ -428,15 +429,21 @@ func (gd *GameReader) IsDismissableModalPresent() (bool, string) {
 }
 
 func (gd *GameReader) LastGameName() string {
-	return gd.ReadStringFromMemory(gd.moduleBaseAddressPtr+0x2587FB8, 0)
+	return gd.ReadStringFromMemory(gd.moduleBaseAddressPtr+0x256E668, 0)
 }
 
 func (gd *GameReader) LastGamePass() string {
-	return gd.ReadStringFromMemory(gd.moduleBaseAddressPtr+0x2588018, 0)
+	return gd.ReadStringFromMemory(gd.moduleBaseAddressPtr+0x256E6C8, 0)
 }
 
 func (gd *GameReader) FPS() int {
 	return int(gd.ReadUInt(gd.moduleBaseAddressPtr+gd.offset.FPS, Uint32))
+}
+
+func (gd *GameReader) Ping() int {
+	ptrToStructPtr := gd.moduleBaseAddressPtr + gd.offset.Ping
+	structPtrAddr := gd.ReadUInt(ptrToStructPtr, Uint64)
+	return int(gd.ReadUInt(uintptr(structPtrAddr+36), Uint32))
 }
 
 func (gd *GameReader) HasMerc() bool {

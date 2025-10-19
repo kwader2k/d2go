@@ -23,6 +23,8 @@ var (
 	fixedPropsRegexp = regexp.MustCompile(`(\[(type|quality|class|name|flag|color|prefix|suffix)]\s*(<=|<|>|>=|!=|==)\s*([a-zA-Z0-9]+))`)
 	statsRegexp      = regexp.MustCompile(`\[(.*?)]`)
 	maxQtyRegexp     = regexp.MustCompile(`(\[maxquantity]\s*(<=|<|>|>=|!=|==)\s*([0-9]+))`)
+	tierRegexp       = regexp.MustCompile(`(\[tier]\s*(<=|<|>|>=|!=|==)\s*([0-9]+))`)
+	mercTierRegexp   = regexp.MustCompile(`(\[merctier]\s*(<=|<|>|>=|!=|==)\s*([0-9]+))`)
 )
 
 type Rule struct {
@@ -31,6 +33,8 @@ type Rule struct {
 	LineNumber    int
 	Enabled       bool
 	maxQuantity   int
+	tier          float64
+	mercTier      float64
 	stage1        *vm.Program
 	stage2        *vm.Program
 	requiredStats []string
@@ -61,6 +65,57 @@ func (r Rules) EvaluateAll(it data.Item) (Rule, RuleResult) {
 	return bestMatchingRule, bestMatch
 }
 
+func (r Rules) EvaluateAllIgnoreTiers(it data.Item) (Rule, RuleResult) {
+	bestMatch := RuleResultNoMatch
+	bestMatchingRule := Rule{}
+	for _, rule := range r {
+		if rule.Enabled {
+			if rule.tier > 0 || rule.mercTier > 0 {
+				continue
+			}
+			result, err := rule.Evaluate(it)
+			if err != nil {
+				continue
+			}
+			if result == RuleResultFullMatch {
+				return rule, result
+			}
+			if result == RuleResultPartial {
+				bestMatch = result
+				bestMatchingRule = rule
+			}
+		}
+	}
+
+	return bestMatchingRule, bestMatch
+}
+
+func (r Rules) EvaluateTiers(it data.Item, tierRulesIndexes []int) (Rule, Rule) {
+	highestTierRule := Rule{}
+	highestMercTierRule := Rule{}
+	for _, ruleIndex := range tierRulesIndexes {
+		if ruleIndex < len(r) {
+			rule := r[ruleIndex]
+			if rule.Enabled {
+				result, err := rule.Evaluate(it)
+				if err != nil {
+					continue
+				}
+				if result == RuleResultFullMatch || result == RuleResultPartial {
+					if rule.tier > highestTierRule.tier {
+						highestTierRule = rule
+					}
+					if rule.mercTier > highestMercTierRule.mercTier {
+						highestMercTierRule = rule
+					}
+				}
+			}
+		}
+	}
+
+	return highestTierRule, highestMercTierRule
+}
+
 var fixedPropsList = map[string]int{"type": 0, "quality": 0, "class": 0, "name": 0, "flag": 0, "color": 0, "prefix": 0, "suffix": 0}
 
 func NewRule(rawRule string, filename string, lineNumber int) (Rule, error) {
@@ -77,6 +132,28 @@ func NewRule(rawRule string, filename string, lineNumber int) (Rule, error) {
 		rule = strings.ReplaceAll(rule, prop[0], "")
 	}
 
+	// Try to get the tier value and purge it from the rule, we can not evaluate it yet
+	tier := 0.0
+	for _, prop := range tierRegexp.FindAllStringSubmatch(rule, -1) {
+		parsedTier, err := strconv.Atoi(prop[3])
+		if err != nil {
+			return Rule{}, fmt.Errorf("error parsing tier value %s: %w", prop[3], err)
+		}
+		tier = float64(parsedTier)
+		rule = strings.ReplaceAll(rule, prop[0], "")
+	}
+
+	// Try to get the merctier value and purge it from the rule, we can not evaluate it yet
+	mercTier := 0.0
+	for _, prop := range mercTierRegexp.FindAllStringSubmatch(rule, -1) {
+		parsedMercTier, err := strconv.Atoi(prop[3])
+		if err != nil {
+			return Rule{}, fmt.Errorf("error parsing merctier value %s: %w", prop[3], err)
+		}
+		mercTier = float64(parsedMercTier)
+		rule = strings.ReplaceAll(rule, prop[0], "")
+	}
+
 	// Sanitize again, just in case we messed up the rule while parsing maxquantity
 	rule = sanitizeLine(rule)
 	if rule == "" {
@@ -89,6 +166,8 @@ func NewRule(rawRule string, filename string, lineNumber int) (Rule, error) {
 		LineNumber:  lineNumber,
 		Enabled:     true,
 		maxQuantity: maxQuantity,
+		tier:        tier,
+		mercTier:    mercTier,
 	}
 
 	parts := strings.Split(rule, "#")
@@ -371,4 +450,12 @@ func getRequiredStatsForRule(line string) []string {
 // MaxQuantity returns the maximum quantity of items that character can have, 0 means no limit
 func (r Rule) MaxQuantity() int {
 	return r.maxQuantity
+}
+
+func (r Rule) Tier() float64 {
+	return r.tier
+}
+
+func (r Rule) MercTier() float64 {
+	return r.mercTier
 }
