@@ -1,21 +1,18 @@
 package quest
 
 type Quest int16
-type Status int16
-type States []Status
+type Status uint16
 
-func (s States) Completed() bool {
-	return s.HasStatus(StatusUpdateQuestLogCompleted) || s.HasStatus(StatusPrimaryGoalCompleted) || s.HasStatus(StatusUnknown1) || s.HasStatus(StatusUnknown2)
+func (s Status) Completed() bool {
+	return s&StatusMaskCompleted != 0
 }
 
-func (s States) HasStatus(st Status) bool {
-	for _, state := range s {
-		if state == st {
-			return true
-		}
-	}
+func (s Status) NotStarted() bool {
+	return s == 0
+}
 
-	return false
+func (s Status) HasStatus(st Status) bool {
+	return (s & st) == st
 }
 
 // Note that quest order isnt what is represented visually in game
@@ -49,4 +46,4 @@ const (
 	Act5EveOfDestruction
 )
 
-type Quests map[Quest]States
+type Quests map[Quest]Status

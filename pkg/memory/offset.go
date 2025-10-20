@@ -17,6 +17,7 @@ type Offset struct {
 	FPS                         uintptr
 	KeyBindingsOffset           uintptr
 	KeyBindingsSkillsOffset     uintptr
+	QuestInfo                   uintptr
 	TZ                          uintptr
 	Quests                      uintptr
 	Ping                        uintptr
@@ -90,6 +91,11 @@ func calculateOffsets(process *Process) Offset {
 	relativeOffset = int32(binary.LittleEndian.Uint32(bytes))
 	keyBindingsSkillsOffset = uintptr(int64(pattern) + 15 + int64(relativeOffset))
 
+	// QuestInfo
+	pattern = process.FindPattern(memory, "\x48\x8B\x0D\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x45\x33\xE4", "xxx????x????xxx")
+	questInfoOffsetPtr := uintptr(process.ReadUInt(pattern+3, Uint32))
+	questInfoOffset := pattern - process.moduleBaseAddressPtr + 7 + questInfoOffsetPtr
+
 	// Terror Zones
 	pattern = process.FindPattern(memory, "\x48\x89\x05\xCC\xCC\xCC\xCC\x48\x8D\x05\xCC\xCC\xCC\xCC\x48\x89\x05\xCC\xCC\xCC\xCC\x48\x8D\x05\xCC\xCC\xCC\xCC\x48\x89\x15\xCC\xCC\xCC\xCC\x48\x89\x15", "xxx????xxx????xxx????xxx????xxx????xxx")
 	tzPtr := process.ReadUInt(pattern+3, Uint32)
@@ -125,6 +131,7 @@ func calculateOffsets(process *Process) Offset {
 		FPS:                         fpsOffset,
 		KeyBindingsOffset:           keyBindingsOffset,
 		KeyBindingsSkillsOffset:     keyBindingsSkillsOffset,
+		QuestInfo:                   questInfoOffset,
 		TZ:                          tzOffset,
 		Quests:                      questDataOffset,
 		Ping:                        pingOffset,
