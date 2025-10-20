@@ -1,18 +1,27 @@
 package quest
 
 const (
-	StatusQuestNotStarted Status = iota
+	StatusRewardGranted Status = 1 << iota
+	StatusRewardPending
+	StatusStarted
+	StatusLeaveTown
+	StatusEnterArea
 	StatusInProgress1
 	StatusInProgress2
 	StatusInProgress3
 	StatusInProgress4
 	StatusInProgress5
 	StatusInProgress6
-	StatusInProgress8
-	StatusInProgress9
-	StatusInProgress10
-	StatusUpdateQuestLogCompleted
-	StatusPrimaryGoalCompleted
-	StatusUnknown1
-	StatusUnknown2
+	StatusInProgress7
+	StatusUpdateQuestLog
+	StatusPrimaryGoalDone
+	StatusCompletedNow
+	StatusCompletedBefore
 )
+
+const StatusMaskCompleted = StatusPrimaryGoalDone |
+	StatusRewardGranted |
+	StatusRewardPending |
+	StatusCompletedNow |
+	StatusCompletedBefore |
+	StatusUpdateQuestLog

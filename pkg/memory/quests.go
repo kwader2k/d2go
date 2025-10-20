@@ -49,28 +49,6 @@ func (gd *GameReader) readQuestFlags(questBytes []byte, questIndex int) uint16 {
 	return uint16(questBytes[byteOffset]) | (uint16(questBytes[byteOffset+1]) << 8)
 }
 
-func (gd *GameReader) getQuestStatus(flags uint16) []quest.Status {
-	var statuses []quest.Status
-
-	if flags == 0 {
-		statuses = append(statuses, quest.StatusQuestNotStarted)
-		return statuses
-	}
-
-	// Return early if completed
-	if (flags & (1 << 0)) != 0 {
-		statuses = append(statuses, quest.StatusUpdateQuestLogCompleted)
-		return statuses
-	}
-
-	// If not completed, find the highest bit, ignoring unknown
-	for bit := 10; bit >= 1; bit-- {
-		if (flags & (1 << bit)) != 0 {
-			statuses = append(statuses, quest.Status(bit))
-			return statuses
-		}
-	}
-
-	statuses = append(statuses, quest.StatusUnknown2)
-	return statuses
+func (gd *GameReader) getQuestStatus(flags uint16) quest.Status {
+	return quest.Status(flags)
 }
