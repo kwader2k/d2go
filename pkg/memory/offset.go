@@ -21,6 +21,7 @@ type Offset struct {
 	Quests                      uintptr
 	Ping                        uintptr
 	LegacyGraphics              uintptr
+	CharData                    uintptr
 }
 
 func calculateOffsets(process *Process) Offset {
@@ -112,6 +113,12 @@ func calculateOffsets(process *Process) Offset {
 	legacyGfxPtr := uintptr(process.ReadUInt(pattern+2, Uint32))
 	legacyGfxOffset := pattern - process.moduleBaseAddressPtr + 7 + legacyGfxPtr
 
+	// CharData
+	pattern = process.FindPattern(memory, "\x48\x8D\x05\x00\x00\x00\x00\x89\x93\xF4\x0C\x00\x00", "xxx????xxxxxx")
+	bytes = process.ReadBytesFromMemory(pattern+3, 4)
+	relativeOffset = int32(binary.LittleEndian.Uint32(bytes))
+	charDataOffset := pattern - process.moduleBaseAddressPtr + 7 + uintptr(relativeOffset)
+
 	return Offset{
 		GameData:                    gameDataOffset,
 		UnitTable:                   unitTableOffset,
@@ -129,5 +136,6 @@ func calculateOffsets(process *Process) Offset {
 		Quests:                      questDataOffset,
 		Ping:                        pingOffset,
 		LegacyGraphics:              legacyGfxOffset,
+		CharData:                    charDataOffset,
 	}
 }
