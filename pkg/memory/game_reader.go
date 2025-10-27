@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"math"
@@ -33,6 +34,13 @@ type MercOption struct {
 	Life    int
 	Defense int
 	Cost    int
+}
+
+type CharacterFlags struct {
+	Hardcore    bool
+	HasEverDied bool
+	Expansion   bool
+	Ladder      bool
 }
 
 var WidgetStateFlags = map[string]uint64{
@@ -493,4 +501,61 @@ func (gd *GameReader) GetActiveWeaponSlot() int {
 		return 0 // Default to primary weapons on error
 	}
 	return state
+}
+
+func (gd *GameReader) GetCharacterFlags(characterName string) (CharacterFlags, error) {
+	const (
+		charDataHeaderSize = 16
+		charNameOffset     = 0x010
+		charFlagsOffset    = 0x122
+		maxCharCount       = 47
+
+		flagHardcore  = 0x04
+		flagDead      = 0x08
+		flagExpansion = 0x20
+		flagLadder    = 0x40
+	)
+
+	charDataPtr := gd.moduleBaseAddressPtr + gd.offset.CharData
+	if charDataPtr == 0 {
+		return CharacterFlags{}, errors.New("character data pointer is invalid")
+	}
+
+	headerBuffer := gd.Process.ReadBytesFromMemory(charDataPtr, charDataHeaderSize)
+	if len(headerBuffer) < charDataHeaderSize {
+		return CharacterFlags{}, errors.New("failed to read character data header")
+	}
+
+	charArrayPtr := uintptr(ReadUIntFromBuffer(headerBuffer, 0x00, Uint64))
+	charCount := int(ReadIntFromBuffer(headerBuffer, 0x08, Uint64))
+
+	if charArrayPtr == 0 || charCount <= 0 || charCount > maxCharCount {
+		return CharacterFlags{}, fmt.Errorf("invalid character metadata: arrayPtr=%v, count=%d", charArrayPtr, charCount)
+	}
+
+	charPointerArray := gd.Process.ReadBytesFromMemory(charArrayPtr, uint(charCount*8))
+
+	for i := 0; i < charCount; i++ {
+		charStructPtr := uintptr(ReadUIntFromBuffer(charPointerArray, uint(i*8), Uint64))
+		if charStructPtr == 0 {
+			continue
+		}
+
+		charName := gd.Process.ReadStringFromMemory(charStructPtr+charNameOffset, 0)
+
+		if charName == characterName {
+			fieldValue := uint16(gd.Process.ReadUInt(charStructPtr+charFlagsOffset, Uint16))
+
+			flags := CharacterFlags{
+				Hardcore:    (fieldValue & flagHardcore) != 0,
+				HasEverDied: (fieldValue & flagDead) != 0,
+				Expansion:   (fieldValue & flagExpansion) != 0,
+				Ladder:      (fieldValue & flagLadder) != 0,
+			}
+
+			return flags, nil
+		}
+	}
+
+	return CharacterFlags{}, fmt.Errorf("character not found: %s", characterName)
 }
