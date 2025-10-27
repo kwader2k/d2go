@@ -549,10 +549,10 @@ func (gd *GameReader) GetCharacterFlags(characterName string) (CharacterFlags, e
 			fieldValue := uint16(gd.Process.ReadUInt(charStructPtr+charFlagsOffset, Uint16))
 
 			flags := CharacterFlags{
-				Hardcore:  (fieldValue & flagHardcore) != 0,
-				Dead:      (fieldValue & flagDead) != 0,
-				Expansion: (fieldValue & flagExpansion) != 0,
-				Ladder:    (fieldValue & flagLadder) != 0,
+				Hardcore:    (fieldValue & flagHardcore) != 0,
+				HasEverDied: (fieldValue & flagDead) != 0,
+				Expansion:   (fieldValue & flagExpansion) != 0,
+				Ladder:      (fieldValue & flagLadder) != 0,
 			}
 
 			return flags, nil
