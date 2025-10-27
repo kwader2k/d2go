@@ -37,10 +37,10 @@ type MercOption struct {
 }
 
 type CharacterFlags struct {
-	Hardcore  bool
-	Dead      bool
-	Expansion bool
-	Ladder    bool
+	Hardcore    bool
+	HasEverDied bool
+	Expansion   bool
+	Ladder      bool
 }
 
 var WidgetStateFlags = map[string]uint64{
