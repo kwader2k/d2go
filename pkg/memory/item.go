@@ -49,6 +49,12 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 	}
 	belt := data.Belt{}
 
+	// Early return if not in-game to avoid any crash
+	if mainPlayer.Area == 0 {
+		inventory.Belt = belt
+		return inventory
+	}
+
 	type socketInfo struct {
 		item     *data.Item
 		position int // Store X position
