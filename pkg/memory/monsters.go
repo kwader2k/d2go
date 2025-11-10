@@ -235,7 +235,7 @@ func (gd *GameReader) shouldBeIgnored(txtNo uint) bool {
 		npc.InvisiblePet,
 		npc.InfernoSentry,
 		npc.DeathSentry,
-		npc.BaalThrone,
+		//npc.BaalThrone,
 		npc.BaalTentacle,
                 npc.BaalTentacle2,
                 npc.BaalTentacle3,
