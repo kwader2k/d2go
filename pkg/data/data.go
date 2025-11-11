@@ -202,6 +202,11 @@ func (pu PlayerUnit) TotalPlayerGold() int {
 	return gold.Value + stashGold.Value
 }
 
+func (pu PlayerUnit) IsDead() bool {
+	life, _ := pu.FindStat(stat.Life, 0)
+	return life.Value <= 0
+}
+
 func (pu PlayerUnit) HPPercent() int {
 	life, _ := pu.FindStat(stat.Life, 0)
 	maxLife, _ := pu.FindStat(stat.MaxLife, 0)
