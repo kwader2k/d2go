@@ -462,11 +462,12 @@ func getRequiredStatsForRule(line string) []string {
 }
 
 func evaluateClassSkillsSum(it data.Item) int {
-	// Check all class skills stats (all have base ID 83 with different layers)
+	// Check all class skills stats
 	totalClassSkills := 0
+	maxLayer := 6 // in aliases.go the max layer for class skills is 6 (itemaddassassinskills)
 
-	for layer := 0; layer <= 6; layer++ {
-		if itemStat, found := it.FindStat(stat.ID(83), layer); found && itemStat.Value > 0 {
+	for layer := 0; layer <= maxLayer; layer++ {
+		if itemStat, found := it.FindStat(stat.AddClassSkills, layer); found && itemStat.Value > 0 {
 			totalClassSkills += itemStat.Value
 		}
 	}
@@ -474,11 +475,12 @@ func evaluateClassSkillsSum(it data.Item) int {
 	return totalClassSkills
 }
 func evaluateSkillTabSum(it data.Item) int {
-	// Check all skill tab stats (all have base ID 188 with different layers)
+	// Check all skill tab stats
 	totalSkillTabs := 0
+	maxLayer := 50 // in aliases.go the max layer for skill tabs is 50 (itemaddmartialartsskilltab)
 
-	for layer := 0; layer <= 50; layer++ {
-		if itemStat, found := it.FindStat(stat.ID(188), layer); found && itemStat.Value > 0 {
+	for layer := 0; layer <= maxLayer; layer++ {
+		if itemStat, found := it.FindStat(stat.AddSkillTab, layer); found && itemStat.Value > 0 {
 			totalSkillTabs += itemStat.Value
 		}
 	}
