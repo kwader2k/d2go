@@ -90,16 +90,7 @@ func (gd *GameReader) GetPlayerUnit(mainPlayerUnit RawPlayerUnit) data.PlayerUni
 	// Class
 	class := data.Class(gd.Process.ReadUInt(mainPlayerUnit.Address+0x17C, Uint32))
 
-	availableWPs := make([]area.ID, 0)
-	// Probably there is a better place to pick up those values, since this seems to be very tied to the UI
-	wpList := gd.Process.ReadBytesFromMemory(gd.moduleBaseAddressPtr+gd.offset.WaypointsOffset, 0x48)
-	for i := 0; i < 0x48; i = i + 8 {
-		a := binary.LittleEndian.Uint32(wpList[i : i+4])
-		available := binary.LittleEndian.Uint32(wpList[i+4 : i+8])
-		if available == 1 || mainPlayerUnit.Area == area.ID(a) {
-			availableWPs = append(availableWPs, area.ID(a))
-		}
-	}
+	availableWPs := gd.decodeWaypointMasks()
 
 	d := data.PlayerUnit{
 		Address:            mainPlayerUnit.Address,
@@ -119,6 +110,69 @@ func (gd *GameReader) GetPlayerUnit(mainPlayerUnit RawPlayerUnit) data.PlayerUni
 	}
 
 	return d
+}
+
+// WaypointTableData returns the waypoint table struct and the data buffer it points to
+func (gd *GameReader) WaypointTableData() (structAddr uintptr, structBuf []byte, dataAddr uintptr, dataBuf []byte) {
+	var structSize = uint(0x100)
+	var dataSize = uint(0x200)
+
+	ptrAddr := gd.moduleBaseAddressPtr + gd.offset.WaypointTableOffset
+	structAddr = uintptr(gd.Process.ReadUInt(ptrAddr, Uint64))
+	structBuf = gd.Process.ReadBytesFromMemory(structAddr, structSize)
+	if len(structBuf) >= 0x18 {
+		dataAddr = uintptr(binary.LittleEndian.Uint64(structBuf[0x10:]))
+		if dataAddr != 0 {
+			dataBuf = gd.Process.ReadBytesFromMemory(dataAddr, dataSize)
+		}
+	}
+	return
+}
+
+// decodeWaypointMasks reads the global waypoint bitfield from the waypoint table.
+// It returns nil if the table cannot be read.
+func (gd *GameReader) decodeWaypointMasks() []area.ID {
+	waypointOrder := []area.ID{
+		// Act 1
+		area.RogueEncampment, area.ColdPlains, area.StonyField, area.DarkWood, area.BlackMarsh,
+		area.OuterCloister, area.JailLevel1, area.InnerCloister, area.CatacombsLevel2,
+		// Act 2
+		area.LutGholein, area.SewersLevel2Act2, area.DryHills, area.HallsOfTheDeadLevel2, area.FarOasis,
+		area.LostCity, area.PalaceCellarLevel1, area.ArcaneSanctuary, area.CanyonOfTheMagi,
+		// Act 3
+		area.KurastDocks, area.SpiderForest, area.GreatMarsh, area.FlayerJungle, area.LowerKurast,
+		area.KurastBazaar, area.UpperKurast, area.Travincal, area.DuranceOfHateLevel2,
+		// Act 4
+		area.ThePandemoniumFortress, area.CityOfTheDamned, area.RiverOfFlame,
+		// Act 5
+		area.Harrogath, area.FrigidHighlands, area.ArreatPlateau, area.CrystallinePassage, area.GlacialTrail,
+		area.HallsOfPain, area.FrozenTundra, area.TheAncientsWay, area.TheWorldStoneKeepLevel2,
+	}
+	_, structBuf, _, _ := gd.WaypointTableData()
+	if len(structBuf) < 4 {
+		return nil
+	}
+	// First two bytes are the 0x0201 header; the next five bytes hold the bitfield (per classic D2 layout).
+	if structBuf[0] != 0x02 || structBuf[1] != 0x01 {
+		return nil
+	}
+
+	var bits uint64
+	for i := 0; i < 5 && 2+i < len(structBuf); i++ {
+		bits |= uint64(structBuf[2+i]) << (8 * i)
+	}
+
+	if bits == 0 {
+		return nil
+	}
+
+	out := make([]area.ID, 0, len(waypointOrder))
+	for idx, wpArea := range waypointOrder {
+		if bits&(1<<uint(idx)) != 0 {
+			out = append(out, wpArea)
+		}
+	}
+	return out
 }
 
 func (gd *GameReader) getSkills(skillListPtr uintptr) map[skill.ID]skill.Points {
