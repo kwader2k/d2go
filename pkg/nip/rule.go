@@ -388,18 +388,17 @@ func (r Rule) Evaluate(it data.Item) (RuleResult, error) {
 		}
 		// Special handling for stats not found
 		if !statFound {
-			// Check if this is a resist stat
 			isResistStat := strings.Contains(statName, "resist")
-
-			// For resist stats in a sum expression when no resists are present, don't match
+			// When the rule contains a resist-sum but the item has no resists,
+			// don’t return NoMatch—set the stat to 0 so the sum evaluates to false,
+			// and let other OR conditions decide the result.
 			if isResistStat && isResistSum && !hasAnyResist {
-				return RuleResultNoMatch, nil
+				stage2Props[statName] = 0
+				continue
 			}
-
-			// For all other stats, default to 0 to allow proper evaluation of OR conditions
+			// For all other missing stats, default to 0
 			stage2Props[statName] = 0
 		} else {
-			// Stat was found, use its value
 			stage2Props[statName] = statValue
 		}
 	}
