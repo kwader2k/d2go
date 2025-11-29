@@ -329,19 +329,27 @@ func (r Rule) Evaluate(it data.Item) (RuleResult, error) {
 		}
 	}
 
-	// Handle resist sums
+	// Handle resist sums - check if item has any resist stats (including negative values)
 	hasAnyResist := false
 
 	// Detect if this is a rule with a resist sum expression
-	// We need to check both for direct addition/subtraction and parenthesized expressions
 	isResistSum := false
 	if strings.Contains(stage2, "resist") {
 		isResistSum = strings.Contains(stage2, "+") || strings.Contains(stage2, "-") ||
 			(strings.Contains(stage2, "(") && strings.Contains(stage2, ")"))
 	}
 
+	// Check if rule ONLY checks resist sums (no other OR conditions)
+	hasNonResistConditions := false
+	for _, statName := range r.requiredStats {
+		if !strings.Contains(statName, "resist") {
+			hasNonResistConditions = true
+			break
+		}
+	}
+
 	if isResistSum {
-		// Check if the item has any resist stats at all
+		// Check if the item has any resist stats at all (including negative values like sunders)
 		for _, statName := range r.requiredStats {
 			if !strings.Contains(statName, "resist") {
 				continue
@@ -355,7 +363,8 @@ func (r Rule) Evaluate(it data.Item) (RuleResult, error) {
 				layer = statData[1]
 			}
 
-			if itemStat, found := it.FindStat(stat.ID(statData[0]), layer); found && itemStat.Value != 0 {
+			// Check if stat exists at all, regardless of value (including negative)
+			if _, found := it.FindStat(stat.ID(statData[0]), layer); found {
 				hasAnyResist = true
 				break
 			}
@@ -386,17 +395,17 @@ func (r Rule) Evaluate(it data.Item) (RuleResult, error) {
 			statValue = itemStat.Value
 			statFound = true
 		}
+
 		// Special handling for stats not found
 		if !statFound {
 			isResistStat := strings.Contains(statName, "resist")
-			// When the rule contains a resist-sum but the item has no resists,
-			// don’t return NoMatch—set the stat to 0 so the sum evaluates to false,
-			// and let other OR conditions decide the result.
-			if isResistStat && isResistSum && !hasAnyResist {
-				stage2Props[statName] = 0
-				continue
+			// Special case: Pure resist-sum rules (like sunders) should fail early if no resists exist
+			// But mixed rules (resists OR other stats) should continue to check other conditions
+			if isResistStat && isResistSum && !hasAnyResist && !hasNonResistConditions {
+				// This is a pure resist rule and item has no resists - can't match
+				return RuleResultNoMatch, nil
 			}
-			// For all other missing stats, default to 0
+			// For all other cases, default missing stats to 0 and let expression evaluate
 			stage2Props[statName] = 0
 		} else {
 			stage2Props[statName] = statValue
