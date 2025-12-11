@@ -98,9 +98,7 @@ func calculateOffsets(process *Process) Offset {
 	questInfoOffset := pattern - process.moduleBaseAddressPtr + 7 + questInfoOffsetPtr
 
 	// Terror Zones
-	pattern = process.FindPattern(memory, "\x48\x89\x05\xCC\xCC\xCC\xCC\x48\x8D\x05\xCC\xCC\xCC\xCC\x48\x89\x05\xCC\xCC\xCC\xCC\x48\x8D\x05\xCC\xCC\xCC\xCC\x48\x89\x15\xCC\xCC\xCC\xCC\x48\x89\x15", "xxx????xxx????xxx????xxx????xxx????xxx")
-	tzPtr := process.ReadUInt(pattern+3, Uint32)
-	tzOffset := pattern - process.moduleBaseAddressPtr + 7 + uintptr(tzPtr)
+	tzOffset := uintptr(0x2955E20)
 
 	// Quest Bytes Data
 	pattern = process.FindPattern(memory, "\x42\xc6\x84\x28\x00\x00\x00\x00\x00\x49\xff\xc5\x49\x83\xfd\x29", "xxxx?????xxxxxxx")
