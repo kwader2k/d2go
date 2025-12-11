@@ -317,7 +317,7 @@ func (gd *GameReader) InCharacterSelectionScreen() bool {
 }
 
 func (gd *GameReader) GetSelectedCharacterName() string {
-	return gd.Process.ReadStringFromMemory(gd.Process.moduleBaseAddressPtr+0x22645F8, 0)
+	return gd.Process.ReadStringFromMemory(gd.Process.moduleBaseAddressPtr+0x20C3FF4, 0)
 }
 
 func (gd *GameReader) LegacyGraphics() bool {
