@@ -654,8 +654,8 @@ func staffModLevelRequirement(itm *data.Item, baseDesc item.Description) int {
 	checkStats := func(stats stat.Stats) {
 		for _, s := range stats {
 			if s.ID == stat.SingleSkill {
-				if req, ok := skill.SkillLevelReq[skill.ID(s.Layer)]; ok && req > maxReq {
-					maxReq = req
+				if skill, ok := skill.Skills[skill.ID(s.Layer)]; ok && skill.ReqLevel > maxReq {
+					maxReq = skill.ReqLevel
 				}
 			}
 		}

@@ -19,6 +19,7 @@ type Skill struct {
 	SkillDesc  SkillDesc
 	LeftSkill  bool
 	RightSkill bool
+	ReqLevel   int
 }
 
 type Points struct {
