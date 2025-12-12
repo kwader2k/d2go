@@ -7,6 +7,7 @@ import (
 
 	"github.com/hectorgimenez/d2go/pkg/data"
 	"github.com/hectorgimenez/d2go/pkg/data/item"
+	"github.com/hectorgimenez/d2go/pkg/data/skill"
 	"github.com/hectorgimenez/d2go/pkg/data/stat"
 	"github.com/hectorgimenez/d2go/pkg/data/state"
 	"github.com/hectorgimenez/d2go/pkg/utils"
@@ -633,6 +634,39 @@ func updateMaxReqFromAffixes(currentMax int, affixes data.ItemAffixes) int {
 	}
 	return maxReq
 }
+
+func staffModLevelRequirement(itm *data.Item, baseDesc item.Description) int {
+	eligibleTypes := map[string]bool{
+		item.TypeScepter:     true,
+		item.TypeWand:        true,
+		item.TypeStaff:       true,
+		item.TypeHandtoHand:  true,
+		item.TypeHandtoHand2: true,
+		item.TypePelt:        true,
+		item.TypePrimalHelm:  true,
+	}
+
+	if !eligibleTypes[baseDesc.Type] {
+		return 0
+	}
+
+	maxReq := 0
+	checkStats := func(stats stat.Stats) {
+		for _, s := range stats {
+			if s.ID == stat.SingleSkill {
+				if req, ok := skill.SkillLevelReq[skill.ID(s.Layer)]; ok && req > maxReq {
+					maxReq = req
+				}
+			}
+		}
+	}
+
+	checkStats(itm.BaseStats)
+	checkStats(itm.Stats)
+
+	return maxReq
+}
+
 func calculateItemLevelReq(itm *data.Item, baseDesc item.Description) int {
 	// Start with base item's requirement
 	maxReq := baseDesc.RequiredLevel
@@ -735,5 +769,10 @@ func calculateItemLevelReq(itm *data.Item, baseDesc item.Description) int {
 			}
 		}
 	}
+
+	if staffModReq := staffModLevelRequirement(itm, baseDesc); staffModReq > maxReq {
+		maxReq = staffModReq
+	}
+
 	return maxReq
 }
