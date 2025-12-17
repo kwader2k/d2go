@@ -317,7 +317,7 @@ func (gd *GameReader) InCharacterSelectionScreen() bool {
 }
 
 func (gd *GameReader) GetSelectedCharacterName() string {
-	return gd.Process.ReadStringFromMemory(gd.Process.moduleBaseAddressPtr+0x20C3FF4, 0)
+	return gd.Process.ReadStringFromMemory(gd.Process.moduleBaseAddressPtr+0x2120FF4, 0)
 }
 
 func (gd *GameReader) LegacyGraphics() bool {
@@ -437,11 +437,11 @@ func (gd *GameReader) IsDismissableModalPresent() (bool, string) {
 }
 
 func (gd *GameReader) LastGameName() string {
-	return gd.ReadStringFromMemory(gd.moduleBaseAddressPtr+0x25113A8, 0)
+	return gd.ReadStringFromMemory(gd.moduleBaseAddressPtr+0x29FB450, 0)
 }
 
 func (gd *GameReader) LastGamePass() string {
-	return gd.ReadStringFromMemory(gd.moduleBaseAddressPtr+0x2511408, 0)
+	return gd.ReadStringFromMemory(gd.moduleBaseAddressPtr+0x29FB4A8, 0)
 }
 
 func (gd *GameReader) FPS() int {

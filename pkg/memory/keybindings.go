@@ -8,7 +8,7 @@ import (
 )
 
 func (gd *GameReader) GetKeyBindings() data.KeyBindings {
-	blob := gd.ReadBytesFromMemory(gd.moduleBaseAddressPtr+0x1D87CC4, 0x500)
+	blob := gd.ReadBytesFromMemory(gd.moduleBaseAddressPtr+0x1DE4CC4, 0x500)
 	blobSkills := gd.ReadBytesFromMemory(gd.offset.KeyBindingsSkillsOffset, 0x500)
 
 	skillsKB := [16]data.SkillBinding{}
