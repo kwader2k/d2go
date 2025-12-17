@@ -199,5 +199,13 @@ func (gd *GameReader) GetKeyBindings() data.KeyBindings {
 			Key1: [2]byte{blob[0x488], blob[0x489]},
 			Key2: [2]byte{blob[0x492], blob[0x493]},
 		},
+		PreviousStashPage: data.KeyBinding{
+			Key1: [2]byte{blob[0x4c4], blob[0x4c5]},
+			Key2: [2]byte{blob[0x4ce], blob[0x4cf]},
+		},
+		NextStashPage: data.KeyBinding{
+			Key1: [2]byte{blob[0x4d8], blob[0x4d9]},
+			Key2: [2]byte{blob[0x4e2], blob[0x4e3]},
+		},
 	}
 }
