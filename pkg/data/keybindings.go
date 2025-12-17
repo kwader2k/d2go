@@ -50,6 +50,9 @@ type KeyBindings struct {
 	ClearMessages KeyBinding
 	Zoom          KeyBinding
 	LegacyToggle  KeyBinding
+
+	PreviousStashPage KeyBinding
+	NextStashPage     KeyBinding
 }
 
 type KeyBinding struct {
