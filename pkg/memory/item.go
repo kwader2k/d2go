@@ -640,6 +640,7 @@ func staffModLevelRequirement(itm *data.Item, baseDesc item.Description) int {
 		item.TypeScepter:     true,
 		item.TypeWand:        true,
 		item.TypeStaff:       true,
+		item.TypeOrb:         true,
 		item.TypeHandtoHand:  true,
 		item.TypeHandtoHand2: true,
 		item.TypePelt:        true,
