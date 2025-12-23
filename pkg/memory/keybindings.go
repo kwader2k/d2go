@@ -8,7 +8,7 @@ import (
 )
 
 func (gd *GameReader) GetKeyBindings() data.KeyBindings {
-	blob := gd.ReadBytesFromMemory(gd.moduleBaseAddressPtr+0x1D87CC4, 0x500)
+	blob := gd.ReadBytesFromMemory(gd.moduleBaseAddressPtr+0x1DE4CC4, 0x500)
 	blobSkills := gd.ReadBytesFromMemory(gd.offset.KeyBindingsSkillsOffset, 0x500)
 
 	skillsKB := [16]data.SkillBinding{}
@@ -198,6 +198,14 @@ func (gd *GameReader) GetKeyBindings() data.KeyBindings {
 		LegacyToggle: data.KeyBinding{
 			Key1: [2]byte{blob[0x488], blob[0x489]},
 			Key2: [2]byte{blob[0x492], blob[0x493]},
+		},
+		PreviousStashPage: data.KeyBinding{
+			Key1: [2]byte{blob[0x4c4], blob[0x4c5]},
+			Key2: [2]byte{blob[0x4ce], blob[0x4cf]},
+		},
+		NextStashPage: data.KeyBinding{
+			Key1: [2]byte{blob[0x4d8], blob[0x4d9]},
+			Key2: [2]byte{blob[0x4e2], blob[0x4e3]},
 		},
 	}
 }

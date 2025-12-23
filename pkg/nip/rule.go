@@ -252,7 +252,17 @@ func (r Rule) Evaluate(it data.Item) (RuleResult, error) {
 		case "name":
 			stage1Props["name"] = it.ID
 		case "flag":
-			stage1Props["flag"] = map[bool]int{true: 1, false: 0}[it.Ethereal]
+			// 0x400000 (eth) | 0x4000000 (runeword) kolbot style
+			currentFlag := 0
+
+			if it.Ethereal {
+				currentFlag |= 0x400000
+			}
+			if it.IsRuneword {
+				currentFlag |= 0x4000000
+			}
+
+			stage1Props["flag"] = currentFlag
 		case "prefix":
 			if it.Affixes.Rare.Prefix != 0 {
 				stage1Props["prefix"] = int(it.Affixes.Rare.Prefix)
@@ -439,7 +449,16 @@ func replaceStringPropertiesInStage1(stage1 string) (string, error) {
 		case "name":
 			replaceWith = strings.ReplaceAll(prop[0], prop[4], fmt.Sprintf("%d", item.GetIDByName(prop[4])))
 		case "flag":
-			replaceWith = strings.ReplaceAll(prop[0], prop[4], fmt.Sprintf("%d", 1))
+			val := 0
+			switch strings.ToLower(prop[4]) {
+			case "runeword":
+				val = 0x4000000
+			case "ethereal":
+				val = 0x400000
+			default:
+				val = 1
+			}
+			replaceWith = strings.ReplaceAll(prop[0], prop[4], fmt.Sprintf("%d", val))
 		case "prefix", "suffix":
 			// Handle prefix/suffix IDs
 			replaceWith = strings.ReplaceAll(prop[0], prop[4], prop[4])
