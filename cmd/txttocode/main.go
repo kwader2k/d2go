@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"go/format"
 	"os"
 	"regexp"
 	"strings"
@@ -117,13 +118,21 @@ func generateFile(sourcePath, destinationPath, tpl string) error {
 
 	t := template.Must(template.New("tpl").Funcs(funcMap).Parse(tpl))
 
-	file, err := os.Create(destinationPath)
-	if err != nil {
+	var b bytes.Buffer
+	if err := t.Execute(&b, fileContent); err != nil {
 		return err
 	}
-	defer file.Close()
 
-	return t.Execute(file, fileContent)
+	output := b.Bytes()
+	if strings.HasSuffix(destinationPath, ".go") {
+		formatted, err := format.Source(output)
+		if err != nil {
+			return err
+		}
+		output = formatted
+	}
+
+	return os.WriteFile(destinationPath, output, 0644)
 }
 
 func generateItems() error {
@@ -217,9 +226,9 @@ func generateItems() error {
 	}
 
 	itemsFileContent += "}"
-	err = os.WriteFile("pkg/data/item/items.go", []byte(itemsFileContent), 0644)
+	formatted, err := format.Source([]byte(itemsFileContent))
 	if err != nil {
 		return err
 	}
-	return nil
+	return os.WriteFile("pkg/data/item/items.go", formatted, 0644)
 }
