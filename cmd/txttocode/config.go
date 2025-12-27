@@ -61,6 +61,11 @@ var textFiles = []TextFileDesc{
 		DestFile:   "pkg/data/item/setitems.go",
 		Template:   templateSetItems,
 	},
+	{
+		SourceFile: "cmd/txttocode/txt/monstats.txt",
+		DestFile:   "pkg/data/npc/monstats.go",
+		Template:   templateMonStats,
+	},
 }
 
 type TextFileDesc struct {
