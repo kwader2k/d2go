@@ -1,0 +1,15 @@
+{
+  "go.formatTool": "default",
+  "[json]": {
+    "editor.formatOnSave": true,
+  },
+  "[jsonc]": {
+    "editor.formatOnSave": true,
+  },
+  "[go]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "always"
+    }
+  }
+}
