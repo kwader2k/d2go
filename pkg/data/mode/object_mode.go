@@ -11,7 +11,6 @@ const (
 	ObjectModeSpecial3  ObjectMode = 5
 	ObjectModeSpecial4  ObjectMode = 6
 	ObjectModeSpecial5  ObjectMode = 7
-
 )
 
 func (m ObjectMode) String() string {
