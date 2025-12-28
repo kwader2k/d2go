@@ -55,7 +55,7 @@
 [type] == armor   && [quality] == rare && [flag] == ethereal # [sockets] == 2 && [itemreplenishdurability] >=1 && ([maxhp] >= 20 || [dexterity]+[strength] >= 7 || [hpregen] >= 4)
 
 // rare shields
-[type] == shield   && [quality] == rare && [flag] == ethereal # [sockets] == 2 && [itemreplenishdurability] >=1 
+[type] == shield   && [quality] == rare && [flag] == ethereal # [sockets] == 2 && [itemreplenishdurability] >=1
 [type] == shield   && [quality] == rare && [flag] != ethereal # [fhr] >= 17 && [sockets] == 2 && [fbr] >= 30 && ([maxhp] >= 30 || [coldresist]+[fireresist]+[lightresist]+[poisonresist] >= 40)
 [type] == shield   && [quality] == rare && [flag] == ethereal # [fhr] >= 17 && [sockets] == 2 && [fbr] >= 30 && ([maxhp] >= 30 || [coldresist]+[fireresist]+[lightresist]+[poisonresist] >= 40) && [itemreplenishdurability] >= 1
 [type] == shield   && [quality] == rare && [flag] != ethereal # [maxhp] >= 30 && [coldresist]+[fireresist]+[lightresist]+[poisonresist] >= 40 && [sockets] == 2 && [fbr] >= 30
