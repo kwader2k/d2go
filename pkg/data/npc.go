@@ -203,3 +203,23 @@ func (m Monster) IsEscapingType() bool {
 	}
 	return false
 }
+
+func (m Monster) IsUndead() bool {
+	flags, ok := npc.MonStatsFlagsForID(m.Name)
+	return ok && (flags.IsLUndead || flags.IsHUndead)
+}
+
+func (m Monster) IsDemon() bool {
+	flags, ok := npc.MonStatsFlagsForID(m.Name)
+	return ok && flags.IsDemon
+}
+
+func (m Monster) IsBeast() bool {
+	flags, ok := npc.MonStatsFlagsForID(m.Name)
+	return ok && !flags.IsLUndead && !flags.IsHUndead && !flags.IsDemon
+}
+
+func (m Monster) IsUndeadOrDemon() bool {
+	flags, ok := npc.MonStatsFlagsForID(m.Name)
+	return ok && (flags.IsLUndead || flags.IsHUndead || flags.IsDemon)
+}
