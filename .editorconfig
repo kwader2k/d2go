@@ -4,7 +4,7 @@ root = true
 charset = utf-8
 end_of_line = lf
 indent_style = space
-indent_size = 2
+indent_size = 4
 trim_trailing_whitespace = true
 insert_final_newline = true
 
@@ -18,8 +18,7 @@ insert_final_newline = unset
 
 [{*.go,go.{mod,work,work.sum,sum}}]
 indent_style = tab
-indent_size = 2
-tab_width = 2
+tab_width = 4
 
 [*.md]
 trim_trailing_whitespace = false
