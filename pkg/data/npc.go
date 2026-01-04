@@ -99,7 +99,7 @@ func (m Monsters) FindByID(id UnitID) (Monster, bool) {
 
 func (m Monster) IsImmune(resist stat.Resist) bool {
 	for st, value := range m.Stats {
-		// We only want max resistance
+		// Only consider immunity threshold (>= 100).
 		if value < 100 {
 			continue
 		}
@@ -119,6 +119,7 @@ func (m Monster) IsImmune(resist stat.Resist) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -131,7 +132,7 @@ func (m Monster) IsMerc() bool {
 }
 
 func (m Monster) IsPet() bool {
-	// Necro revive
+	// Necromancer revive.
 	if m.States.HasState(state.Revive) {
 		return true
 	}
@@ -143,41 +144,63 @@ func (m Monster) IsPet() bool {
 		npc.FireGolem, npc.NecroSkeleton, npc.NecroMage, npc.Valkyrie, npc.Decoy,
 		npc.ShadowWarrior, npc.ShadowMaster:
 		return true
-	default:
-		return false
 	}
+
+	return false
 }
 
 func (m Monster) IsGoodNPC() bool {
 	switch m.Name {
 		case 146, 154, 147, 150, 155, 148, 244, 210, 175, 199, 198, 177, 178, 201, 202, 200, 331, 245, 264, 255, 176,
 		252, 254, 253, 297, 246, 251, 367, 521, 257, 405, 265, 520, 512, 518, 527, 515, 513, 511, 514, 266, 408, 406,
-		543: // BaalThrone
+		543: // Baal Throne
 		return true
 	}
 
 	return false
 }
 
-func (m Monster) IsElite() bool {
-	return m.Type == MonsterTypeMinion || m.Type == MonsterTypeUnique || m.Type == MonsterTypeChampion || m.Type == MonsterTypeSuperUnique
+// IsPrimeEvil returns true if the monster is a Prime Evil (act boss).
+func (m Monster) IsPrimeEvil() bool {
+	flags, ok := npc.MonStatsFlagsForID(m.Name)
+	return ok && flags.IsPrimeEvil
 }
 
-// IsMonsterRaiser returns true if the monster is able to spawn new monsters.
+// IsUber returns true if the monster is an Uber boss.
+func (m Monster) IsUber() bool {
+	switch m.Name {
+	case npc.Lilith, npc.UberDuriel, npc.UberIzual, npc.UberMephisto, npc.UberDiablo, npc.UberBaal:
+		return true
+	}
+
+	return false
+}
+
+// IsElite returns true if the monster is an elite (champion or above).
+func (m Monster) IsElite() bool {
+	return m.Type == MonsterTypeChampion || m.Type == MonsterTypeMinion || m.Type == MonsterTypeUnique || m.Type == MonsterTypeSuperUnique
+}
+
+// IsSealElite returns true if the monster is an elite from a Chaos Sanctuary seal.
+func (m Monster) IsSealElite() bool {
+	return m.Type == MonsterTypeSuperUnique &&
+		(m.Name == npc.OblivionKnight || // Lord De Seis
+			m.Name == npc.VenomLord || // Infector of Souls
+			m.Name == npc.StormCaster) // Grand Vizier of Chaos
+}
+
+// IsMonsterRaiser returns true if the monster can spawn new monsters.
 func (m Monster) IsMonsterRaiser() bool {
 	switch m.Name {
-	case npc.FallenShaman,
-		npc.CarverShaman,
-		npc.DevilkinShaman,
-		npc.DarkShaman,
-		npc.WarpedShaman:
+	case npc.FallenShaman, npc.CarverShaman, npc.DevilkinShaman, npc.DarkShaman, npc.WarpedShaman,
+		npc.HollowOne, npc.Guardian, npc.Guardian2, npc.Unraveler, npc.Unraveler2, npc.HoradrimAncient, npc.BaalSubjectMummy, npc.HoradrimAncient2, npc.HoradrimAncient3:
 		return true
 	}
 
 	return false
 }
 
-// IsSkip monster can not be killed as a normal enemy, for example can not be targeted
+// IsSkip returns true if the monster cannot be killed as a normal enemy, for example cannot be targeted.
 func (m Monster) IsSkip() bool {
 	switch m.Name {
 	case npc.WaterWatcherLimb, npc.WaterWatcherHead, npc.BaalTaunt, npc.Act5Combatant, npc.Act5Combatant2, npc.BarricadeTower, npc.DarkWanderer, npc.POW:
@@ -186,39 +209,37 @@ func (m Monster) IsSkip() bool {
 
 	return false
 }
-func (m Monster) IsSealBoss() bool {
 
-	return (m.Type == MonsterTypeSuperUnique || m.Type == MonsterTypeMinion) && (m.Name == npc.OblivionKnight || (m.Name == npc.DoomKnight) || // Lord De Seis
-		m.Name == npc.VenomLord || // Infector of Souls
-		m.Name == npc.StormCaster) // Grand Vizier of Chaos
-}
-
-// IsEscapingType Monster cannot be attacked when airborne or hide in water (NpcMode 8)
+// IsEscapingType returns true if the monster cannot be attacked when airborne or hiding in water (NpcMode 8).
 func (m Monster) IsEscapingType() bool {
 	switch m.Name {
 	case npc.CarrionBird, npc.CarrionBird2, npc.WaterWatcherLimb, npc.RiverStalkerLimb, npc.StygianWatcherLimb,
 		npc.WaterWatcherHead, npc.RiverStalkerHead, npc.StygianWatcherHead, npc.CloudStalker, npc.Sucker, npc.UndeadScavenger, npc.FoulCrow:
-
 		return true
 	}
+
 	return false
 }
 
+// IsUndead returns true if the monster is undead.
 func (m Monster) IsUndead() bool {
 	flags, ok := npc.MonStatsFlagsForID(m.Name)
 	return ok && (flags.IsLUndead || flags.IsHUndead)
 }
 
+// IsDemon returns true if the monster is a demon.
 func (m Monster) IsDemon() bool {
 	flags, ok := npc.MonStatsFlagsForID(m.Name)
 	return ok && flags.IsDemon
 }
 
+// IsBeast returns true if the monster is a beast.
 func (m Monster) IsBeast() bool {
 	flags, ok := npc.MonStatsFlagsForID(m.Name)
 	return ok && !flags.IsLUndead && !flags.IsHUndead && !flags.IsDemon
 }
 
+// IsUndeadOrDemon returns true if the monster is undead or a demon.
 func (m Monster) IsUndeadOrDemon() bool {
 	flags, ok := npc.MonStatsFlagsForID(m.Name)
 	return ok && (flags.IsLUndead || flags.IsHUndead || flags.IsDemon)
