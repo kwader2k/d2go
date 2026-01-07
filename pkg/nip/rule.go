@@ -19,8 +19,14 @@ const (
 	RuleResultNoMatch   RuleResult = 3
 )
 
+// EvaluationContext provides runtime context for NIP rule evaluation.
+// This allows rules to access character-level information like level.
+type EvaluationContext struct {
+	CharLevel int // Defaults to 0 if not provided.
+}
+
 var (
-	fixedPropsRegexp = regexp.MustCompile(`(\[(type|quality|class|name|flag|color|prefix|suffix)]\s*(<=|<|>|>=|!=|==)\s*([a-zA-Z0-9]+))`)
+	fixedPropsRegexp = regexp.MustCompile(`(\[(type|quality|class|name|flag|color|prefix|suffix|charlvl)]\s*(<=|<|>|>=|!=|==)\s*([a-zA-Z0-9]+))`)
 	statsRegexp      = regexp.MustCompile(`\[(.*?)]`)
 	maxQtyRegexp     = regexp.MustCompile(`(\[maxquantity]\s*(<=|<|>|>=|!=|==)\s*([0-9]+))`)
 	tierRegexp       = regexp.MustCompile(`(\[tier]\s*(<=|<|>|>=|!=|==)\s*([0-9]+))`)
@@ -44,11 +50,15 @@ type RuleResult int
 type Rules []Rule
 
 func (r Rules) EvaluateAll(it data.Item) (Rule, RuleResult) {
+	return r.EvaluateAllWithContext(it, EvaluationContext{})
+}
+
+func (r Rules) EvaluateAllWithContext(it data.Item, ctx EvaluationContext) (Rule, RuleResult) {
 	bestMatch := RuleResultNoMatch
 	bestMatchingRule := Rule{}
 	for _, rule := range r {
 		if rule.Enabled {
-			result, err := rule.Evaluate(it)
+			result, err := rule.EvaluateWithContext(it, ctx)
 			if err != nil {
 				continue
 			}
@@ -66,6 +76,10 @@ func (r Rules) EvaluateAll(it data.Item) (Rule, RuleResult) {
 }
 
 func (r Rules) EvaluateAllIgnoreTiers(it data.Item) (Rule, RuleResult) {
+	return r.EvaluateAllIgnoreTiersWithContext(it, EvaluationContext{})
+}
+
+func (r Rules) EvaluateAllIgnoreTiersWithContext(it data.Item, ctx EvaluationContext) (Rule, RuleResult) {
 	bestMatch := RuleResultNoMatch
 	bestMatchingRule := Rule{}
 	for _, rule := range r {
@@ -73,7 +87,7 @@ func (r Rules) EvaluateAllIgnoreTiers(it data.Item) (Rule, RuleResult) {
 			if rule.tier > 0 || rule.mercTier > 0 {
 				continue
 			}
-			result, err := rule.Evaluate(it)
+			result, err := rule.EvaluateWithContext(it, ctx)
 			if err != nil {
 				continue
 			}
@@ -91,13 +105,17 @@ func (r Rules) EvaluateAllIgnoreTiers(it data.Item) (Rule, RuleResult) {
 }
 
 func (r Rules) EvaluateTiers(it data.Item, tierRulesIndexes []int) (Rule, Rule) {
+	return r.EvaluateTiersWithContext(it, tierRulesIndexes, EvaluationContext{})
+}
+
+func (r Rules) EvaluateTiersWithContext(it data.Item, tierRulesIndexes []int, ctx EvaluationContext) (Rule, Rule) {
 	highestTierRule := Rule{}
 	highestMercTierRule := Rule{}
 	for _, ruleIndex := range tierRulesIndexes {
 		if ruleIndex < len(r) {
 			rule := r[ruleIndex]
 			if rule.Enabled {
-				result, err := rule.Evaluate(it)
+				result, err := rule.EvaluateWithContext(it, ctx)
 				if err != nil {
 					continue
 				}
@@ -116,7 +134,7 @@ func (r Rules) EvaluateTiers(it data.Item, tierRulesIndexes []int) (Rule, Rule) 
 	return highestTierRule, highestMercTierRule
 }
 
-var fixedPropsList = map[string]int{"type": 0, "quality": 0, "class": 0, "name": 0, "flag": 0, "color": 0, "prefix": 0, "suffix": 0}
+var fixedPropsList = map[string]int{"type": 0, "quality": 0, "class": 0, "name": 0, "flag": 0, "color": 0, "prefix": 0, "suffix": 0, "charlvl": 0}
 
 func NewRule(rawRule string, filename string, lineNumber int) (Rule, error) {
 	rule := sanitizeLine(rawRule)
@@ -239,6 +257,10 @@ func normalizeParenthesizedExpressions(expr string) string {
 }
 
 func (r Rule) Evaluate(it data.Item) (RuleResult, error) {
+	return r.EvaluateWithContext(it, EvaluationContext{})
+}
+
+func (r Rule) EvaluateWithContext(it data.Item, ctx EvaluationContext) (RuleResult, error) {
 	// Stage 1: Basic properties evaluation
 	stage1Props := make(map[string]int)
 	for prop := range fixedPropsList {
@@ -283,6 +305,8 @@ func (r Rule) Evaluate(it data.Item) (RuleResult, error) {
 					break
 				}
 			}
+		case "charlvl":
+			stage1Props["charlvl"] = ctx.CharLevel
 		case "color":
 			// TODO: Not supported yet
 		}
@@ -462,6 +486,9 @@ func replaceStringPropertiesInStage1(stage1 string) (string, error) {
 		case "prefix", "suffix":
 			// Handle prefix/suffix IDs
 			replaceWith = strings.ReplaceAll(prop[0], prop[4], prop[4])
+		case "charlvl":
+			// charlvl is evaluated at runtime, it will be handled during bracket removal
+			continue
 		case "color":
 			// TODO: Not supported yet
 			return "", fmt.Errorf("property %s is not supported yet", prop[2])

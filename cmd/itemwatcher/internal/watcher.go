@@ -12,6 +12,7 @@ import (
 	"github.com/hectorgimenez/d2go/pkg/data"
 	"github.com/hectorgimenez/d2go/pkg/data/area"
 	"github.com/hectorgimenez/d2go/pkg/data/item"
+	"github.com/hectorgimenez/d2go/pkg/data/stat"
 	"github.com/hectorgimenez/d2go/pkg/memory"
 	"github.com/hectorgimenez/d2go/pkg/nip"
 )
@@ -53,9 +54,17 @@ func (w *Watcher) Start(ctx context.Context) error {
 			time.Sleep(100 * time.Millisecond)
 
 			d := w.gr.GetData()
+
+			// Extract character level for context
+			charLevel := 0
+			if lvl, ok := d.PlayerUnit.FindStat(stat.Level, 0); ok {
+				charLevel = lvl.Value
+			}
+			ctx := nip.EvaluationContext{CharLevel: charLevel}
+
 			for _, i := range d.Inventory.ByLocation(item.LocationGround) {
 				for _, r := range w.rules {
-					res, err := r.Evaluate(i)
+					res, err := r.EvaluateWithContext(i, ctx)
 					if err != nil {
 						log.Printf("error evaluating rule: %v", err)
 						continue

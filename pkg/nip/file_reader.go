@@ -64,7 +64,7 @@ func ParseNIPFile(filePath string) (Rules, error) {
 		}
 
 		// We evaluate all the rules at startup to ensure no format errors, if there is a format error we will throw it now instead of during runtime
-		_, err = rule.Evaluate(dummyItem)
+		_, err = rule.EvaluateWithContext(dummyItem, EvaluationContext{})
 		if err != nil {
 			return nil, fmt.Errorf("error testing rule on [%s:%d]: %w", filePath, lineNumber, err)
 		}
