@@ -193,8 +193,10 @@ func (m Monster) IsSealElite() bool {
 // IsMonsterRaiser returns true if the monster can spawn new monsters.
 func (m Monster) IsMonsterRaiser() bool {
 	switch m.Name {
-	case npc.FallenShaman, npc.CarverShaman, npc.DevilkinShaman, npc.DarkShaman, npc.WarpedShaman,
-		npc.HollowOne, npc.Guardian, npc.Guardian2, npc.Unraveler, npc.Unraveler2, npc.HoradrimAncient, npc.BaalSubjectMummy, npc.HoradrimAncient2, npc.HoradrimAncient3:
+	case
+		npc.FallenShaman, npc.CarverShaman, npc.DevilkinShaman, npc.DarkShaman, npc.WarpedShaman, npc.CarverShaman2, npc.DevilkinShaman2, npc.DarkShaman2, // Act 1
+		npc.HollowOne, npc.Guardian, npc.Unraveler, npc.HoradrimAncient, npc.BaalSubjectMummy, npc.Guardian2, npc.Unraveler2, npc.HoradrimAncient2, npc.HoradrimAncient3, // Act2
+		npc.RatManShaman, npc.FetishShaman, npc.FlayerShaman, npc.SoulKillerShaman, npc.StygianDollShaman, npc.FlayerShaman2, npc.StygianDollShaman2, npc.SoulKillerShaman2: // Act 3
 		return true
 	}
 
