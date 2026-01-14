@@ -46,7 +46,7 @@ package skill
 
 var Skills = map[ID]Skill{
 {{- range $key, $value := . }}
-    {{ index $value "*Id" }}: {Name: "{{ $value.skill }}", SkillDesc: "{{ $value.skilldesc }}", ID: {{ $key }}, LeftSkill: {{ if eq $value.leftskill "1" }}true{{ else }}false{{ end }}, RightSkill: {{ if eq $value.rightskill "1" }}true{{ else }}false{{ end }}, ReqLevel: {{ default $value.reqlevel "0" }}},
+    {{ index $value "*Id" }}: {Name: "{{ $value.skill }}", SkillDesc: "{{ $value.skilldesc }}", ID: {{ $key }}, LeftSkill: {{ if eq $value.leftskill "1" }}true{{ else }}false{{ end }}, RightSkill: {{ if eq $value.rightskill "1" }}true{{ else }}false{{ end }}, ReqLevel: {{ default $value.reqlevel "0" }}, Class: "{{ default $value.charclass "" }}", ReqSkill1: "{{ default $value.reqskill1 "" }}", ReqSkill2: "{{ default $value.reqskill2 "" }}"},
 {{- end }}
 }`
 
