@@ -20,6 +20,9 @@ type Skill struct {
 	LeftSkill  bool
 	RightSkill bool
 	ReqLevel   int
+	Class      string
+	ReqSkill1  string
+	ReqSkill2  string
 }
 
 type Points struct {
