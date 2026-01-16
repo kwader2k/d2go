@@ -186,6 +186,7 @@ func (gd *GameReader) OpenMenus() data.OpenMenus {
 		QuestLog:       buffer[0xE] != 0,
 		PortraitsShown: buffer[0x1D] != 0,
 		ChatOpen:       buffer[0x05] != 0,
+		Cinematic:      buffer[0x11] != 0,
 	}
 }
 
