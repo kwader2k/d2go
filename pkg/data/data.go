@@ -315,6 +315,7 @@ type OpenMenus struct {
 	QuestLog       bool
 	PortraitsShown bool
 	ChatOpen       bool
+	Cinematic      bool
 }
 
 func (om OpenMenus) IsMenuOpen() bool {
