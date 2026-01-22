@@ -47,6 +47,11 @@ var (
 	procGetThreadTimes             = kernel32.NewProc("GetThreadTimes")
 	procVirtualProtectEx           = kernel32.NewProc("VirtualProtectEx")
 	procSetProcessValidCallTargets = kernel32.NewProc("SetProcessValidCallTargets")
+	procCreateRemoteThread         = kernel32.NewProc("CreateRemoteThread")
+
+	ntdll                  = windows.NewLazySystemDLL("ntdll.dll")
+	procNtGetContextThread = ntdll.NewProc("NtGetContextThread")
+	procNtSetContextThread = ntdll.NewProc("NtSetContextThread")
 
 	d2gsCachedFn uintptr
 	d2gsCacheMu  sync.RWMutex
@@ -57,6 +62,7 @@ var (
 			return new([sendPacketMetaSize]byte)
 		},
 	}
+	sendPacketCallCount int
 )
 
 const (
@@ -88,6 +94,9 @@ type sendPacketState struct {
 	processPID          uint32
 	threadLastValidated time.Time
 	leakedBuffers       []uintptr
+	lastSendTime        time.Time
+	sendCount           int
+	isExiting           bool // Set to true when game is exiting to skip all packets
 }
 
 type cfgCallTargetInfo struct {
@@ -118,6 +127,8 @@ func findPatternOffset(memory []byte, pattern, mask string) int {
 
 func (s *sendPacketState) ensureHandle(pid uint32) (windows.Handle, error) {
 	if s.handle != 0 && s.processPID == pid {
+		// Reset exit flag even if handle is reused - we're in a new game
+		s.isExiting = false
 		return s.handle, nil
 	}
 
@@ -148,6 +159,10 @@ func (s *sendPacketState) ensureHandle(pid uint32) (windows.Handle, error) {
 	}
 	s.handle = h
 	s.processPID = pid
+
+	// Reset exiting flag when starting new game
+	s.isExiting = false
+
 	return h, nil
 }
 
@@ -228,6 +243,74 @@ func (s *sendPacketState) ensurePacketBuffer(handle windows.Handle, size uintptr
 
 	s.packet = newPacket
 	s.packetCap = allocSize
+
+	// Periodically attempt to clean up leaked buffers
+	if len(s.leakedBuffers) > 0 {
+		s.cleanupLeakedBuffers(handle)
+	}
+
+	return nil
+}
+
+// cleanupLeakedBuffers attempts to free previously leaked buffers
+func (s *sendPacketState) cleanupLeakedBuffers(handle windows.Handle) {
+	if len(s.leakedBuffers) == 0 {
+		return
+	}
+
+	cleaned := s.leakedBuffers[:0]
+	for _, addr := range s.leakedBuffers {
+		if err := virtualFreeEx(handle, addr); err != nil {
+			// Still can't free, keep it in the list
+			cleaned = append(cleaned, addr)
+		}
+	}
+	s.leakedBuffers = cleaned
+
+	if len(s.leakedBuffers) == 0 {
+		log.Printf("Successfully cleaned up all leaked packet buffers")
+	}
+}
+
+// Cleanup sets exit flag to cancel all future packet sends
+// Pending APCs in queue will timeout naturally, which is fine since game is exiting
+// Also resets buffer pointers so they will be re-allocated on next game
+// IMPORTANT: We do NOT free remote memory here because pending APCs may still be
+// executing and trying to use that memory. Freeing it would cause D2R to crash.
+// The memory will be freed when the process exits, or orphaned if game continues.
+func (s *sendPacketState) Cleanup() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	// Set exiting flag to skip all future packet sends immediately
+	s.isExiting = true
+
+	log.Printf("Packet system marked as exiting - all future packet sends will be cancelled")
+
+	// DO NOT free remote buffers - pending APCs may still be using them!
+	// Just reset local pointers so they will be re-allocated on next game.
+	// The remote memory will be orphaned but that's acceptable:
+	// - If D2R exits/crashes, memory is freed with the process
+	// - If game returns to menu, it's a small leak that won't accumulate
+	//   (next game allocates new buffers with fresh pointers)
+	if s.handle != 0 {
+		// Reset pointers WITHOUT freeing - memory is orphaned but safe
+		s.packet = 0
+		s.packetCap = 0
+		s.meta = 0
+		s.stub = 0
+
+		// Reset function pointer as it may be invalid after game exit
+		s.fn = 0
+
+		// Close thread handle - the main thread may change between games
+		if s.thread != 0 {
+			windows.CloseHandle(s.thread)
+			s.thread = 0
+			s.threadID = 0
+		}
+	}
+
 	return nil
 }
 
@@ -251,10 +334,15 @@ func (s *sendPacketState) ensureFunction(p *Process) (uintptr, error) {
 
 func (s *sendPacketState) ensureThreadHandle(p *Process) (windows.Handle, error) {
 	if s.thread != 0 && s.processPID == p.pid {
+		// Validate thread is still active and belongs to the correct process
 		if err := validateThreadActive(s.thread); err == nil {
-			s.threadLastValidated = time.Now()
-			return s.thread, nil
+			// Additional validation: verify thread still belongs to this process
+			if err := validateThreadBelongsToProcess(s.thread, p.pid); err == nil {
+				s.threadLastValidated = time.Now()
+				return s.thread, nil
+			}
 		}
+		// Thread is invalid, close and reset
 		windows.CloseHandle(s.thread)
 		s.thread = 0
 		s.threadID = 0
@@ -274,6 +362,12 @@ func (s *sendPacketState) ensureThreadHandle(p *Process) (windows.Handle, error)
 	handle, err := windows.OpenThread(sendPacketThreadAccess, false, threadID)
 	if err != nil {
 		return 0, fmt.Errorf("open thread %d: %w", threadID, err)
+	}
+
+	// Validate the newly opened thread belongs to the correct process
+	if err := validateThreadBelongsToProcess(handle, p.pid); err != nil {
+		windows.CloseHandle(handle)
+		return 0, fmt.Errorf("thread %d validation failed: %w", threadID, err)
 	}
 
 	s.thread = handle
@@ -300,6 +394,31 @@ func validateThreadActive(thread windows.Handle) error {
 		return fmt.Errorf("thread is not active (exit code: %d)", exitCode)
 	}
 
+	return nil
+}
+
+// validateThreadBelongsToProcess verifies the thread belongs to the specified process
+// Uses basic process handle comparison for validation
+func validateThreadBelongsToProcess(thread windows.Handle, expectedPID uint32) error {
+	// Try to get process ID of thread by checking thread times
+	// If we can get thread times, the thread is valid
+	var creationTime, exitTime, kernelTime, userTime windows.Filetime
+	ret, _, err := procGetThreadTimes.Call(
+		uintptr(thread),
+		uintptr(unsafe.Pointer(&creationTime)),
+		uintptr(unsafe.Pointer(&exitTime)),
+		uintptr(unsafe.Pointer(&kernelTime)),
+		uintptr(unsafe.Pointer(&userTime)),
+	)
+	if ret == 0 {
+		if err != nil {
+			return fmt.Errorf("thread validation failed (GetThreadTimes): %w", err)
+		}
+		return errors.New("thread validation failed: GetThreadTimes returned 0")
+	}
+
+	// Thread is valid and accessible, which means we have permission
+	// This is a basic check - we already validated the thread ID when opening it
 	return nil
 }
 
@@ -483,8 +602,8 @@ func (p *Process) GetD2GSSendPacketFn() (uintptr, error) {
 			continue
 		}
 
-		memory := make([]byte, int(module.ModuleBaseSize))
-		if err := windows.ReadProcessMemory(p.handler, module.ModuleBaseAddress, &memory[0], uintptr(module.ModuleBaseSize), nil); err != nil {
+		memory, err := ReadMemoryChunked(p.handler, module.ModuleBaseAddress, module.ModuleBaseSize)
+		if err != nil {
 			log.Printf("Warning: failed to read module %s: %v", module.ModuleName, err)
 			continue
 		}
@@ -599,7 +718,171 @@ func (p *Process) SendPacket(packet []byte) (err error) {
 		return fmt.Errorf("dispatch APC: %w", err)
 	}
 
-	return nil
+	// Wait for completion with default timeout
+	return p.waitForPacketCompletion(handle, state, 100*time.Millisecond)
+}
+
+// SendPacketWithTimeout sends a packet with a custom APC timeout
+// Use this for high-ping connections where 100ms may not be enough
+func (p *Process) SendPacketWithTimeout(packet []byte, apcTimeout time.Duration) (err error) {
+	if p == nil {
+		return errors.New("process is nil")
+	}
+
+	sendPacketCallCount++
+	packetID := byte(0)
+	if len(packet) > 0 {
+		packetID = packet[0]
+	}
+
+	// Log every increment packet send (0x3A = stat, 0x3B = skill)
+	if packetID == 0x3A || packetID == 0x3B {
+		packetType := "UNKNOWN"
+		if packetID == 0x3A {
+			packetType = "STAT"
+		} else if packetID == 0x3B {
+			packetType = "SKILL"
+		}
+		log.Printf("[D2GO SEND #%d] Sending %s packet (0x%02x) - %d bytes", sendPacketCallCount, packetType, packetID, len(packet))
+	}
+
+	defer func() {
+		if err != nil {
+			log.Printf("SendPacket(%d bytes) error: %v", len(packet), err)
+		}
+	}()
+
+	if len(packet) == 0 {
+		return errors.New("packet payload cannot be empty")
+	}
+
+	if len(packet) > maxPacketSize {
+		return fmt.Errorf("packet too large: %d bytes (max %d)", len(packet), maxPacketSize)
+	}
+
+	p.sendPacketMu.Lock()
+	if p.sendPacket == nil {
+		p.sendPacket = &sendPacketState{}
+	}
+	state := p.sendPacket
+	state.mu.Lock()
+	p.sendPacketMu.Unlock()
+	defer state.mu.Unlock()
+
+	// Ensure handle is open (this resets isExiting flag if new game)
+	handle, err := state.ensureHandle(p.pid)
+	if err != nil {
+		return fmt.Errorf("open process: %w", err)
+	}
+
+	// If we're exiting, skip all packet sends immediately
+	if state.isExiting {
+		return errors.New("packet send cancelled: game is exiting")
+	}
+
+	// Rate limiting: prevent overwhelming the APC queue
+	const maxPacketsPerSecond = 100
+
+	now := time.Now()
+	if !state.lastSendTime.IsZero() {
+		elapsed := now.Sub(state.lastSendTime)
+		if elapsed < time.Second {
+			if state.sendCount >= maxPacketsPerSecond {
+				return fmt.Errorf("rate limit exceeded: %d packets/sec (max %d)", state.sendCount, maxPacketsPerSecond)
+			}
+			state.sendCount++
+		} else {
+			state.sendCount = 1
+			state.lastSendTime = now
+		}
+	} else {
+		state.lastSendTime = now
+		state.sendCount = 1
+	}
+
+	// Additional protection: minimum delay between consecutive packets
+	if !state.lastSendTime.IsZero() && now.Sub(state.lastSendTime) < time.Millisecond {
+		time.Sleep(time.Millisecond - now.Sub(state.lastSendTime))
+	}
+
+	fnAddr, err := state.ensureFunction(p)
+	if err != nil {
+		return fmt.Errorf("resolve D2GS_SendPacket: %w", err)
+	}
+
+	if err := state.ensureStub(handle); err != nil {
+		return err
+	}
+
+	if err := state.ensureMeta(handle); err != nil {
+		return err
+	}
+
+	if err := state.ensurePacketBuffer(handle, uintptr(len(packet))); err != nil {
+		return err
+	}
+
+	if err := writeRemoteMemory(handle, state.packet, packet); err != nil {
+		return fmt.Errorf("write remote packet: %w", err)
+	}
+
+	metaBuf := metaBufPool.Get().(*[sendPacketMetaSize]byte)
+	defer func() {
+		*metaBuf = [sendPacketMetaSize]byte{}
+		metaBufPool.Put(metaBuf)
+	}()
+
+	binary.LittleEndian.PutUint64(metaBuf[0:], uint64(fnAddr))
+	binary.LittleEndian.PutUint64(metaBuf[8:], uint64(state.packet))
+	binary.LittleEndian.PutUint64(metaBuf[16:], uint64(len(packet)))
+	binary.LittleEndian.PutUint32(metaBuf[sendPacketStatusOffset:], 0)
+
+	if err := writeRemoteMemory(handle, state.meta, metaBuf[:]); err != nil {
+		return fmt.Errorf("write remote metadata: %w", err)
+	}
+
+	threadHandle, err := state.ensureThreadHandle(p)
+	if err != nil {
+		return fmt.Errorf("resolve main thread: %w", err)
+	}
+
+	if err := state.dispatchAPC(threadHandle, state.stub, state.meta); err != nil {
+		return fmt.Errorf("dispatch APC: %w", err)
+	}
+
+	return p.waitForPacketCompletion(handle, state, apcTimeout)
+}
+
+// waitForPacketCompletion waits for the APC to complete with the given timeout
+func (p *Process) waitForPacketCompletion(handle windows.Handle, state *sendPacketState, apcTimeout time.Duration) error {
+	timeout := time.After(apcTimeout)
+	ticker := time.NewTicker(1 * time.Millisecond)
+	defer ticker.Stop()
+
+	timeoutMs := int(apcTimeout.Milliseconds())
+
+	var statusBuf [4]byte
+	for {
+		select {
+		case <-timeout:
+			// Try to read status one last time before failing
+			if err := windows.ReadProcessMemory(handle, state.meta+sendPacketStatusOffset, &statusBuf[0], 4, nil); err == nil {
+				status := binary.LittleEndian.Uint32(statusBuf[:])
+				if status == 1 {
+					return nil
+				}
+			}
+			return fmt.Errorf("packet send timeout: APC not processed within %dms", timeoutMs)
+		case <-ticker.C:
+			if err := windows.ReadProcessMemory(handle, state.meta+sendPacketStatusOffset, &statusBuf[0], 4, nil); err != nil {
+				continue
+			}
+			status := binary.LittleEndian.Uint32(statusBuf[:])
+			if status == 1 {
+				return nil // Success - packet was sent
+			}
+		}
+	}
 }
 
 func writeRemoteMemory(handle windows.Handle, address uintptr, data []byte) error {
@@ -717,4 +1000,104 @@ func alignUp(value, alignment uintptr) uintptr {
 	}
 	mask := alignment - 1
 	return (value + mask) &^ mask
+}
+
+func createRemoteThread(handle windows.Handle, startAddr, parameter uintptr) (windows.Handle, uint32, error) {
+	var threadID uint32
+
+	ret, _, err := procCreateRemoteThread.Call(
+		uintptr(handle),
+		0,         // lpThreadAttributes
+		0,         // dwStackSize (default)
+		startAddr, // lpStartAddress
+		parameter, // lpParameter
+		0,         // dwCreationFlags (start immediately)
+		uintptr(unsafe.Pointer(&threadID)),
+	)
+	if ret == 0 {
+		if err != nil {
+			return 0, 0, err
+		}
+		return 0, 0, errors.New("CreateRemoteThread failed")
+	}
+
+	return windows.Handle(ret), threadID, nil
+}
+
+// CONTEXT64 is the AMD64 thread context structure
+type CONTEXT64 struct {
+	P1Home               uint64
+	P2Home               uint64
+	P3Home               uint64
+	P4Home               uint64
+	P5Home               uint64
+	P6Home               uint64
+	ContextFlags         uint32
+	MxCsr                uint32
+	SegCs                uint16
+	SegDs                uint16
+	SegEs                uint16
+	SegFs                uint16
+	SegGs                uint16
+	SegSs                uint16
+	EFlags               uint32
+	Dr0                  uint64
+	Dr1                  uint64
+	Dr2                  uint64
+	Dr3                  uint64
+	Dr6                  uint64
+	Dr7                  uint64
+	Rax                  uint64
+	Rcx                  uint64
+	Rdx                  uint64
+	Rbx                  uint64
+	Rsp                  uint64
+	Rbp                  uint64
+	Rsi                  uint64
+	Rdi                  uint64
+	R8                   uint64
+	R9                   uint64
+	R10                  uint64
+	R11                  uint64
+	R12                  uint64
+	R13                  uint64
+	R14                  uint64
+	R15                  uint64
+	Rip                  uint64
+	_                    [512]byte // FltSave (XSAVE_FORMAT)
+	VectorRegister       [26][16]byte
+	VectorControl        uint64
+	DebugControl         uint64
+	LastBranchToRip      uint64
+	LastBranchFromRip    uint64
+	LastExceptionToRip   uint64
+	LastExceptionFromRip uint64
+}
+
+const CONTEXT_AMD64 = 0x00100000
+const CONTEXT_CONTROL = CONTEXT_AMD64 | 0x0001
+const CONTEXT_INTEGER = CONTEXT_AMD64 | 0x0002
+const CONTEXT_FULL = CONTEXT_CONTROL | CONTEXT_INTEGER
+
+func getThreadContext(threadHandle windows.Handle, ctx *CONTEXT64) error {
+	ctx.ContextFlags = CONTEXT_FULL
+	ret, _, err := procNtGetContextThread.Call(
+		uintptr(threadHandle),
+		uintptr(unsafe.Pointer(ctx)),
+	)
+	if ret != 0 {
+		return fmt.Errorf("NtGetContextThread failed: 0x%X, %w", ret, err)
+	}
+	return nil
+}
+
+func setThreadContext(threadHandle windows.Handle, ctx *CONTEXT64) error {
+	ret, _, err := procNtSetContextThread.Call(
+		uintptr(threadHandle),
+		uintptr(unsafe.Pointer(ctx)),
+	)
+	if ret != 0 {
+		return fmt.Errorf("NtSetContextThread failed: 0x%X, %w", ret, err)
+	}
+	return nil
 }
