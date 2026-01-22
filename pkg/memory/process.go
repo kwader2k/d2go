@@ -105,10 +105,44 @@ func getMainModule(pid uint32) (ModuleInfo, bool) {
 }
 
 func (p *Process) getProcessMemory() ([]byte, error) {
-	var data = make([]byte, p.moduleBaseSize)
-	err := windows.ReadProcessMemory(p.handler, p.moduleBaseAddressPtr, &data[0], uintptr(p.moduleBaseSize), nil)
-	if err != nil {
-		return nil, err
+	// Use chunked reading as primary method since VirtualQueryEx is often blocked
+	return p.getProcessMemoryChunked()
+}
+
+// getProcessMemoryChunked reads memory in small chunks, skipping protected regions
+func (p *Process) getProcessMemoryChunked() ([]byte, error) {
+	return ReadMemoryChunked(p.handler, p.moduleBaseAddressPtr, p.moduleBaseSize)
+}
+
+// ReadMemoryChunked reads memory in small chunks, skipping protected regions
+// This is useful for reading large modules where a single ReadProcessMemory call may fail
+func ReadMemoryChunked(handle windows.Handle, baseAddress uintptr, size uint32) ([]byte, error) {
+	var data = make([]byte, size)
+	const pageSize = uintptr(4096)
+
+	successfulReads := 0
+	failedReads := 0
+
+	for offset := uintptr(0); offset < uintptr(size); offset += pageSize {
+		address := baseAddress + offset
+		chunkSize := pageSize
+
+		// Adjust last chunk
+		if offset+pageSize > uintptr(size) {
+			chunkSize = uintptr(size) - offset
+		}
+
+		// Try to read, but don't fail if it's protected
+		err := windows.ReadProcessMemory(handle, address, &data[offset], chunkSize, nil)
+		if err != nil {
+			failedReads++
+			// Fill with zeros and continue (pattern matching will fail gracefully)
+			for i := offset; i < offset+chunkSize; i++ {
+				data[i] = 0
+			}
+		} else {
+			successfulReads++
+		}
 	}
 
 	return data, nil
