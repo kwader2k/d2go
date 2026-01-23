@@ -19,15 +19,12 @@ type Offset struct {
 	Ping                        uintptr
 	LegacyGraphics              uintptr
 	CharData                    uintptr
+	SelectedCharName            uintptr
+	LastGameName                uintptr
+	LastGamePassword            uintptr
 }
 
-func calculateOffsets(process *Process) Offset {
-	memory, err := process.getProcessMemory()
-	if err != nil || len(memory) == 0 {
-		// Return empty offsets - will be recalculated when game is ready
-		return Offset{}
-	}
-
+func calculateOffsets(_ *Process) Offset {
 	// UnitTable
 	unitTableOffset := uintptr(0x1D95AF0)
 
@@ -55,23 +52,35 @@ func calculateOffsets(process *Process) Offset {
 	// FPS
 	fpsOffset := uintptr(0x1C46894)
 
+	// KeyBindings
+	keyBindingsOffset := uintptr(0x18C2894)
+
 	// KeyBindings Skills
 	keyBindingsSkillsOffset := uintptr(0x1CE8510)
 
 	// QuestInfo
-	questInfoOffset := uintptr(0)
+	questInfoOffset := uintptr(0x1DB23D8)
 
 	// Terror Zones
-	tzOffset := uintptr(0x248D4C8)
+	tzOffset := uintptr(0x248D430)
 
 	// Ping
-	pingOffset := uintptr(0)
+	pingOffset := uintptr(0x1CE78D0)
 
 	// LegacyGraphics
 	legacyGfxOffset := uintptr(0x1DB263E)
 
 	// CharData
 	charDataOffset := uintptr(0x1CED5E8)
+
+	// Selected Char Name
+	selectedCharNameOffset := uintptr(0x1C3D694)
+
+	// Last Game Name
+	lastGameNameOffset := uintptr(0x24D5A90)
+
+	// Last Game Password
+	lastGamePasswordOffset := uintptr(0x24D5AE8)
 
 	return Offset{
 		UnitTable:                   unitTableOffset,
@@ -83,11 +92,15 @@ func calculateOffsets(process *Process) Offset {
 		WidgetStatesOffset:          WidgetStatesOffset,
 		WaypointTableOffset:         WaypointTableOffset,
 		FPS:                         fpsOffset,
+		KeyBindingsOffset:           keyBindingsOffset,
 		KeyBindingsSkillsOffset:     keyBindingsSkillsOffset,
 		QuestInfo:                   questInfoOffset,
 		TZ:                          tzOffset,
 		Ping:                        pingOffset,
 		LegacyGraphics:              legacyGfxOffset,
 		CharData:                    charDataOffset,
+		SelectedCharName:            selectedCharNameOffset,
+		LastGameName:                lastGameNameOffset,
+		LastGamePassword:            lastGamePasswordOffset,
 	}
 }
