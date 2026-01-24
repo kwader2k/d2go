@@ -414,7 +414,10 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 
 		// Get socket list for this base item
 		sockets := socketedItemsMap[baseUnitID]
-		if len(sockets) != numSockets.Value {
+		if len(sockets) == 0 {
+			continue
+		}
+		if len(sockets) > numSockets.Value {
 			continue
 		}
 
@@ -425,8 +428,8 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 			})
 		}
 
-		// Validate socket positions and build final list in one pass
-		baseItem.Sockets = make([]data.Item, 0, numSockets.Value)
+		// Validate socket positions and build final list in one pass (allow partial sockets)
+		baseItem.Sockets = make([]data.Item, 0, len(sockets))
 		for i, socket := range sockets {
 			if socket.position != i {
 				baseItem.Sockets = nil // Reset if positions are invalid
