@@ -2,9 +2,11 @@ package data
 
 import (
 	"github.com/hectorgimenez/d2go/pkg/data/mode"
+	"github.com/hectorgimenez/d2go/pkg/data/monplace"
 	"github.com/hectorgimenez/d2go/pkg/data/npc"
 	"github.com/hectorgimenez/d2go/pkg/data/stat"
 	"github.com/hectorgimenez/d2go/pkg/data/state"
+	"github.com/hectorgimenez/d2go/pkg/data/superunique"
 )
 
 type NPC struct {
@@ -33,6 +35,32 @@ func (n NPCs) FindOne(npcid npc.ID) (NPC, bool) {
 	for _, np := range n {
 		if np.ID == npcid {
 			return np, true
+		}
+	}
+
+	return NPC{}, false
+}
+
+func (n NPCs) FindOneBySuperUniqueID(id superunique.ID) (NPC, bool) {
+	presetunit, found := npc.PresetUnitForSuperUniqueID(id)
+	if found {
+		for _, np := range n {
+			if np.ID == npc.ID(presetunit.PresetID) {
+				return np, true
+			}
+		}
+	}
+
+	return NPC{}, false
+}
+
+func (n NPCs) FindOneByMonPlaceID(id monplace.ID) (NPC, bool) {
+	presetunit, found := npc.PresetUnitForMonPlaceID(id)
+	if found {
+		for _, np := range n {
+			if np.ID == npc.ID(presetunit.PresetID) {
+				return np, true
+			}
 		}
 	}
 
