@@ -16,12 +16,12 @@ jobs:
       - uses: actions/stale@v9
         with:
           # Timing settings
-          days-before-pr-stale: 21
+          days-before-pr-stale: 14
           days-before-pr-close: 7
           
           # The "Friendly Info" message (posted when 30 days of inactivity pass)
           stale-pr-message: >
-            This Pull Request has been inactive for 21 days. To keep our 
+            This Pull Request has been inactive for 14 days. To keep our 
             queue manageable, we mark older PRs as stale. This doesn't mean the 
             work isn't appreciated. It's often just a matter of timing or current 
             project focus. 
