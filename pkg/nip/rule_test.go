@@ -36,10 +36,11 @@ func TestRule_Evaluate(t *testing.T) {
 			},
 			args: args{
 				item: data.Item{
-					ID:       603,
-					Name:     "SmAlLCharM",
-					Quality:  item.QualityMagic,
-					Ethereal: true,
+					ID:         603,
+					Name:       "SmAlLCharM",
+					Quality:    item.QualityMagic,
+					Identified: true,
+					Ethereal:   true,
 					Stats: []stat.Data{
 						{ID: stat.PoisonLength, Value: 20},
 						{ID: stat.PoisonMaxDamage, Value: 100},
@@ -58,10 +59,11 @@ func TestRule_Evaluate(t *testing.T) {
 			},
 			args: args{
 				item: data.Item{
-					ID:       373,
-					Name:     "mageplate",
-					Quality:  item.QualitySuperior,
-					Ethereal: false,
+					ID:         373,
+					Name:       "mageplate",
+					Quality:    item.QualitySuperior,
+					Identified: true,
+					Ethereal:   false,
 					Stats: []stat.Data{
 						{ID: stat.MaxDurabilityPercent, Value: 15},
 						{ID: stat.NumSockets, Value: 4},
@@ -78,8 +80,9 @@ func TestRule_Evaluate(t *testing.T) {
 			},
 			args: args{
 				item: data.Item{
-					ID:   373,
-					Name: "mageplate",
+					ID:         373,
+					Name:       "mageplate",
+					Identified: true,
 					Stats: []stat.Data{
 						{ID: stat.AddClassSkills, Value: 3, Layer: 1},
 					},
@@ -95,8 +98,9 @@ func TestRule_Evaluate(t *testing.T) {
 			},
 			args: args{
 				item: data.Item{
-					ID:   373,
-					Name: "mageplate",
+					ID:         373,
+					Name:       "mageplate",
+					Identified: true,
 					Stats: []stat.Data{
 						{ID: stat.SingleSkill, Value: 3, Layer: 55},
 					},
@@ -123,7 +127,7 @@ func TestRule_Evaluate(t *testing.T) {
 		{
 			name: "Basic rule without stats or maxquantity",
 			fields: fields{
-				RawLine: "[type] == assassinclaw && [class] == elite && [quality] == magic # #",
+				RawLine: "[type] == assassinclaw && [class] == exceptional && [quality] == magic # #",
 				Enabled: true,
 			},
 			args: args{
@@ -174,6 +178,52 @@ func TestRule_Evaluate(t *testing.T) {
 						{ID: stat.MaxDamage, Value: 74},
 						{ID: stat.TwoHandedMinDamage, Value: 66},
 						{ID: stat.TwoHandedMaxDamage, Value: 132},
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "Magic Giant Sword with +3 Warcries and 6% mana leech",
+			fields: fields{
+				RawLine: "[name] == giantsword && [quality] == magic # [warcriesskilltab] >= 3 && ([coldmindam] >= 4 || [firemindam] >= 9 || [lightmaxdam] >= 40 || [poisonmindam] >= 10 || [poisondamage] >= 10 || [maxdamage] >= 10 || [mindamage] >= 5 || [strength] >= 15 || [hpregen] >= 5 || [maxhp] >= 30 || [itemknockback] >= 1 || [lifeleech] >= 6 || [manaleech] >= 6 || [itemreqpercent] == -30 || [itemskillonattack] >= 1 || [itemchargedskill] >= 1)",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					Identified: true,
+					ID:         35,
+					Name:       "GiantSword",
+					Quality:    item.QualityMagic,
+					Stats: []stat.Data{
+						{ID: stat.AddSkillTab, Value: 3, Layer: 34},
+						{ID: stat.ManaSteal, Value: 6},
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name:    "Ensure [itemskillonstriking] returns error, not supported yet",
+			fields:  fields{RawLine: "[quality] == magic # [itemskillonstriking] >= 1", Enabled: true},
+			args:    args{item: data.Item{Identified: true, ID: 516, Name: "healingpotion", Quality: item.QualityMagic}},
+			wantErr: true,
+		},
+		{
+			name: "Magic Flail with itemskillonhit",
+			fields: fields{
+				RawLine: "[name] == flail && [quality] == magic && [flag] != ethereal # [itemskillonhit] == 48",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					Identified: true,
+					ID:         21,
+					Name:       "Flail",
+					Quality:    item.QualityMagic,
+					Ethereal:   false,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnHit, Value: 48, Layer: 1},
 					},
 				},
 			},
