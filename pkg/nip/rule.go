@@ -488,6 +488,16 @@ func getRequiredStatsForRule(line string) []string {
 	return statsList
 }
 
+// ValidateStats checks that all required stats in stage2 are valid aliases.
+func (r Rule) ValidateStats() error {
+	for _, statName := range r.requiredStats {
+		if _, found := statAliases[statName]; !found {
+			return fmt.Errorf("property %s is not valid or not supported", statName)
+		}
+	}
+	return nil
+}
+
 func evaluateClassSkillsSum(it data.Item) int {
 	// Check all class skills stats
 	totalClassSkills := 0
