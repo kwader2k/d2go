@@ -401,9 +401,49 @@ func (r Rule) Evaluate(it data.Item) (RuleResult, error) {
 		statFound := false
 		var statValue int
 
-		if itemStat, found := it.FindStat(stat.ID(statData[0]), layer); found {
-			statValue = itemStat.Value
-			statFound = true
+		isChanceToCast := false
+		targetID := stat.ID(statData[0])
+
+		// Special cases, those encode skill ID and level in the layer
+		switch targetID {
+		case stat.SkillOnAttack, stat.SkillOnKill, stat.SkillOnDeath, stat.SkillOnHit, stat.SkillOnLevelUp, stat.SkillOnGetHit, stat.ItemChargedSkill:
+			isChanceToCast = true
+		}
+
+		if isChanceToCast && (layer == 1 || layer == 2) {
+			var foundStat *stat.Data
+			for _, s := range it.Stats {
+				if s.ID == targetID {
+					foundStat = &s
+					break
+				}
+			}
+
+			if foundStat == nil {
+				for _, s := range it.BaseStats {
+					if s.ID == targetID {
+						foundStat = &s
+						break
+					}
+				}
+			}
+
+			if foundStat != nil {
+				statFound = true
+				skillID := foundStat.Layer >> 6
+				level := foundStat.Layer & 0x3F
+
+				if layer == 1 {
+					statValue = skillID
+				} else {
+					statValue = level
+				}
+			}
+		} else {
+			if itemStat, found := it.FindStat(stat.ID(statData[0]), layer); found {
+				statValue = itemStat.Value
+				statFound = true
+			}
 		}
 
 		// Special handling for stats not found
