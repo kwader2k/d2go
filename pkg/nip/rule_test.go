@@ -223,11 +223,537 @@ func TestRule_Evaluate(t *testing.T) {
 					Quality:    item.QualityMagic,
 					Ethereal:   false,
 					Stats: []stat.Data{
-						{ID: stat.SkillOnHit, Value: 48, Layer: 1},
+						{ID: stat.SkillOnHit, Value: 10, Layer: 3075},
 					},
 				},
 			},
 			want: RuleResultFullMatch,
+		},
+		{
+			name: "Magic Giant Sword with itemskillonhit",
+			fields: fields{
+				RawLine: "[name] == giantsword && [quality] == magic # [itemskillonhit] >= 1",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					Identified: true,
+					ID:         35,
+					Name:       "GiantSword",
+					Quality:    item.QualityMagic,
+					Ethereal:   false,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnHit, Value: 10, Layer: 3075},
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "Magic Flail with itemskillonhitlevel",
+			fields: fields{
+				RawLine: "[name] == flail && [quality] == magic && [flag] != ethereal # [itemskillonhitlevel] >= 3",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					Identified: true,
+					ID:         21,
+					Name:       "Flail",
+					Quality:    item.QualityMagic,
+					Ethereal:   false,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnHit, Value: 10, Layer: 3075},
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnAttack: Fire Ball (47) Level 5 (match)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemskillonattack] == 47 && [itemskillonattacklevel] == 5",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnAttack, Value: 10, Layer: 3013}, // (47 << 6) | 5
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnAttack: Fire Ball (47) Level 5 (match distinct level condition)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemskillonattacklevel] >= 4",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnAttack, Value: 10, Layer: 3013}, // (47 << 6) | 5
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnAttack: Fire Ball (47) Level 5 (match distinct OR condition)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemskillonattack] == 47 || [itemskillonattack] == 50",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnAttack, Value: 10, Layer: 3013}, // (47 << 6) | 5
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnAttack: Fire Ball (47) Level 5 (no match)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemskillonattack] == 48",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnAttack, Value: 10, Layer: 3013},
+					},
+				},
+			},
+			want: RuleResultNoMatch,
+		},
+		{
+			name: "SkillOnKill: Chain Lightning (53) Level 12 (match)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemskillonkill] == 53 && [itemskillonkilllevel] == 12",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnKill, Value: 10, Layer: 3404}, // (53 << 6) | 12
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnKill: Chain Lightning (53) Level 12 (match distinct level condition)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemskillonkilllevel] >= 10",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnKill, Value: 10, Layer: 3404}, // (53 << 6) | 12
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnKill: Chain Lightning (53) Level 12 (match distinct OR condition)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemskillonkill] == 53 || [itemskillonkill] == 60",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnKill, Value: 10, Layer: 3404}, // (53 << 6) | 12
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnKill: Chain Lightning (53) Level 12 (no match)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemskillonkill] == 54",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnKill, Value: 10, Layer: 3404}, // (53 << 6) | 12
+					},
+				},
+			},
+			want: RuleResultNoMatch,
+		},
+		{
+			name: "SkillOnDeath: Shiver Armor (50) Level 3 (match)",
+			fields: fields{
+				RawLine: "[name] == mageplate # [itemskillondeath] == 50 && [itemskillondeathlevel] == 3",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         373,
+					Name:       "MagePlate",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnDeath, Value: 100, Layer: 3203}, // (50 << 6) | 3
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnDeath: Shiver Armor (50) Level 3 (match distinct level condition)",
+			fields: fields{
+				RawLine: "[name] == mageplate # [itemskillondeathlevel] >= 2",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         373,
+					Name:       "MagePlate",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnDeath, Value: 100, Layer: 3203}, // (50 << 6) | 3
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnDeath: Shiver Armor (50) Level 3 (match distinct OR condition)",
+			fields: fields{
+				RawLine: "[name] == mageplate # [itemskillondeath] == 50 || [itemskillondeath] == 55",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         373,
+					Name:       "MagePlate",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnDeath, Value: 100, Layer: 3203}, // (50 << 6) | 3
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnDeath: Shiver Armor (50) Level 3 (no match)",
+			fields: fields{
+				RawLine: "[name] == mageplate # [itemskillondeath] == 51",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         373,
+					Name:       "MagePlate",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnDeath, Value: 100, Layer: 3203}, // (50 << 6) | 3
+					},
+				},
+			},
+			want: RuleResultNoMatch,
+		},
+		{
+			name: "SkillOnHit: Amplify Damage (66) Level 1 (match)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemskillonhit] == 66 && [itemskillonhitlevel] == 1",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnHit, Value: 5, Layer: 4225}, // (66 << 6) | 1
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnHit: Amplify Damage (66) Level 1 (match distinct level condition)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemskillonhitlevel] >= 1",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnHit, Value: 5, Layer: 4225}, // (66 << 6) | 1
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnHit: Amplify Damage (66) Level 1 (match distinct OR condition)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemskillonhit] == 66 || [itemskillonhit] == 70",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnHit, Value: 5, Layer: 4225}, // (66 << 6) | 1
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnHit: Amplify Damage (66) Level 1 (no match)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemskillonhit] == 67",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnHit, Value: 5, Layer: 4225}, // (66 << 6) | 1
+					},
+				},
+			},
+			want: RuleResultNoMatch,
+		},
+		{
+			name: "SkillOnLevelUp: Blizzard (59) Level 7 (match)",
+			fields: fields{
+				RawLine: "[name] == mageplate # [itemskillonlevelup] == 59 && [itemskillonleveluplevel] >= 5",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         373,
+					Name:       "MagePlate",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnLevelUp, Value: 10, Layer: 3783}, // (59 << 6) | 7
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnLevelUp: Blizzard (59) Level 7 (match distinct OR condition)",
+			fields: fields{
+				RawLine: "[name] == mageplate # [itemskillonlevelup] == 59 || [itemskillonlevelup] == 60",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         373,
+					Name:       "MagePlate",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnLevelUp, Value: 10, Layer: 3783}, // (59 << 6) | 7
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnLevelUp: Blizzard (59) Level 7 (no match)",
+			fields: fields{
+				RawLine: "[name] == mageplate # [itemskillonlevelup] == 60",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         373,
+					Name:       "MagePlate",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnLevelUp, Value: 10, Layer: 3783}, // (59 << 6) | 7
+					},
+				},
+			},
+			want: RuleResultNoMatch,
+		},
+		{
+			name: "SkillOnGetHit: Nova (48) Level 9 (match)",
+			fields: fields{
+				RawLine: "[name] == mageplate # [itemskillongethit] == 48 && [itemskillongethitlevel] == 9",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         373,
+					Name:       "MagePlate",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnGetHit, Value: 10, Layer: 3081}, // (48 << 6) | 9
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnGetHit: Nova (48) Level 9 (match distinct level condition)",
+			fields: fields{
+				RawLine: "[name] == mageplate # [itemskillongethitlevel] >= 5",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         373,
+					Name:       "MagePlate",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnGetHit, Value: 10, Layer: 3081}, // (48 << 6) | 9
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnGetHit: Nova (48) Level 9 (match distinct OR condition)",
+			fields: fields{
+				RawLine: "[name] == mageplate # [itemskillongethit] == 48 || [itemskillongethit] == 50",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         373,
+					Name:       "MagePlate",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnGetHit, Value: 10, Layer: 3081}, // (48 << 6) | 9
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "SkillOnGetHit: Nova (48) Level 9 (no match)",
+			fields: fields{
+				RawLine: "[name] == mageplate # [itemskillongethit] == 49",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         373,
+					Name:       "MagePlate",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.SkillOnGetHit, Value: 10, Layer: 3081}, // (48 << 6) | 9
+					},
+				},
+			},
+			want: RuleResultNoMatch,
+		},
+		{
+			name: "ChargedSkill: Teleport (54) Level 1 (match)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemchargedskill] == 54 && [itemchargedskilllevel] == 1",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.ItemChargedSkill, Value: 20, Layer: 3457}, // (54 << 6) | 1
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "ChargedSkill: Teleport (54) Level 1 (match distinct level condition)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemchargedskilllevel] >= 1",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.ItemChargedSkill, Value: 20, Layer: 3457}, // (54 << 6) | 1
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "ChargedSkill: Teleport (54) Level 1 (match distinct OR condition)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemchargedskill] == 54 || [itemchargedskill] == 60",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.ItemChargedSkill, Value: 20, Layer: 3457}, // (54 << 6) | 1
+					},
+				},
+			},
+			want: RuleResultFullMatch,
+		},
+		{
+			name: "ChargedSkill: Teleport (54) Level 1 (no match - different skill)",
+			fields: fields{
+				RawLine: "[name] == flail # [itemchargedskill] == 55",
+				Enabled: true,
+			},
+			args: args{
+				item: data.Item{
+					ID:         21,
+					Name:       "Flail",
+					Identified: true,
+					Stats: []stat.Data{
+						{ID: stat.ItemChargedSkill, Value: 20, Layer: 3457}, // (54 << 6) | 1
+					},
+				},
+			},
+			want: RuleResultNoMatch,
 		},
 	}
 	for _, tt := range tests {
