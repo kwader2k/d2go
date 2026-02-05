@@ -804,6 +804,105 @@ func TestNew(t *testing.T) {
 	}
 }
 
+func TestRule_ValidateStage1(t *testing.T) {
+	tests := []struct {
+		name    string
+		rawRule string
+		wantErr bool
+	}{
+		// Valid cases
+		{
+			name:    "Valid type",
+			rawRule: "[type] == sword",
+			wantErr: false,
+		},
+		{
+			name:    "Valid quality",
+			rawRule: "[quality] >= magic",
+			wantErr: false,
+		},
+		{
+			name:    "Valid class",
+			rawRule: "[class] == elite",
+			wantErr: false,
+		},
+		{
+			name:    "Valid flag ethereal",
+			rawRule: "[flag] != ethereal",
+			wantErr: false,
+		},
+		{
+			name:    "Valid flag runeword",
+			rawRule: "[flag] == runeword",
+			wantErr: false,
+		},
+		{
+			name:    "Valid name",
+			rawRule: "[name] == mageplate",
+			wantErr: false,
+		},
+		{
+			name:    "Valid combined stage1",
+			rawRule: "[type] == armor && [quality] == magic && [class] == elite",
+			wantErr: false,
+		},
+		{
+			name:    "Empty stage1 with stats only",
+			rawRule: "# [defense] >= 100",
+			wantErr: false,
+		},
+		// Invalid cases
+		{
+			name:    "Invalid type",
+			rawRule: "[type] == invalidtype",
+			wantErr: true,
+		},
+		{
+			name:    "Invalid quality",
+			rawRule: "[quality] == legendary",
+			wantErr: true,
+		},
+		{
+			name:    "Invalid class",
+			rawRule: "[class] == mythic",
+			wantErr: true,
+		},
+		{
+			name:    "Invalid name",
+			rawRule: "[name] == nonexistentitem",
+			wantErr: true,
+		},
+		{
+			name:    "Invalid flag (not runeword/ethereal/numeric)",
+			rawRule: "[flag] == invalidflag",
+			wantErr: true,
+		},
+		{
+			name:    "Color not supported",
+			rawRule: "[color] == 1000",
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r, err := NewRule(tt.rawRule, "test.nip", 1)
+			// Some rules may fail to create due to color not supported
+			if err != nil && tt.wantErr {
+				return // Expected error during rule creation
+			}
+			require.NoError(t, err)
+
+			err = r.ValidateStage1()
+			if tt.wantErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
 func BenchmarkEvaluate(b *testing.B) {
 	it := data.Item{
 		ID:      0,
