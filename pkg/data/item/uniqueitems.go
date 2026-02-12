@@ -35,6 +35,7 @@ const (
 	BloodCrescent                   UniqueName = "Blood Crescent"
 	KrintizsSkewer                  UniqueName = "Krintizs Skewer"
 	Gleamscythe                     UniqueName = "Gleamscythe"
+	AzurewrathCrystalSword          UniqueName = "Azurewrath"
 	GriswoldsEdge                   UniqueName = "Griswolds Edge"
 	Hellplague                      UniqueName = "Hellplague"
 	CulwensPoint                    UniqueName = "Culwens Point"
@@ -266,6 +267,7 @@ const (
 	Doombringer                     UniqueName = "Doombringer"
 	TheGrandfather                  UniqueName = "The Grandfather"
 	Wizardspike                     UniqueName = "Wizardspike"
+	ConstrictingRing                UniqueName = "Constricting Ring"
 	Stormspire                      UniqueName = "Stormspire"
 	Eaglehorn                       UniqueName = "Eaglehorn"
 	Windforce                       UniqueName = "Windforce"
@@ -397,6 +399,36 @@ const (
 	RottingFissure                  UniqueName = "Rotting Fissure"
 	BoneBreak                       UniqueName = "Bone Break"
 	BlackCleft                      UniqueName = "Black Cleft"
+	ArsAlDiablolos                  UniqueName = "Ars Al'Diablolos"
+	ArsTorBaalos                    UniqueName = "Ars Tor'Baalos"
+	ArsDulMephistos                 UniqueName = "Ars Dul'Mephistos"
+	MeasuredWrath                   UniqueName = "Measured Wrath"
+	Dreadfang                       UniqueName = "Dreadfang"
+	Wraithstep                      UniqueName = "Wraithstep"
+	BloodpactShard                  UniqueName = "Bloodpact Shard"
+	Sling                           UniqueName = "Sling"
+	Opalvein                        UniqueName = "Opalvein"
+	EntropyLocket                   UniqueName = "Entropy Locket"
+	GheedsWager                     UniqueName = "Gheed's Wager"
+	UniqueWarlockHelm               UniqueName = "Unique Warlock Helm"
+	DefendersBile                   UniqueName = "Defender's Bile"
+	GuardiansThunder                UniqueName = "Guardian's Thunder"
+	ProtectorsFrost                 UniqueName = "Protector's Frost"
+	DefendersFire                   UniqueName = "Defender's Fire"
+	ProtectorsStone                 UniqueName = "Protector's Stone"
+	GuardiansLight                  UniqueName = "Guardian's Light"
+	PreCraftedColdRupture           UniqueName = "PreCrafted Cold Rupture"
+	CraftedColdRupture              UniqueName = "Crafted Cold Rupture"
+	PreCraftedFlameRift             UniqueName = "PreCrafted Flame Rift"
+	PreCraftedCrackoftheHeavens     UniqueName = "PreCrafted Crack of the Heavens"
+	PreCraftedRottingFissure        UniqueName = "PreCrafted Rotting Fissure"
+	PreCraftedBoneBreak             UniqueName = "PreCrafted Bone Break"
+	PreCraftedBlackCleft            UniqueName = "PreCrafted Black Cleft"
+	CraftedFlameRift                UniqueName = "Crafted Flame Rift"
+	CraftedCrackoftheHeavens        UniqueName = "Crafted Crack of the Heavens"
+	CraftedRottingFissure           UniqueName = "Crafted Rotting Fissure"
+	CraftedBoneBreak                UniqueName = "Crafted Bone Break"
+	CraftedBlackCleft               UniqueName = "Crafted Black Cleft"
 )
 
 type UniqueItemInfo struct {
@@ -408,35 +440,36 @@ type UniqueItemInfo struct {
 }
 
 var UniqueItems = map[UniqueName]UniqueItemInfo{
-	TheGnasher:                      {Name: "The Gnasher", Code: "hax", LevelReq: 5, Rarity: 1, ID: 0},
-	Deathspade:                      {Name: "Deathspade", Code: "axe", LevelReq: 9, Rarity: 1, ID: 1},
-	Bladebone:                       {Name: "Bladebone", Code: "2ax", LevelReq: 15, Rarity: 1, ID: 2},
-	Mindrend:                        {Name: "Mindrend", Code: "mpi", LevelReq: 21, Rarity: 1, ID: 3},
-	Rakescar:                        {Name: "Rakescar", Code: "wax", LevelReq: 27, Rarity: 1, ID: 4},
-	FechmarsAxe:                     {Name: "Fechmars Axe", Code: "lax", LevelReq: 8, Rarity: 1, ID: 5},
-	Goreshovel:                      {Name: "Goreshovel", Code: "bax", LevelReq: 14, Rarity: 1, ID: 6},
-	TheChieftan:                     {Name: "The Chieftan", Code: "btx", LevelReq: 19, Rarity: 1, ID: 7},
-	Brainhew:                        {Name: "Brainhew", Code: "gax", LevelReq: 25, Rarity: 1, ID: 8},
-	TheHumongous:                    {Name: "The Humongous", Code: "gix", LevelReq: 29, Rarity: 1, ID: 9},
-	IrosTorch:                       {Name: "Iros Torch", Code: "wnd", LevelReq: 5, Rarity: 1, ID: 10},
-	Maelstromwrath:                  {Name: "Maelstromwrath", Code: "ywn", LevelReq: 14, Rarity: 1, ID: 11},
-	Gravenspine:                     {Name: "Gravenspine", Code: "bwn", LevelReq: 20, Rarity: 1, ID: 12},
-	UmesLament:                      {Name: "Umes Lament", Code: "gwn", LevelReq: 28, Rarity: 1, ID: 13},
-	Felloak:                         {Name: "Felloak", Code: "clb", LevelReq: 3, Rarity: 1, ID: 14},
-	KnellStriker:                    {Name: "Knell Striker", Code: "scp", LevelReq: 5, Rarity: 1, ID: 15},
-	Rusthandle:                      {Name: "Rusthandle", Code: "gsc", LevelReq: 17, Rarity: 1, ID: 16},
-	Stormeye:                        {Name: "Stormeye", Code: "wsp", LevelReq: 23, Rarity: 1, ID: 17},
-	Stoutnail:                       {Name: "Stoutnail", Code: "spc", LevelReq: 5, Rarity: 1, ID: 18},
-	Crushflange:                     {Name: "Crushflange", Code: "mac", LevelReq: 9, Rarity: 1, ID: 19},
-	Bloodrise:                       {Name: "Bloodrise", Code: "mst", LevelReq: 15, Rarity: 1, ID: 20},
-	TheGeneralsTanDoLiGa:            {Name: "The Generals Tan Do Li Ga", Code: "fla", LevelReq: 21, Rarity: 1, ID: 21},
-	Ironstone:                       {Name: "Ironstone", Code: "whm", LevelReq: 27, Rarity: 1, ID: 22},
-	Bonesob:                         {Name: "Bonesob", Code: "mau", LevelReq: 24, Rarity: 1, ID: 23},
-	Steeldriver:                     {Name: "Steeldriver", Code: "gma", LevelReq: 29, Rarity: 1, ID: 24},
-	RixotsKeen:                      {Name: "Rixots Keen", Code: "ssd", LevelReq: 2, Rarity: 1, ID: 25},
-	BloodCrescent:                   {Name: "Blood Crescent", Code: "scm", LevelReq: 7, Rarity: 1, ID: 26},
-	KrintizsSkewer:                  {Name: "Krintizs Skewer", Code: "sbr", LevelReq: 10, Rarity: 1, ID: 27},
-	Gleamscythe:                     {Name: "Gleamscythe", Code: "flc", LevelReq: 13, Rarity: 1, ID: 28},
+	TheGnasher:           {Name: "The Gnasher", Code: "hax", LevelReq: 5, Rarity: 1, ID: 0},
+	Deathspade:           {Name: "Deathspade", Code: "axe", LevelReq: 9, Rarity: 1, ID: 1},
+	Bladebone:            {Name: "Bladebone", Code: "2ax", LevelReq: 15, Rarity: 1, ID: 2},
+	Mindrend:             {Name: "Mindrend", Code: "mpi", LevelReq: 21, Rarity: 1, ID: 3},
+	Rakescar:             {Name: "Rakescar", Code: "wax", LevelReq: 27, Rarity: 1, ID: 4},
+	FechmarsAxe:          {Name: "Fechmars Axe", Code: "lax", LevelReq: 8, Rarity: 1, ID: 5},
+	Goreshovel:           {Name: "Goreshovel", Code: "bax", LevelReq: 14, Rarity: 1, ID: 6},
+	TheChieftan:          {Name: "The Chieftan", Code: "btx", LevelReq: 19, Rarity: 1, ID: 7},
+	Brainhew:             {Name: "Brainhew", Code: "gax", LevelReq: 25, Rarity: 1, ID: 8},
+	TheHumongous:         {Name: "The Humongous", Code: "gix", LevelReq: 29, Rarity: 1, ID: 9},
+	IrosTorch:            {Name: "Iros Torch", Code: "wnd", LevelReq: 5, Rarity: 1, ID: 10},
+	Maelstromwrath:       {Name: "Maelstromwrath", Code: "ywn", LevelReq: 14, Rarity: 1, ID: 11},
+	Gravenspine:          {Name: "Gravenspine", Code: "bwn", LevelReq: 20, Rarity: 1, ID: 12},
+	UmesLament:           {Name: "Umes Lament", Code: "gwn", LevelReq: 28, Rarity: 1, ID: 13},
+	Felloak:              {Name: "Felloak", Code: "clb", LevelReq: 3, Rarity: 1, ID: 14},
+	KnellStriker:         {Name: "Knell Striker", Code: "scp", LevelReq: 5, Rarity: 1, ID: 15},
+	Rusthandle:           {Name: "Rusthandle", Code: "gsc", LevelReq: 17, Rarity: 1, ID: 16},
+	Stormeye:             {Name: "Stormeye", Code: "wsp", LevelReq: 23, Rarity: 1, ID: 17},
+	Stoutnail:            {Name: "Stoutnail", Code: "spc", LevelReq: 5, Rarity: 1, ID: 18},
+	Crushflange:          {Name: "Crushflange", Code: "mac", LevelReq: 9, Rarity: 1, ID: 19},
+	Bloodrise:            {Name: "Bloodrise", Code: "mst", LevelReq: 15, Rarity: 1, ID: 20},
+	TheGeneralsTanDoLiGa: {Name: "The Generals Tan Do Li Ga", Code: "fla", LevelReq: 21, Rarity: 1, ID: 21},
+	Ironstone:            {Name: "Ironstone", Code: "whm", LevelReq: 27, Rarity: 1, ID: 22},
+	Bonesob:              {Name: "Bonesob", Code: "mau", LevelReq: 24, Rarity: 1, ID: 23},
+	Steeldriver:          {Name: "Steeldriver", Code: "gma", LevelReq: 29, Rarity: 1, ID: 24},
+	RixotsKeen:           {Name: "Rixots Keen", Code: "ssd", LevelReq: 2, Rarity: 1, ID: 25},
+	BloodCrescent:        {Name: "Blood Crescent", Code: "scm", LevelReq: 7, Rarity: 1, ID: 26},
+	KrintizsSkewer:       {Name: "Krintizs Skewer", Code: "sbr", LevelReq: 10, Rarity: 1, ID: 27},
+	Gleamscythe:          {Name: "Gleamscythe", Code: "flc", LevelReq: 13, Rarity: 1, ID: 28},
+	// AzurewrathCrystalSword (ID: 29, Code: "crs") omitted: duplicate name with Phase Blade Azurewrath (ID: 301)
 	GriswoldsEdge:                   {Name: "Griswolds Edge", Code: "bsd", LevelReq: 17, Rarity: 1, ID: 30},
 	Hellplague:                      {Name: "Hellplague", Code: "lsd", LevelReq: 22, Rarity: 1, ID: 31},
 	CulwensPoint:                    {Name: "Culwens Point", Code: "wsd", LevelReq: 29, Rarity: 1, ID: 32},
@@ -668,6 +701,7 @@ var UniqueItems = map[UniqueName]UniqueItemInfo{
 	Doombringer:                     {Name: "Doombringer", Code: "7b7", LevelReq: 69, Rarity: 1, ID: 260},
 	TheGrandfather:                  {Name: "The Grandfather", Code: "7gd", LevelReq: 81, Rarity: 1, ID: 261},
 	Wizardspike:                     {Name: "Wizardspike", Code: "7dg", LevelReq: 61, Rarity: 1, ID: 262},
+	ConstrictingRing:                {Name: "Constricting Ring", Code: "rin", LevelReq: 95, Rarity: 1, ID: 263},
 	Stormspire:                      {Name: "Stormspire", Code: "7wc", LevelReq: 70, Rarity: 1, ID: 264},
 	Eaglehorn:                       {Name: "Eaglehorn", Code: "6l7", LevelReq: 69, Rarity: 1, ID: 265},
 	Windforce:                       {Name: "Windforce", Code: "6lw", LevelReq: 73, Rarity: 1, ID: 266},
@@ -799,4 +833,34 @@ var UniqueItems = map[UniqueName]UniqueItemInfo{
 	RottingFissure:                  {Name: "Rotting Fissure", Code: "cm3", LevelReq: 75, Rarity: 1, ID: 404},
 	BoneBreak:                       {Name: "Bone Break", Code: "cm3", LevelReq: 75, Rarity: 1, ID: 405},
 	BlackCleft:                      {Name: "Black Cleft", Code: "cm3", LevelReq: 75, Rarity: 1, ID: 406},
+	ArsAlDiablolos:                  {Name: "Ars Al'Diablolos", Code: "waf", LevelReq: 80, Rarity: 1, ID: 408},
+	ArsTorBaalos:                    {Name: "Ars Tor'Baalos", Code: "wae", LevelReq: 73, Rarity: 1, ID: 409},
+	ArsDulMephistos:                 {Name: "Ars Dul'Mephistos", Code: "wac", LevelReq: 78, Rarity: 1, ID: 410},
+	MeasuredWrath:                   {Name: "Measured Wrath", Code: "wa6", LevelReq: 52, Rarity: 3, ID: 411},
+	Dreadfang:                       {Name: "Dreadfang", Code: "72h", LevelReq: 61, Rarity: 2, ID: 412},
+	Wraithstep:                      {Name: "Wraithstep", Code: "utb", LevelReq: 67, Rarity: 2, ID: 413},
+	BloodpactShard:                  {Name: "Bloodpact Shard", Code: "7di", LevelReq: 67, Rarity: 2, ID: 414},
+	Sling:                           {Name: "Sling", Code: "rin", LevelReq: 50, Rarity: 1, ID: 415},
+	Opalvein:                        {Name: "Opalvein", Code: "rin", LevelReq: 50, Rarity: 1, ID: 416},
+	EntropyLocket:                   {Name: "Entropy Locket", Code: "amu", LevelReq: 54, Rarity: 1, ID: 417},
+	GheedsWager:                     {Name: "Gheed's Wager", Code: "utc", LevelReq: 71, Rarity: 1, ID: 418},
+	UniqueWarlockHelm:               {Name: "Unique Warlock Helm", Code: "xsk", LevelReq: 50, Rarity: 2, ID: 419},
+	DefendersBile:                   {Name: "Defender's Bile", Code: "cjw", LevelReq: 75, Rarity: 1, ID: 420},
+	GuardiansThunder:                {Name: "Guardian's Thunder", Code: "cjw", LevelReq: 75, Rarity: 1, ID: 421},
+	ProtectorsFrost:                 {Name: "Protector's Frost", Code: "cjw", LevelReq: 75, Rarity: 1, ID: 422},
+	DefendersFire:                   {Name: "Defender's Fire", Code: "cjw", LevelReq: 75, Rarity: 1, ID: 423},
+	ProtectorsStone:                 {Name: "Protector's Stone", Code: "cjw", LevelReq: 75, Rarity: 1, ID: 424},
+	GuardiansLight:                  {Name: "Guardian's Light", Code: "cjw", LevelReq: 75, Rarity: 1, ID: 425},
+	PreCraftedColdRupture:           {Name: "PreCrafted Cold Rupture", Code: "cm3", LevelReq: 75, Rarity: 2, ID: 426},
+	CraftedColdRupture:              {Name: "Crafted Cold Rupture", Code: "cs2", LevelReq: 75, Rarity: 1, ID: 427},
+	PreCraftedFlameRift:             {Name: "PreCrafted Flame Rift", Code: "cm3", LevelReq: 75, Rarity: 2, ID: 428},
+	PreCraftedCrackoftheHeavens:     {Name: "PreCrafted Crack of the Heavens", Code: "cm3", LevelReq: 75, Rarity: 2, ID: 429},
+	PreCraftedRottingFissure:        {Name: "PreCrafted Rotting Fissure", Code: "cm3", LevelReq: 75, Rarity: 2, ID: 430},
+	PreCraftedBoneBreak:             {Name: "PreCrafted Bone Break", Code: "cm3", LevelReq: 75, Rarity: 2, ID: 431},
+	PreCraftedBlackCleft:            {Name: "PreCrafted Black Cleft", Code: "cm3", LevelReq: 75, Rarity: 2, ID: 432},
+	CraftedFlameRift:                {Name: "Crafted Flame Rift", Code: "cs2", LevelReq: 75, Rarity: 1, ID: 433},
+	CraftedCrackoftheHeavens:        {Name: "Crafted Crack of the Heavens", Code: "cs2", LevelReq: 75, Rarity: 1, ID: 434},
+	CraftedRottingFissure:           {Name: "Crafted Rotting Fissure", Code: "cs2", LevelReq: 75, Rarity: 1, ID: 435},
+	CraftedBoneBreak:                {Name: "Crafted Bone Break", Code: "cs2", LevelReq: 75, Rarity: 1, ID: 436},
+	CraftedBlackCleft:               {Name: "Crafted Black Cleft", Code: "cs2", LevelReq: 75, Rarity: 1, ID: 437},
 }

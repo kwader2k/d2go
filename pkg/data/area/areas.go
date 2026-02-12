@@ -140,4 +140,5 @@ var Areas = map[ID]Area{
 	134: {Name: "Pandemonium Run 2", ID: 134},
 	135: {Name: "Pandemonium Run 3", ID: 135},
 	136: {Name: "Tristram", ID: 136},
+	137: {Name: "ColossalSummit", ID: 137},
 }
