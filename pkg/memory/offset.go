@@ -56,7 +56,7 @@ func calculateOffsets(_ *Process) Offset {
 	keyBindingsOffset := uintptr(0x19C65B4)
 
 	// KeyBindings Skills
-	keyBindingsSkillsOffset := uintptr(0x1DEF12C)
+	keyBindingsSkillsOffset := uintptr(0x1DEF110)
 
 	// QuestInfo
 	questInfoOffset := uintptr(0x1EB7CD8)
