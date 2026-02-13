@@ -38,8 +38,9 @@ func (gd *GameReader) GetRawPlayerUnits() RawPlayerUnits {
 
 			expCharPtr := uintptr(gd.Process.ReadUInt(gd.moduleBaseAddressPtr+gd.offset.Expansion, Uint64))
 			expChar := gd.Process.ReadUInt(expCharPtr+0x5C, Uint16)
+			gd.ExpChar = uint16(expChar)
 			isMainPlayer := gd.Process.ReadUInt(inventoryAddr+0x30, Uint16)
-			if expChar > 0 {
+			if expChar >= 2 {
 				isMainPlayer = gd.Process.ReadUInt(inventoryAddr+0x70, Uint16)
 			}
 			isCorpse := gd.Process.ReadUInt(playerUnit+0x1AE, Uint8)

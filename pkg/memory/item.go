@@ -14,6 +14,7 @@ import (
 )
 
 func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverData) data.Inventory {
+	item.SetExpChar(gd.ExpChar)
 	mainPlayer := rawPlayerUnits.GetMainPlayer()
 	baseAddr := gd.Process.moduleBaseAddressPtr + gd.offset.UnitTable + (4 * 1024)
 	unitTableBuffer := gd.Process.ReadBytesFromMemory(baseAddr, 128*8)
@@ -355,7 +356,7 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 			if location == item.LocationSocket {
 				if itm.Desc().Code == "jew" {
 					// Base requirement for jewels
-					itm.LevelReq = item.Desc[itm.ID].RequiredLevel
+					itm.LevelReq = itm.Desc().RequiredLevel
 
 					// For magic/rare jewels, check affixes
 					if itm.Quality == item.QualityMagic || itm.Quality == item.QualityRare {
@@ -371,7 +372,7 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 					}
 				} else {
 					// Normal socketed items (runes,gems) just use base requirement
-					itm.LevelReq = item.Desc[itm.ID].RequiredLevel
+					itm.LevelReq = itm.Desc().RequiredLevel
 				}
 				itemExtraData := uintptr(gd.Process.ReadUInt(unitDataPtr+0xA0, Uint64))
 				if itemExtraData != 0 {
@@ -442,7 +443,7 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 	// Build final inventory
 	inventory.AllItems = make([]data.Item, len(allItems))
 	for i, itm := range allItems {
-		baseDesc := item.Desc[itm.ID]
+		baseDesc := itm.Desc()
 		maxReq := calculateItemLevelReq(itm, baseDesc)
 
 		// Check magic/rare affixes
@@ -452,7 +453,7 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 
 		// Check socketed items
 		for _, socketItem := range itm.Sockets {
-			socketBaseDesc := item.Desc[socketItem.ID]
+			socketBaseDesc := socketItem.Desc()
 			socketReq := calculateItemLevelReq(&socketItem, socketBaseDesc)
 
 			if socketReq > maxReq {

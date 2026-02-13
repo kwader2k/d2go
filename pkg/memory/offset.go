@@ -26,61 +26,61 @@ type Offset struct {
 
 func calculateOffsets(_ *Process) Offset {
 	// UnitTable
-	unitTableOffset := uintptr(0x1D95AF0)
+	unitTableOffset := uintptr(0x1E9B350)
 
 	// UI
-	uiOffsetPtr := uintptr(0x1DA57DA)
+	uiOffsetPtr := uintptr(0x1EAB042)
 
 	// Hover
-	hoverOffset := uintptr(0x1CE8400)
+	hoverOffset := uintptr(0x1DEF000)
 
 	// Expansion
-	expOffset := uintptr(0x1CE78D0)
+	expOffset := uintptr(0x1DEE468)
 
 	// Party members offset
-	rosterOffset := uintptr(0x1DABD60)
+	rosterOffset := uintptr(0x1EB1660)
 
 	// PanelManagerContainer
-	panelManagerContainerOffset := uintptr(0x1D00968)
+	panelManagerContainerOffset := uintptr(0x1E05DC0)
 
 	// WidgetStates
-	WidgetStatesOffset := uintptr(0x1DCDD40)
+	WidgetStatesOffset := uintptr(0x1ED3678)
 
 	// Waypoints
-	WaypointTableOffset := uintptr(0x1C468B0)
+	WaypointTableOffset := uintptr(0x1D4D3C0)
 
 	// FPS
-	fpsOffset := uintptr(0x1C46894)
+	fpsOffset := uintptr(0x1D4D394)
 
 	// KeyBindings
-	keyBindingsOffset := uintptr(0x18C2894)
+	keyBindingsOffset := uintptr(0x19C65B4)
 
 	// KeyBindings Skills
-	keyBindingsSkillsOffset := uintptr(0x1CE8510)
+	keyBindingsSkillsOffset := uintptr(0x1DEF110)
 
 	// QuestInfo
-	questInfoOffset := uintptr(0x1DB23D8)
+	questInfoOffset := uintptr(0x1EB7CD8)
 
 	// Terror Zones
-	tzOffset := uintptr(0x248D430)
+	tzOffset := uintptr(0x25A5AB0)
 
 	// Ping
-	pingOffset := uintptr(0x1CE78D0)
+	pingOffset := uintptr(0x1DEE468)
 
 	// LegacyGraphics
-	legacyGfxOffset := uintptr(0x1DB263E)
+	legacyGfxOffset := uintptr(0x1EB7E7E)
 
 	// CharData
-	charDataOffset := uintptr(0x1CED5E8)
+	charDataOffset := uintptr(0x1DF25F8)
 
 	// Selected Char Name
-	selectedCharNameOffset := uintptr(0x1C3D694)
+	selectedCharNameOffset := uintptr(0x1D44195)
 
 	// Last Game Name
-	lastGameNameOffset := uintptr(0x24D5A90)
+	lastGameNameOffset := uintptr(0x25EE370)
 
 	// Last Game Password
-	lastGamePasswordOffset := uintptr(0x24D5AE8)
+	lastGamePasswordOffset := uintptr(0x25EE3C8)
 
 	return Offset{
 		UnitTable:                   unitTableOffset,

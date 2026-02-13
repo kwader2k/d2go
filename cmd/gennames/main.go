@@ -2,7 +2,9 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"go/format"
 	"os"
 	"regexp"
 	"strings"
@@ -10,15 +12,22 @@ import (
 )
 
 func main() {
+	if err := run(); err != nil {
+		panic(err)
+	}
+}
+
+func run() error {
 	// Read items.go
 	f, err := os.Open("pkg/data/item/items.go")
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer f.Close()
 
 	nameRe := regexp.MustCompile(`Name:\s*"([^"]*)"`)
 	var names []string
+	seenNames := make(map[string]string)
 
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
@@ -27,36 +36,42 @@ func main() {
 		if m == nil {
 			continue
 		}
-		raw := strings.TrimSpace(m[1])
-		// Remove apostrophes
-		raw = strings.ReplaceAll(raw, "'", "")
-		// Split by whitespace, capitalize each word, join
-		words := strings.Fields(raw)
-		var camel strings.Builder
-		for _, w := range words {
-			if len(w) == 0 {
-				continue
-			}
-			runes := []rune(w)
-			runes[0] = unicode.ToUpper(runes[0])
-			camel.WriteString(string(runes))
+		raw := m[1]
+		canonical := canonicalizeName(raw)
+		if canonical == "" {
+			return fmt.Errorf("unable to generate canonical name for item %q", raw)
 		}
-		names = append(names, camel.String())
+
+		if existingRaw, exists := seenNames[canonical]; exists && existingRaw != raw {
+			return fmt.Errorf("duplicate generated item name %q from %q and %q", canonical, existingRaw, raw)
+		}
+		if _, exists := seenNames[canonical]; !exists {
+			seenNames[canonical] = raw
+		}
+		names = append(names, canonical)
+	}
+	if err := scanner.Err(); err != nil {
+		return err
 	}
 
 	fmt.Printf("Extracted %d names from items.go\n", len(names))
 
 	// Write name.go
-	out, err := os.Create("pkg/data/item/name.go")
-	if err != nil {
-		panic(err)
-	}
-	defer out.Close()
-
-	w := bufio.NewWriter(out)
-	w.WriteString(`package item
+	var b bytes.Buffer
+	b.WriteString(`package item
 
 import "strings"
+
+const (
+	ExpCharItemIDThreshold = 508
+	ExpCharItemIDOffset    = 15
+)
+
+var ExpChar uint16
+
+func SetExpChar(expChar uint16) {
+	ExpChar = expChar
+}
 
 const (
 	ScrollOfTownPortal = "ScrollOfTownPortal"
@@ -67,15 +82,22 @@ const (
 )
 
 func GetNameByEnum(itemNumber uint) Name {
-	if int(itemNumber) >= len(Names) {
+	idx := int(itemNumber)
+	if ExpChar >= 3 && idx >= ExpCharItemIDThreshold {
+		idx += ExpCharItemIDOffset
+	}
+	if idx < 0 || idx >= len(Names) {
 		return Name("")
 	}
-	return Name(Names[itemNumber])
+	return Name(Names[idx])
 }
 
 func GetIDByName(itemName string) int {
 	for i, name := range Names {
 		if strings.EqualFold(name, itemName) {
+			if ExpChar >= 3 && i >= ExpCharItemIDThreshold+ExpCharItemIDOffset {
+				return i - ExpCharItemIDOffset
+			}
 			return i
 		}
 	}
@@ -88,10 +110,42 @@ type Name string
 var Names = []string{
 `)
 	for _, n := range names {
-		fmt.Fprintf(w, "\t\"%s\",\n", n)
+		fmt.Fprintf(&b, "\t\"%s\",\n", n)
 	}
-	w.WriteString("}\n")
-	w.Flush()
+	b.WriteString("}\n")
+
+	formatted, err := format.Source(b.Bytes())
+	if err != nil {
+		return fmt.Errorf("formatting generated name.go: %w", err)
+	}
+
+	if err := os.WriteFile("pkg/data/item/name.go", formatted, 0644); err != nil {
+		return err
+	}
 
 	fmt.Println("Generated name.go successfully")
+	return nil
+}
+
+func canonicalizeName(raw string) string {
+	raw = strings.TrimSpace(raw)
+	raw = strings.ReplaceAll(raw, "'", "")
+
+	var canonical strings.Builder
+	capitalizeNext := true
+
+	for _, r := range raw {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			if capitalizeNext && unicode.IsLetter(r) {
+				r = unicode.ToUpper(r)
+			}
+			canonical.WriteRune(r)
+			capitalizeNext = false
+			continue
+		}
+
+		capitalizeNext = true
+	}
+
+	return canonical.String()
 }

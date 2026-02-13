@@ -3,6 +3,17 @@ package item
 import "strings"
 
 const (
+	ExpCharItemIDThreshold = 508
+	ExpCharItemIDOffset    = 15
+)
+
+var ExpChar uint16
+
+func SetExpChar(expChar uint16) {
+	ExpChar = expChar
+}
+
+const (
 	ScrollOfTownPortal = "ScrollOfTownPortal"
 	ScrollOfIdentify   = "ScrollOfIdentify"
 	TomeOfTownPortal   = "TomeOfTownPortal"
@@ -11,15 +22,22 @@ const (
 )
 
 func GetNameByEnum(itemNumber uint) Name {
-	if int(itemNumber) >= len(Names) {
+	idx := int(itemNumber)
+	if ExpChar >= 3 && idx >= ExpCharItemIDThreshold {
+		idx += ExpCharItemIDOffset
+	}
+	if idx < 0 || idx >= len(Names) {
 		return Name("")
 	}
-	return Name(Names[itemNumber])
+	return Name(Names[idx])
 }
 
 func GetIDByName(itemName string) int {
 	for i, name := range Names {
 		if strings.EqualFold(name, itemName) {
+			if ExpChar >= 3 && i >= ExpCharItemIDThreshold+ExpCharItemIDOffset {
+				return i - ExpCharItemIDOffset
+			}
 			return i
 		}
 	}
@@ -63,7 +81,7 @@ var Names = []string{
 	"BroadSword",
 	"LongSword",
 	"WarSword",
-	"Two-HandedSword",
+	"TwoHandedSword",
 	"Claymore",
 	"GiantSword",
 	"BastardSword",
@@ -184,7 +202,7 @@ var Names = []string{
 	"Bill",
 	"BattleScythe",
 	"Partizan",
-	"Bec-de-Corbin",
+	"BecDeCorbin",
 	"GrimScythe",
 	"JoStaff",
 	"Quarterstaff",
@@ -202,7 +220,7 @@ var Names = []string{
 	"Arbalest",
 	"SiegeCrossbow",
 	"Ballista",
-	"Chu-Ko-Nu",
+	"ChuKoNu",
 	"KhalimsFlail",
 	"KhalimsWill",
 	"Katar",
@@ -232,7 +250,7 @@ var Names = []string{
 	"WarSpike",
 	"BerserkerAxe",
 	"FeralAxe",
-	"Silver-edgedAxe",
+	"SilverEdgedAxe",
 	"Decapitator",
 	"ChampionAxe",
 	"GloriousAxe",

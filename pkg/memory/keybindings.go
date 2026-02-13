@@ -12,6 +12,7 @@ func (gd *GameReader) GetKeyBindings() data.KeyBindings {
 	blobSkills := gd.ReadBytesFromMemory(gd.moduleBaseAddressPtr+gd.offset.KeyBindingsSkillsOffset, 0x500)
 
 	skillsKB := [16]data.SkillBinding{}
+	// Skills 0-6: slots 14-20
 	for i := 0; i < 7; i++ {
 		skillsKB[i] = data.SkillBinding{
 			SkillID: skill.ID(binary.LittleEndian.Uint32(blobSkills[i*0x1c : i*0x1c+4])),
@@ -21,8 +22,20 @@ func (gd *GameReader) GetKeyBindings() data.KeyBindings {
 			},
 		}
 	}
-	for i := 0; i < 9; i++ {
+	// Skills 7-13: slots 26-32
+	for i := 0; i < 7; i++ {
 		skillIdx := i + 7
+		skillsKB[skillIdx] = data.SkillBinding{
+			SkillID: skill.ID(binary.LittleEndian.Uint32(blobSkills[skillIdx*0x1c : skillIdx*0x1c+4])),
+			KeyBinding: data.KeyBinding{
+				Key1: [2]byte{blob[0x208+(i*0x14)], blob[0x209+(i*0x14)]},
+				Key2: [2]byte{blob[0x212+(i*0x14)], blob[0x213+(i*0x14)]},
+			},
+		}
+	}
+	// Skills 14-15: slots 45-46
+	for i := 0; i < 2; i++ {
+		skillIdx := i + 14
 		skillsKB[skillIdx] = data.SkillBinding{
 			SkillID: skill.ID(binary.LittleEndian.Uint32(blobSkills[skillIdx*0x1c : skillIdx*0x1c+4])),
 			KeyBinding: data.KeyBinding{
