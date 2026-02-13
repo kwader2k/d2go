@@ -72,6 +72,11 @@ func (p *Process) Close() error {
 	return windows.CloseHandle(p.handler)
 }
 
+// ModuleBaseAddress returns the base address of the D2R module.
+func (p *Process) ModuleBaseAddress() uintptr {
+	return p.moduleBaseAddressPtr
+}
+
 func getGameModule() (ModuleInfo, error) {
 	processes := make([]uint32, 2048)
 	length := uint32(0)
