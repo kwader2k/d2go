@@ -26,9 +26,8 @@ type Skill struct {
 }
 
 type Points struct {
-	Level    uint
-	Quantity uint
-	Charges  uint
+	Level   uint
+	Charges uint
 }
 
 func (skillId ID) Desc() Description {
