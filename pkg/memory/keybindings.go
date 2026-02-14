@@ -14,11 +14,12 @@ func (gd *GameReader) GetKeyBindings() data.KeyBindings {
 	skillsKB := [16]data.SkillBinding{}
 
 	// The skill blob stores 16 skill IDs contiguously at 0x1C stride.
-	// The key blob stores VK codes in three separate regions:
-	//   F1-F7 at 0x118 (stride 0x14), F8 at 0x384, NUMPAD0-6 at 0x208 (stride 0x14), extra at 0x398.
-	// The skill blob order is: F1, F2, ..., F7, F8, NUMPAD0, ..., NUMPAD6, extra.
+	// The key blob stores VK codes in two regions:
+	//   Slots 0-6:  at 0x118, stride 0x14 (default keys: F1-F7)
+	//   Slots 7-15: at 0x384, stride 0x14 (default key: F8 for slot 7, unbound for 8-15)
+	// Note: 0x208 is the emote region (SayHelp, SayFollowMe, etc.) — NOT skill slots.
 
-	// Skills 0-6: F1-F7 (key region at 0x118, stride 0x14)
+	// Skills 0-6: keys at 0x118, stride 0x14
 	for i := 0; i < 7; i++ {
 		skillsKB[i] = data.SkillBinding{
 			SkillID: skill.ID(binary.LittleEndian.Uint32(blobSkills[i*0x1c : i*0x1c+4])),
@@ -29,34 +30,16 @@ func (gd *GameReader) GetKeyBindings() data.KeyBindings {
 		}
 	}
 
-	// Skill 7: F8 (key at 0x384)
-	skillsKB[7] = data.SkillBinding{
-		SkillID: skill.ID(binary.LittleEndian.Uint32(blobSkills[7*0x1c : 7*0x1c+4])),
-		KeyBinding: data.KeyBinding{
-			Key1: [2]byte{blob[0x384], blob[0x385]},
-			Key2: [2]byte{blob[0x38e], blob[0x38f]},
-		},
-	}
-
-	// Skills 8-14: NUMPAD0-NUMPAD6 (key region at 0x208, stride 0x14)
-	for i := 0; i < 7; i++ {
-		skillIdx := i + 8
+	// Skills 7-15: keys at 0x384, stride 0x14
+	for i := 0; i < 9; i++ {
+		skillIdx := i + 7
 		skillsKB[skillIdx] = data.SkillBinding{
 			SkillID: skill.ID(binary.LittleEndian.Uint32(blobSkills[skillIdx*0x1c : skillIdx*0x1c+4])),
 			KeyBinding: data.KeyBinding{
-				Key1: [2]byte{blob[0x208+(i*0x14)], blob[0x209+(i*0x14)]},
-				Key2: [2]byte{blob[0x212+(i*0x14)], blob[0x213+(i*0x14)]},
+				Key1: [2]byte{blob[0x384+(i*0x14)], blob[0x385+(i*0x14)]},
+				Key2: [2]byte{blob[0x38e+(i*0x14)], blob[0x38f+(i*0x14)]},
 			},
 		}
-	}
-
-	// Skill 15: extra slot (key at 0x398)
-	skillsKB[15] = data.SkillBinding{
-		SkillID: skill.ID(binary.LittleEndian.Uint32(blobSkills[15*0x1c : 15*0x1c+4])),
-		KeyBinding: data.KeyBinding{
-			Key1: [2]byte{blob[0x398], blob[0x399]},
-			Key2: [2]byte{blob[0x3a2], blob[0x3a3]},
-		},
 	}
 
 	belt := [4]data.KeyBinding{}
