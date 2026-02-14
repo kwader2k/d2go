@@ -131,7 +131,7 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 			itm := &data.Item{
 				ID:      int(txtFileNo),
 				UnitID:  data.UnitID(unitID),
-				Name:    item.GetNameByEnumWithExpChar(gd.ExpChar, txtFileNo),
+				Name:    item.GetNameByEnum(txtFileNo),
 				Quality: item.Quality(itemQuality),
 				Position: data.Position{
 					X: int(itemX),

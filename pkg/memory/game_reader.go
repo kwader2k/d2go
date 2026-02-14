@@ -20,7 +20,6 @@ type GameReader struct {
 	monstersLastUpdate  time.Time
 	inventoryLastUpdate time.Time
 	objectsLastUpdate   time.Time
-	ExpChar             uint16
 
 	cachedMonsters  data.Monsters
 	cachedInventory data.Inventory
