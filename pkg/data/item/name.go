@@ -1,15 +1,6 @@
 package item
 
-import (
-	"strings"
-
-	"github.com/hectorgimenez/d2go/pkg/data/game"
-)
-
-const (
-	ExpCharItemIDThreshold = 508
-	ExpCharItemIDOffset    = 15
-)
+import "strings"
 
 const (
 	ScrollOfTownPortal = "ScrollOfTownPortal"
@@ -19,27 +10,18 @@ const (
 	Key                = "Key"
 )
 
-func GetNameByEnumWithExpChar(expChar uint16, itemNumber uint) Name {
-	idx := int(itemNumber)
-	if expChar >= game.CharDLC && idx >= ExpCharItemIDThreshold {
-		idx += ExpCharItemIDOffset
-	}
-	if idx < 0 || idx >= len(Names) {
-		return Name("")
-	}
-	return Name(Names[idx])
+func GetNameByEnum(itemNumber uint) Name {
+	return Name(Names[itemNumber])
 }
 
-// DescIDByName returns the internal description/index ID for an item name.
-// This ID matches the keys used by Desc and the indices in the Names slice.
-func DescIDByName(itemName string) (int, bool) {
+func GetIDByName(itemName string) int {
 	for i, name := range Names {
 		if strings.EqualFold(name, itemName) {
-			return i, true
+			return i
 		}
 	}
 
-	return -1, false
+	return -1
 }
 
 type Name string

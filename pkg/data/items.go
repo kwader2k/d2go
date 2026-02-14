@@ -121,17 +121,7 @@ type Drop struct {
 }
 
 func (i Item) Desc() item.Description {
-	if descID, ok := item.DescIDByName(string(i.Name)); ok {
-		if desc, found := item.Desc[descID]; found {
-			return desc
-		}
-	}
-
-	if desc, found := item.Desc[i.ID]; found {
-		return desc
-	}
-
-	return item.Description{}
+	return item.Desc[i.ID]
 }
 
 func (i Item) Type() item.Type {
