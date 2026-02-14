@@ -75,7 +75,7 @@ const (
 	NatalyasSoul              SetItemName = "Natalya's Soul"
 	AldursStonyGaze           SetItemName = "Aldur's Stony Gaze"
 	AldursDeception           SetItemName = "Aldur's Deception"
-	AldursRhythm              SetItemName = "Aldur's Rhythm"
+	AldursGauntlet            SetItemName = "Aldur's Gauntlet"
 	AldursAdvance             SetItemName = "Aldur's Advance"
 	ImmortalKingsWill         SetItemName = "Immortal King's Will"
 	ImmortalKingsSoulCage     SetItemName = "Immortal King's Soul Cage"
@@ -86,7 +86,7 @@ const (
 	TalRashasFireSpunCloth    SetItemName = "Tal Rasha's Fire-Spun Cloth"
 	TalRashasAdjudication     SetItemName = "Tal Rasha's Adjudication"
 	TalRashasLidlessEye       SetItemName = "Tal Rasha's Lidless Eye"
-	TalRashasGuardianship     SetItemName = "Tal Rasha's Guardianship"
+	TalRashasHowlingWind      SetItemName = "Tal Rasha's Howling Wind"
 	TalRashasHoradricCrest    SetItemName = "Tal Rasha's Horadric Crest"
 	GriswoldsValor            SetItemName = "Griswold's Valor"
 	GriswoldsHeart            SetItemName = "Griswold's Heart"
@@ -105,10 +105,10 @@ const (
 	TellingofBeads            SetItemName = "Telling of Beads"
 	LayingofHands             SetItemName = "Laying of Hands"
 	RiteofPassage             SetItemName = "Rite of Passage"
-	DarkAdherent              SetItemName = "Dark Adherent"
+	SpiritualCustodian        SetItemName = "Spiritual Custodian"
 	Credendum                 SetItemName = "Credendum"
 	DangoonsTeaching          SetItemName = "Dangoon's Teaching"
-	TaebaeksGlory             SetItemName = "Taebaek's Glory"
+	HeavensTaebaek            SetItemName = "Heaven's Taebaek"
 	HaemosusAdament           SetItemName = "Haemosu's Adament"
 	OndalsAlmighty            SetItemName = "Ondal's Almighty"
 	GuillaumesFace            SetItemName = "Guillaume's Face"
@@ -117,7 +117,7 @@ const (
 	WihtstansGuard            SetItemName = "Wihtstan's Guard"
 	HwaninsSplendor           SetItemName = "Hwanin's Splendor"
 	HwaninsRefuge             SetItemName = "Hwanin's Refuge"
-	HwaninsBlessing           SetItemName = "Hwanin's Blessing"
+	HwaninsSeal               SetItemName = "Hwanin's Seal"
 	HwaninsJustice            SetItemName = "Hwanin's Justice"
 	SazabisCobaltRedeemer     SetItemName = "Sazabi's Cobalt Redeemer"
 	SazabisGhostLiberator     SetItemName = "Sazabi's Ghost Liberator"
@@ -130,10 +130,23 @@ const (
 	NajsPuzzler               SetItemName = "Naj's Puzzler"
 	NajsLightPlate            SetItemName = "Naj's Light Plate"
 	NajsCirclet               SetItemName = "Naj's Circlet"
-	SandersParagon            SetItemName = "Sander's Paragon"
-	SandersRiprap             SetItemName = "Sander's Riprap"
-	SandersTaboo              SetItemName = "Sander's Taboo"
-	SandersSuperstition       SetItemName = "Sander's Superstition"
+	McAuleysParagon           SetItemName = "McAuley's Paragon"
+	McAuleysRiprap            SetItemName = "McAuley's Riprap"
+	McAuleysTaboo             SetItemName = "McAuley's Taboo"
+	McAuleysSuperstition      SetItemName = "McAuley's Superstition"
+	WarlordsConquest          SetItemName = "Warlord's Conquest"
+	WarlordsLust              SetItemName = "Warlord's Lust"
+	WarlordsMantle            SetItemName = "Warlord's Mantle"
+	WarlordsCrushers          SetItemName = "Warlord's Crushers"
+	WarlordsAuthority         SetItemName = "Warlord's Authority"
+	BanesOathmaker            SetItemName = "Bane's Oathmaker"
+	BanesWraithskin           SetItemName = "Bane's Wraithskin"
+	BanesAuthority            SetItemName = "Bane's Authority"
+	HorazonsCountenance       SetItemName = "Horazon's Countenance"
+	HorazonsDominion          SetItemName = "Horazon's Dominion"
+	HorazonsHold              SetItemName = "Horazon's Hold"
+	HorazonsLegacy            SetItemName = "Horazon's Legacy"
+	HorazonsSecrets           SetItemName = "Horazon's Secrets"
 )
 
 type SetItemInfo struct {
@@ -214,7 +227,7 @@ var SetItems = map[SetItemName]SetItemInfo{
 	NatalyasSoul:              {Name: "Natalya's Soul", SetName: "Natalya's Odium", Code: "xmb", LevelReq: 25, Rarity: 7, ID: 65},
 	AldursStonyGaze:           {Name: "Aldur's Stony Gaze", SetName: "Aldur's Watchtower", Code: "dr8", LevelReq: 36, Rarity: 7, ID: 66},
 	AldursDeception:           {Name: "Aldur's Deception", SetName: "Aldur's Watchtower", Code: "uul", LevelReq: 76, Rarity: 7, ID: 67},
-	AldursRhythm:              {Name: "Aldur's Rhythm", SetName: "Aldur's Watchtower", Code: "9mt", LevelReq: 42, Rarity: 7, ID: 68},
+	AldursGauntlet:            {Name: "Aldur's Gauntlet", SetName: "Aldur's Watchtower", Code: "9mt", LevelReq: 42, Rarity: 7, ID: 68},
 	AldursAdvance:             {Name: "Aldur's Advance", SetName: "Aldur's Watchtower", Code: "xtb", LevelReq: 45, Rarity: 7, ID: 69},
 	ImmortalKingsWill:         {Name: "Immortal King's Will", SetName: "Immortal King", Code: "ba5", LevelReq: 47, Rarity: 7, ID: 70},
 	ImmortalKingsSoulCage:     {Name: "Immortal King's Soul Cage", SetName: "Immortal King", Code: "uar", LevelReq: 76, Rarity: 7, ID: 71},
@@ -225,7 +238,7 @@ var SetItems = map[SetItemName]SetItemInfo{
 	TalRashasFireSpunCloth:    {Name: "Tal Rasha's Fire-Spun Cloth", SetName: "Tal Rasha's Wrappings", Code: "zmb", LevelReq: 53, Rarity: 7, ID: 76},
 	TalRashasAdjudication:     {Name: "Tal Rasha's Adjudication", SetName: "Tal Rasha's Wrappings", Code: "amu", LevelReq: 67, Rarity: 1, ID: 77},
 	TalRashasLidlessEye:       {Name: "Tal Rasha's Lidless Eye", SetName: "Tal Rasha's Wrappings", Code: "oba", LevelReq: 65, Rarity: 7, ID: 78},
-	TalRashasGuardianship:     {Name: "Tal Rasha's Guardianship", SetName: "Tal Rasha's Wrappings", Code: "uth", LevelReq: 71, Rarity: 7, ID: 79},
+	TalRashasHowlingWind:      {Name: "Tal Rasha's Howling Wind", SetName: "Tal Rasha's Wrappings", Code: "uth", LevelReq: 71, Rarity: 7, ID: 79},
 	TalRashasHoradricCrest:    {Name: "Tal Rasha's Horadric Crest", SetName: "Tal Rasha's Wrappings", Code: "xsk", LevelReq: 66, Rarity: 7, ID: 80},
 	GriswoldsValor:            {Name: "Griswold's Valor", SetName: "Griswold's Legacy", Code: "urn", LevelReq: 69, Rarity: 7, ID: 81},
 	GriswoldsHeart:            {Name: "Griswold's Heart", SetName: "Griswold's Legacy", Code: "xar", LevelReq: 45, Rarity: 7, ID: 82},
@@ -244,10 +257,10 @@ var SetItems = map[SetItemName]SetItemInfo{
 	TellingofBeads:            {Name: "Telling of Beads", SetName: "The Disciple", Code: "amu", LevelReq: 30, Rarity: 1, ID: 95},
 	LayingofHands:             {Name: "Laying of Hands", SetName: "The Disciple", Code: "ulg", LevelReq: 63, Rarity: 7, ID: 96},
 	RiteofPassage:             {Name: "Rite of Passage", SetName: "The Disciple", Code: "xlb", LevelReq: 29, Rarity: 7, ID: 97},
-	DarkAdherent:              {Name: "Dark Adherent", SetName: "The Disciple", Code: "uui", LevelReq: 43, Rarity: 7, ID: 98},
+	SpiritualCustodian:        {Name: "Spiritual Custodian", SetName: "The Disciple", Code: "uui", LevelReq: 43, Rarity: 7, ID: 98},
 	Credendum:                 {Name: "Credendum", SetName: "The Disciple", Code: "umc", LevelReq: 65, Rarity: 7, ID: 99},
 	DangoonsTeaching:          {Name: "Dangoon's Teaching", SetName: "Heaven's Brethren", Code: "7ma", LevelReq: 68, Rarity: 7, ID: 100},
-	TaebaeksGlory:             {Name: "Taebaek's Glory", SetName: "Heaven's Brethren", Code: "uts", LevelReq: 81, Rarity: 7, ID: 101},
+	HeavensTaebaek:            {Name: "Heaven's Taebaek", SetName: "Heaven's Brethren", Code: "uts", LevelReq: 81, Rarity: 7, ID: 101},
 	HaemosusAdament:           {Name: "Haemosu's Adament", SetName: "Heaven's Brethren", Code: "xrs", LevelReq: 44, Rarity: 7, ID: 102},
 	OndalsAlmighty:            {Name: "Ondal's Almighty", SetName: "Heaven's Brethren", Code: "uhm", LevelReq: 69, Rarity: 7, ID: 103},
 	GuillaumesFace:            {Name: "Guillaume's Face", SetName: "Orphan's Call", Code: "xhm", LevelReq: 34, Rarity: 7, ID: 104},
@@ -256,7 +269,7 @@ var SetItems = map[SetItemName]SetItemInfo{
 	WihtstansGuard:            {Name: "Wihtstan's Guard", SetName: "Orphan's Call", Code: "xml", LevelReq: 29, Rarity: 7, ID: 107},
 	HwaninsSplendor:           {Name: "Hwanin's Splendor", SetName: "Hwanin's Majesty", Code: "xrn", LevelReq: 45, Rarity: 7, ID: 108},
 	HwaninsRefuge:             {Name: "Hwanin's Refuge", SetName: "Hwanin's Majesty", Code: "xcl", LevelReq: 30, Rarity: 7, ID: 109},
-	HwaninsBlessing:           {Name: "Hwanin's Blessing", SetName: "Hwanin's Majesty", Code: "mbl", LevelReq: 35, Rarity: 7, ID: 110},
+	HwaninsSeal:               {Name: "Hwanin's Seal", SetName: "Hwanin's Majesty", Code: "mbl", LevelReq: 35, Rarity: 7, ID: 110},
 	HwaninsJustice:            {Name: "Hwanin's Justice", SetName: "Hwanin's Majesty", Code: "9vo", LevelReq: 28, Rarity: 7, ID: 111},
 	SazabisCobaltRedeemer:     {Name: "Sazabi's Cobalt Redeemer", SetName: "Sazabi's Grand Tribute", Code: "7ls", LevelReq: 73, Rarity: 7, ID: 112},
 	SazabisGhostLiberator:     {Name: "Sazabi's Ghost Liberator", SetName: "Sazabi's Grand Tribute", Code: "upl", LevelReq: 67, Rarity: 7, ID: 113},
@@ -269,10 +282,23 @@ var SetItems = map[SetItemName]SetItemInfo{
 	NajsPuzzler:               {Name: "Naj's Puzzler", SetName: "Naj's Ancient Set", Code: "6cs", LevelReq: 78, Rarity: 7, ID: 120},
 	NajsLightPlate:            {Name: "Naj's Light Plate", SetName: "Naj's Ancient Set", Code: "ult", LevelReq: 71, Rarity: 7, ID: 121},
 	NajsCirclet:               {Name: "Naj's Circlet", SetName: "Naj's Ancient Set", Code: "ci0", LevelReq: 28, Rarity: 7, ID: 122},
-	SandersParagon:            {Name: "Sander's Paragon", SetName: "Sander's Folly", Code: "cap", LevelReq: 25, Rarity: 3, ID: 123},
-	SandersRiprap:             {Name: "Sander's Riprap", SetName: "Sander's Folly", Code: "vbt", LevelReq: 20, Rarity: 7, ID: 124},
-	SandersTaboo:              {Name: "Sander's Taboo", SetName: "Sander's Folly", Code: "vgl", LevelReq: 28, Rarity: 7, ID: 125},
-	SandersSuperstition:       {Name: "Sander's Superstition", SetName: "Sander's Folly", Code: "bwn", LevelReq: 25, Rarity: 7, ID: 126},
+	McAuleysParagon:           {Name: "McAuley's Paragon", SetName: "McAuley's Folly", Code: "cap", LevelReq: 25, Rarity: 3, ID: 123},
+	McAuleysRiprap:            {Name: "McAuley's Riprap", SetName: "McAuley's Folly", Code: "vbt", LevelReq: 20, Rarity: 7, ID: 124},
+	McAuleysTaboo:             {Name: "McAuley's Taboo", SetName: "McAuley's Folly", Code: "vgl", LevelReq: 28, Rarity: 7, ID: 125},
+	McAuleysSuperstition:      {Name: "McAuley's Superstition", SetName: "McAuley's Folly", Code: "bwn", LevelReq: 25, Rarity: 7, ID: 126},
+	WarlordsConquest:          {Name: "Warlord's Conquest", SetName: "Warlord's Glory", Code: "hgl", LevelReq: 1, Rarity: 7, ID: 127},
+	WarlordsLust:              {Name: "Warlord's Lust", SetName: "Warlord's Glory", Code: "ghm", LevelReq: 1, Rarity: 7, ID: 128},
+	WarlordsMantle:            {Name: "Warlord's Mantle", SetName: "Warlord's Glory", Code: "ful", LevelReq: 1, Rarity: 7, ID: 129},
+	WarlordsCrushers:          {Name: "Warlord's Crushers", SetName: "Warlord's Glory", Code: "hbt", LevelReq: 1, Rarity: 7, ID: 130},
+	WarlordsAuthority:         {Name: "Warlord's Authority", SetName: "Warlord's Glory", Code: "hbl", LevelReq: 1, Rarity: 7, ID: 131},
+	BanesOathmaker:            {Name: "Bane's Oathmaker", SetName: "Bane's Garments", Code: "kri", LevelReq: 8, Rarity: 7, ID: 132},
+	BanesWraithskin:           {Name: "Bane's Wraithskin", SetName: "Bane's Garments", Code: "hla", LevelReq: 8, Rarity: 7, ID: 133},
+	BanesAuthority:            {Name: "Bane's Authority", SetName: "Bane's Garments", Code: "vbl", LevelReq: 8, Rarity: 7, ID: 134},
+	HorazonsCountenance:       {Name: "Horazon's Countenance", SetName: "Horazon's Splendor", Code: "usk", LevelReq: 62, Rarity: 7, ID: 135},
+	HorazonsDominion:          {Name: "Horazon's Dominion", SetName: "Horazon's Splendor", Code: "xpl", LevelReq: 55, Rarity: 7, ID: 136},
+	HorazonsHold:              {Name: "Horazon's Hold", SetName: "Horazon's Splendor", Code: "xlg", LevelReq: 48, Rarity: 7, ID: 137},
+	HorazonsLegacy:            {Name: "Horazon's Legacy", SetName: "Horazon's Splendor", Code: "utb", LevelReq: 67, Rarity: 7, ID: 138},
+	HorazonsSecrets:           {Name: "Horazon's Secrets", SetName: "Horazon's Splendor", Code: "wad", LevelReq: 57, Rarity: 7, ID: 139},
 }
 
 var Sets = map[string][]SetItemName{
@@ -379,7 +405,7 @@ var Sets = map[string][]SetItemName{
 	"Aldur's Watchtower": {
 		AldursStonyGaze,
 		AldursDeception,
-		AldursRhythm,
+		AldursGauntlet,
 		AldursAdvance,
 	},
 	"Immortal King": {
@@ -394,7 +420,7 @@ var Sets = map[string][]SetItemName{
 		TalRashasFireSpunCloth,
 		TalRashasAdjudication,
 		TalRashasLidlessEye,
-		TalRashasGuardianship,
+		TalRashasHowlingWind,
 		TalRashasHoradricCrest,
 	},
 	"Griswold's Legacy": {
@@ -421,12 +447,12 @@ var Sets = map[string][]SetItemName{
 		TellingofBeads,
 		LayingofHands,
 		RiteofPassage,
-		DarkAdherent,
+		SpiritualCustodian,
 		Credendum,
 	},
 	"Heaven's Brethren": {
 		DangoonsTeaching,
-		TaebaeksGlory,
+		HeavensTaebaek,
 		HaemosusAdament,
 		OndalsAlmighty,
 	},
@@ -439,7 +465,7 @@ var Sets = map[string][]SetItemName{
 	"Hwanin's Majesty": {
 		HwaninsSplendor,
 		HwaninsRefuge,
-		HwaninsBlessing,
+		HwaninsSeal,
 		HwaninsJustice,
 	},
 	"Sazabi's Grand Tribute": {
@@ -461,10 +487,29 @@ var Sets = map[string][]SetItemName{
 		NajsLightPlate,
 		NajsCirclet,
 	},
-	"Sander's Folly": {
-		SandersParagon,
-		SandersRiprap,
-		SandersTaboo,
-		SandersSuperstition,
+	"McAuley's Folly": {
+		McAuleysParagon,
+		McAuleysRiprap,
+		McAuleysTaboo,
+		McAuleysSuperstition,
+	},
+	"Warlord's Glory": {
+		WarlordsConquest,
+		WarlordsLust,
+		WarlordsMantle,
+		WarlordsCrushers,
+		WarlordsAuthority,
+	},
+	"Bane's Garments": {
+		BanesOathmaker,
+		BanesWraithskin,
+		BanesAuthority,
+	},
+	"Horazon's Splendor": {
+		HorazonsCountenance,
+		HorazonsDominion,
+		HorazonsHold,
+		HorazonsLegacy,
+		HorazonsSecrets,
 	},
 }

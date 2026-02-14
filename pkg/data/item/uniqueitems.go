@@ -397,6 +397,36 @@ const (
 	RottingFissure                  UniqueName = "Rotting Fissure"
 	BoneBreak                       UniqueName = "Bone Break"
 	BlackCleft                      UniqueName = "Black Cleft"
+	ArsAlDiablolos                  UniqueName = "Ars Al'Diablolos"
+	ArsTorBaalos                    UniqueName = "Ars Tor'Baalos"
+	ArsDulMephistos                 UniqueName = "Ars Dul'Mephistos"
+	MeasuredWrath                   UniqueName = "Measured Wrath"
+	Dreadfang                       UniqueName = "Dreadfang"
+	Wraithstep                      UniqueName = "Wraithstep"
+	BloodpactShard                  UniqueName = "Bloodpact Shard"
+	Sling                           UniqueName = "Sling"
+	Opalvein                        UniqueName = "Opalvein"
+	EntropyLocket                   UniqueName = "Entropy Locket"
+	GheedsWager                     UniqueName = "Gheed's Wager"
+	UniqueWarlockHelm               UniqueName = "Unique Warlock Helm"
+	DefendersBile                   UniqueName = "Defender's Bile"
+	GuardiansThunder                UniqueName = "Guardian's Thunder"
+	ProtectorsFrost                 UniqueName = "Protector's Frost"
+	DefendersFire                   UniqueName = "Defender's Fire"
+	ProtectorsStone                 UniqueName = "Protector's Stone"
+	GuardiansLight                  UniqueName = "Guardian's Light"
+	PreCraftedColdRupture           UniqueName = "PreCrafted Cold Rupture"
+	CraftedColdRupture              UniqueName = "Crafted Cold Rupture"
+	PreCraftedFlameRift             UniqueName = "PreCrafted Flame Rift"
+	PreCraftedCrackoftheHeavens     UniqueName = "PreCrafted Crack of the Heavens"
+	PreCraftedRottingFissure        UniqueName = "PreCrafted Rotting Fissure"
+	PreCraftedBoneBreak             UniqueName = "PreCrafted Bone Break"
+	PreCraftedBlackCleft            UniqueName = "PreCrafted Black Cleft"
+	CraftedFlameRift                UniqueName = "Crafted Flame Rift"
+	CraftedCrackoftheHeavens        UniqueName = "Crafted Crack of the Heavens"
+	CraftedRottingFissure           UniqueName = "Crafted Rotting Fissure"
+	CraftedBoneBreak                UniqueName = "Crafted Bone Break"
+	CraftedBlackCleft               UniqueName = "Crafted Black Cleft"
 )
 
 type UniqueItemInfo struct {
@@ -799,4 +829,34 @@ var UniqueItems = map[UniqueName]UniqueItemInfo{
 	RottingFissure:                  {Name: "Rotting Fissure", Code: "cm3", LevelReq: 75, Rarity: 1, ID: 404},
 	BoneBreak:                       {Name: "Bone Break", Code: "cm3", LevelReq: 75, Rarity: 1, ID: 405},
 	BlackCleft:                      {Name: "Black Cleft", Code: "cm3", LevelReq: 75, Rarity: 1, ID: 406},
+	ArsAlDiablolos:                  {Name: "Ars Al'Diablolos", Code: "waf", LevelReq: 80, Rarity: 1, ID: 408},
+	ArsTorBaalos:                    {Name: "Ars Tor'Baalos", Code: "wae", LevelReq: 73, Rarity: 1, ID: 409},
+	ArsDulMephistos:                 {Name: "Ars Dul'Mephistos", Code: "wac", LevelReq: 78, Rarity: 1, ID: 410},
+	MeasuredWrath:                   {Name: "Measured Wrath", Code: "wa6", LevelReq: 52, Rarity: 3, ID: 411},
+	Dreadfang:                       {Name: "Dreadfang", Code: "72h", LevelReq: 61, Rarity: 2, ID: 412},
+	Wraithstep:                      {Name: "Wraithstep", Code: "utb", LevelReq: 67, Rarity: 2, ID: 413},
+	BloodpactShard:                  {Name: "Bloodpact Shard", Code: "7di", LevelReq: 67, Rarity: 2, ID: 414},
+	Sling:                           {Name: "Sling", Code: "rin", LevelReq: 50, Rarity: 1, ID: 415},
+	Opalvein:                        {Name: "Opalvein", Code: "rin", LevelReq: 50, Rarity: 1, ID: 416},
+	EntropyLocket:                   {Name: "Entropy Locket", Code: "amu", LevelReq: 54, Rarity: 1, ID: 417},
+	GheedsWager:                     {Name: "Gheed's Wager", Code: "utc", LevelReq: 71, Rarity: 1, ID: 418},
+	UniqueWarlockHelm:               {Name: "Unique Warlock Helm", Code: "xsk", LevelReq: 50, Rarity: 2, ID: 419},
+	DefendersBile:                   {Name: "Defender's Bile", Code: "cjw", LevelReq: 75, Rarity: 1, ID: 420},
+	GuardiansThunder:                {Name: "Guardian's Thunder", Code: "cjw", LevelReq: 75, Rarity: 1, ID: 421},
+	ProtectorsFrost:                 {Name: "Protector's Frost", Code: "cjw", LevelReq: 75, Rarity: 1, ID: 422},
+	DefendersFire:                   {Name: "Defender's Fire", Code: "cjw", LevelReq: 75, Rarity: 1, ID: 423},
+	ProtectorsStone:                 {Name: "Protector's Stone", Code: "cjw", LevelReq: 75, Rarity: 1, ID: 424},
+	GuardiansLight:                  {Name: "Guardian's Light", Code: "cjw", LevelReq: 75, Rarity: 1, ID: 425},
+	PreCraftedColdRupture:           {Name: "PreCrafted Cold Rupture", Code: "cm3", LevelReq: 75, Rarity: 2, ID: 426},
+	CraftedColdRupture:              {Name: "Crafted Cold Rupture", Code: "cs2", LevelReq: 75, Rarity: 1, ID: 427},
+	PreCraftedFlameRift:             {Name: "PreCrafted Flame Rift", Code: "cm3", LevelReq: 75, Rarity: 2, ID: 428},
+	PreCraftedCrackoftheHeavens:     {Name: "PreCrafted Crack of the Heavens", Code: "cm3", LevelReq: 75, Rarity: 2, ID: 429},
+	PreCraftedRottingFissure:        {Name: "PreCrafted Rotting Fissure", Code: "cm3", LevelReq: 75, Rarity: 2, ID: 430},
+	PreCraftedBoneBreak:             {Name: "PreCrafted Bone Break", Code: "cm3", LevelReq: 75, Rarity: 2, ID: 431},
+	PreCraftedBlackCleft:            {Name: "PreCrafted Black Cleft", Code: "cm3", LevelReq: 75, Rarity: 2, ID: 432},
+	CraftedFlameRift:                {Name: "Crafted Flame Rift", Code: "cs2", LevelReq: 75, Rarity: 1, ID: 433},
+	CraftedCrackoftheHeavens:        {Name: "Crafted Crack of the Heavens", Code: "cs2", LevelReq: 75, Rarity: 1, ID: 434},
+	CraftedRottingFissure:           {Name: "Crafted Rotting Fissure", Code: "cs2", LevelReq: 75, Rarity: 1, ID: 435},
+	CraftedBoneBreak:                {Name: "Crafted Bone Break", Code: "cs2", LevelReq: 75, Rarity: 1, ID: 436},
+	CraftedBlackCleft:               {Name: "Crafted Black Cleft", Code: "cs2", LevelReq: 75, Rarity: 1, ID: 437},
 }

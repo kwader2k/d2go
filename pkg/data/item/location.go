@@ -10,18 +10,21 @@ type Location struct {
 
 const (
 	// Storage locations
-	LocationUnknown     LocationType = "unknown"
-	LocationInventory   LocationType = "inventory"
-	LocationStash       LocationType = "stash"
-	LocationSharedStash LocationType = "shared_stash"
-	LocationBelt        LocationType = "belt"
-	LocationCube        LocationType = "cube"
-	LocationVendor      LocationType = "vendor"
-	LocationGround      LocationType = "ground"
-	LocationSocket      LocationType = "socket"
-	LocationCursor      LocationType = "cursor"
-	LocationEquipped    LocationType = "equipped"
-	LocationMercenary   LocationType = "mercenary"
+	LocationUnknown      LocationType = "unknown"
+	LocationInventory    LocationType = "inventory"
+	LocationStash        LocationType = "stash"
+	LocationSharedStash  LocationType = "shared_stash"
+	LocationBelt         LocationType = "belt"
+	LocationCube         LocationType = "cube"
+	LocationVendor       LocationType = "vendor"
+	LocationGround       LocationType = "ground"
+	LocationSocket       LocationType = "socket"
+	LocationCursor       LocationType = "cursor"
+	LocationEquipped     LocationType = "equipped"
+	LocationMercenary    LocationType = "mercenary"
+	LocationGemsTab      LocationType = "gems_tab"
+	LocationMaterialsTab LocationType = "materials_tab"
+	LocationRunesTab     LocationType = "runes_tab"
 
 	// Body locations
 	LocNone              LocationType = "none"

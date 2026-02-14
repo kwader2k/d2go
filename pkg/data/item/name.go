@@ -1,6 +1,15 @@
 package item
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/hectorgimenez/d2go/pkg/data/game"
+)
+
+const (
+	ExpCharItemIDThreshold = 508
+	ExpCharItemIDOffset    = 15
+)
 
 const (
 	ScrollOfTownPortal = "ScrollOfTownPortal"
@@ -10,18 +19,27 @@ const (
 	Key                = "Key"
 )
 
-func GetNameByEnum(itemNumber uint) Name {
-	return Name(Names[itemNumber])
+func GetNameByEnumWithExpChar(expChar uint16, itemNumber uint) Name {
+	idx := int(itemNumber)
+	if expChar >= game.CharDLC && idx >= ExpCharItemIDThreshold {
+		idx += ExpCharItemIDOffset
+	}
+	if idx < 0 || idx >= len(Names) {
+		return Name("")
+	}
+	return Name(Names[idx])
 }
 
-func GetIDByName(itemName string) int {
+// DescIDByName returns the internal description/index ID for an item name.
+// This ID matches the keys used by Desc and the indices in the Names slice.
+func DescIDByName(itemName string) (int, bool) {
 	for i, name := range Names {
 		if strings.EqualFold(name, itemName) {
-			return i
+			return i, true
 		}
 	}
 
-	return -1
+	return -1, false
 }
 
 type Name string
@@ -535,11 +553,26 @@ var Names = []string{
 	"OverseerSkull",
 	"SuccubusSkull",
 	"BloodlordSkull",
+	"OldBook",
+	"Tome",
+	"Codex",
+	"Compendium",
+	"Grimoire",
+	"BurntText",
+	"DarkTome",
+	"DarkCodex",
+	"PossessedCompendium",
+	"PossessedGrimoire",
+	"ForgottenVolume",
+	"OccultTome",
+	"OccultCodex",
+	"BlasphemousCompendium",
+	"BlasphemousGrimoire",
 	"Elixir",
-	"INVALID509",
-	"INVALID510",
-	"INVALID511",
-	"INVALID512",
+	"HealingPotion",
+	"ManaPotion",
+	"FullHealingPotion",
+	"FullManaPotion",
 	"StaminaPotion",
 	"AntidotePotion",
 	"RejuvenationPotion",
@@ -633,10 +666,10 @@ var Names = []string{
 	"SmallCharm",
 	"LargeCharm",
 	"GrandCharm",
-	"INVALID606",
-	"INVALID607",
-	"INVALID608",
-	"INVALID609",
+	"SmallRedPotion",
+	"LargeRedPotion",
+	"SmallBluePotion",
+	"LargeBluePotion",
 	"ElRune",
 	"EldRune",
 	"TirRune",
@@ -680,10 +713,28 @@ var Names = []string{
 	"DiablosHorn",
 	"BaalsEye",
 	"MephistosBrain",
-	"TokenofAbsolution",
+	"TokenOfAbsolution",
 	"TwistedEssenceOfSuffering",
 	"ChargedEssenceOfHatred",
 	"BurningEssenceOfTerror",
 	"FesteringEssenceOfDestruction",
 	"StandardOfHeroes",
+	"WesternWorldstoneShard",
+	"EasternWorldstoneShard",
+	"SouthernWorldstoneShard",
+	"DeepWorldstoneShard",
+	"NorthernWorldstoneShard",
+	"UberAncientSummonMaterialAct1",
+	"UberAncientSummonMaterialAct2",
+	"UberAncientSummonMaterialAct3",
+	"UberAncientSummonMaterialAct4",
+	"UberAncientSummonMaterialAct5",
+	"UberAncientUpgradeMaterialFire",
+	"UberAncientUpgradeMaterialPoison",
+	"UberAncientUpgradeMaterialCold",
+	"UberAncientUpgradeMaterialPhysical",
+	"UberAncientUpgradeMaterialLightning",
+	"UberAncientUpgradeMaterialMagic",
+	"ColossusJewel",
+	"CraftedSunderCharm",
 }

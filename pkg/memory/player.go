@@ -7,6 +7,7 @@ import (
 
 	"github.com/hectorgimenez/d2go/pkg/data"
 	"github.com/hectorgimenez/d2go/pkg/data/area"
+	"github.com/hectorgimenez/d2go/pkg/data/game"
 	"github.com/hectorgimenez/d2go/pkg/data/skill"
 	"github.com/hectorgimenez/d2go/pkg/data/state"
 )
@@ -38,8 +39,9 @@ func (gd *GameReader) GetRawPlayerUnits() RawPlayerUnits {
 
 			expCharPtr := uintptr(gd.Process.ReadUInt(gd.moduleBaseAddressPtr+gd.offset.Expansion, Uint64))
 			expChar := gd.Process.ReadUInt(expCharPtr+0x5C, Uint16)
+			gd.ExpChar = uint16(expChar)
 			isMainPlayer := gd.Process.ReadUInt(inventoryAddr+0x30, Uint16)
-			if expChar > 0 {
+			if expChar >= uint(game.CharLoD) {
 				isMainPlayer = gd.Process.ReadUInt(inventoryAddr+0x70, Uint16)
 			}
 			isCorpse := gd.Process.ReadUInt(playerUnit+0x1AE, Uint8)
@@ -183,8 +185,7 @@ func (gd *GameReader) getSkills(skillListPtr uintptr) map[skill.ID]skill.Points 
 	for skillPtr != 0 {
 		skillTxtPtr := uintptr(gd.Process.ReadUInt(skillPtr, Uint64))
 		skillTxt := uintptr(gd.Process.ReadUInt(skillTxtPtr, Uint16))
-		lvl := gd.Process.ReadUInt(skillPtr+0x38, Uint16)
-		quantity := gd.Process.ReadUInt(skillPtr+0x40, Uint16)
+		lvl := gd.Process.ReadUInt(skillPtr+0x40, Uint16)
 		charges := gd.Process.ReadUInt(skillPtr+0x48, Uint16)
 
 		shouldSetSkill := true
@@ -197,9 +198,8 @@ func (gd *GameReader) getSkills(skillListPtr uintptr) map[skill.ID]skill.Points 
 
 		if shouldSetSkill {
 			skills[skill.ID(skillTxt)] = skill.Points{
-				Level:    lvl,
-				Quantity: quantity,
-				Charges:  charges,
+				Level:   lvl,
+				Charges: charges,
 			}
 		}
 

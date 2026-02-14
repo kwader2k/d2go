@@ -12,6 +12,14 @@ func (gd *GameReader) GetKeyBindings() data.KeyBindings {
 	blobSkills := gd.ReadBytesFromMemory(gd.moduleBaseAddressPtr+gd.offset.KeyBindingsSkillsOffset, 0x500)
 
 	skillsKB := [16]data.SkillBinding{}
+
+	// The skill blob stores 16 skill IDs contiguously at 0x1C stride.
+	// The key blob stores VK codes in two regions:
+	//   Slots 0-6:  at 0x118, stride 0x14 (default keys: F1-F7)
+	//   Slots 7-15: at 0x384, stride 0x14 (default key: F8 for slot 7, unbound for 8-15)
+	// Note: 0x208 is the emote region (SayHelp, SayFollowMe, etc.) — NOT skill slots.
+
+	// Skills 0-6: keys at 0x118, stride 0x14
 	for i := 0; i < 7; i++ {
 		skillsKB[i] = data.SkillBinding{
 			SkillID: skill.ID(binary.LittleEndian.Uint32(blobSkills[i*0x1c : i*0x1c+4])),
@@ -21,6 +29,8 @@ func (gd *GameReader) GetKeyBindings() data.KeyBindings {
 			},
 		}
 	}
+
+	// Skills 7-15: keys at 0x384, stride 0x14
 	for i := 0; i < 9; i++ {
 		skillIdx := i + 7
 		skillsKB[skillIdx] = data.SkillBinding{

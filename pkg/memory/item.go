@@ -18,9 +18,11 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 	baseAddr := gd.Process.moduleBaseAddressPtr + gd.offset.UnitTable + (4 * 1024)
 	unitTableBuffer := gd.Process.ReadBytesFromMemory(baseAddr, 128*8)
 
-	// Process shared stash data
-	stashPlayerUnits := make(map[uint]RawPlayerUnit)
-	stashPlayerUnitOrder := make([]uint, 0, 3) // Pre-allocate with expected size
+	// Process shared stash data - build a UnitID→page mapping for ALL shared stash units.
+	// Post-patch D2R has 5 shared stash units (3 original shared tabs + DLC tabs).
+	stashUnitIDToPage := make(map[uint]uint)         // UnitID → 1-based page number
+	stashPlayerUnitOrder := make([]uint, 0, 6)       // order values, sorted
+	stashPlayerUnits := make(map[uint]RawPlayerUnit) // order → unit
 	for _, pu := range rawPlayerUnits {
 		if pu.States.HasState(state.Sharedstash) {
 			order := gd.ReadUInt(pu.Address+0xD8, Uint64)
@@ -29,15 +31,19 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 		}
 	}
 	slices.Sort(stashPlayerUnitOrder)
+	for i, orderKey := range stashPlayerUnitOrder {
+		uid := uint(stashPlayerUnits[orderKey].UnitID)
+		stashUnitIDToPage[uid] = uint(i + 1) // pages are 1-based
+	}
 
 	// Gold
 	inventoryGold, _ := mainPlayer.BaseStats.FindStat(stat.Gold, 0)
 	mainPlayerStashedGold, _ := mainPlayer.BaseStats.FindStat(stat.StashGold, 0)
-	stashedGold := [4]int{mainPlayerStashedGold.Value, 0, 0, 0}
+	stashedGold := [6]int{mainPlayerStashedGold.Value, 0, 0, 0, 0, 0}
 
 	for i, puKey := range stashPlayerUnitOrder {
-		if i > 2 {
-			break
+		if i > 4 {
+			break // max 5 shared stash pages
 		}
 		if stashGold, found := stashPlayerUnits[puKey].BaseStats.FindStat(stat.StashGold, 0); found {
 			stashedGold[i+1] = stashGold.Value
@@ -45,8 +51,9 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 	}
 
 	inventory := data.Inventory{
-		Gold:        inventoryGold.Value,
-		StashedGold: stashedGold,
+		Gold:             inventoryGold.Value,
+		StashedGold:      stashedGold,
+		SharedStashPages: len(stashPlayerUnitOrder),
 	}
 	belt := data.Belt{}
 
@@ -124,7 +131,7 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 			itm := &data.Item{
 				ID:      int(txtFileNo),
 				UnitID:  data.UnitID(unitID),
-				Name:    item.GetNameByEnum(txtFileNo),
+				Name:    item.GetNameByEnumWithExpChar(gd.ExpChar, txtFileNo),
 				Quality: item.Quality(itemQuality),
 				Position: data.Position{
 					X: int(itemX),
@@ -258,17 +265,28 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 			location := item.LocationUnknown
 			switch itemLoc {
 			case 0:
-				if itemOwnerNPC == 2 || itemOwnerNPC == uint(stashPlayerUnits[stashPlayerUnitOrder[0]].UnitID) {
+				// Check shared stash ownership dynamically via UnitID map.
+				// Also keep legacy checks (ownerNPC 2/3/4) for older D2R versions.
+				if page, ok := stashUnitIDToPage[itemOwnerNPC]; ok {
+					location = item.LocationSharedStash
+					invPage = page
+				} else if itemOwnerNPC == 2 && len(stashUnitIDToPage) == 0 {
 					location = item.LocationSharedStash
 					invPage = 1
-				} else if itemOwnerNPC == 3 || itemOwnerNPC == uint(stashPlayerUnits[stashPlayerUnitOrder[1]].UnitID) {
+				} else if itemOwnerNPC == 3 && len(stashUnitIDToPage) == 0 {
 					location = item.LocationSharedStash
 					invPage = 2
-				} else if itemOwnerNPC == 4 || itemOwnerNPC == uint(stashPlayerUnits[stashPlayerUnitOrder[2]].UnitID) {
+				} else if itemOwnerNPC == 4 && len(stashUnitIDToPage) == 0 {
 					location = item.LocationSharedStash
 					invPage = 3
-				} else if 0x00002000&flags != 0 && itemOwnerNPC == 4294967295 {
-					location = item.LocationVendor
+				} else if itemOwnerNPC == 4294967295 {
+					if 0x00002000&flags != 0 {
+						location = item.LocationVendor
+					} else {
+						// DLC stash tab items: ownerNPC=0xFFFFFFFF, no vendor flag.
+						// Classify by item type: gems, runes, or materials.
+						location = classifyDLCTabItem(txtFileNo)
+					}
 				} else if data.UnitID(itemOwnerNPC) == mainPlayer.UnitID || itemOwnerNPC == 1 {
 					if invPage == 0 {
 						location = item.LocationInventory
@@ -355,7 +373,7 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 			if location == item.LocationSocket {
 				if itm.Desc().Code == "jew" {
 					// Base requirement for jewels
-					itm.LevelReq = item.Desc[itm.ID].RequiredLevel
+					itm.LevelReq = itm.Desc().RequiredLevel
 
 					// For magic/rare jewels, check affixes
 					if itm.Quality == item.QualityMagic || itm.Quality == item.QualityRare {
@@ -371,7 +389,7 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 					}
 				} else {
 					// Normal socketed items (runes,gems) just use base requirement
-					itm.LevelReq = item.Desc[itm.ID].RequiredLevel
+					itm.LevelReq = itm.Desc().RequiredLevel
 				}
 				itemExtraData := uintptr(gd.Process.ReadUInt(unitDataPtr+0xA0, Uint64))
 				if itemExtraData != 0 {
@@ -442,7 +460,7 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 	// Build final inventory
 	inventory.AllItems = make([]data.Item, len(allItems))
 	for i, itm := range allItems {
-		baseDesc := item.Desc[itm.ID]
+		baseDesc := itm.Desc()
 		maxReq := calculateItemLevelReq(itm, baseDesc)
 
 		// Check magic/rare affixes
@@ -452,7 +470,7 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 
 		// Check socketed items
 		for _, socketItem := range itm.Sockets {
-			socketBaseDesc := item.Desc[socketItem.ID]
+			socketBaseDesc := socketItem.Desc()
 			socketReq := calculateItemLevelReq(&socketItem, socketBaseDesc)
 
 			if socketReq > maxReq {
@@ -779,4 +797,50 @@ func calculateItemLevelReq(itm *data.Item, baseDesc item.Description) int {
 	}
 
 	return maxReq
+}
+
+// gemTypes is the set of d2go item type codes that correspond to gems.
+var gemTypes = map[string]bool{
+	item.TypeAmethyst: true,
+	item.TypeDiamond:  true,
+	item.TypeEmerald:  true,
+	item.TypeRuby:     true,
+	item.TypeSapphire: true,
+	item.TypeTopaz:    true,
+	item.TypeSkull:    true,
+}
+
+// materialIDs is the set of txt file IDs that the DLC Materials tab auto-sorts.
+// Keys (pk1-pk3), Organs (dhn, bey, mbr), Token (toa), Essences (tes, ceh, bet, fed).
+var materialIDs = map[uint]bool{
+	662: true, // KeyOfTerror
+	663: true, // KeyOfHate
+	664: true, // KeyOfDestruction
+	665: true, // DiablosHorn
+	666: true, // BaalsEye
+	667: true, // MephistosBrain
+	668: true, // TokenOfAbsolution
+	669: true, // TwistedEssenceOfSuffering
+	670: true, // ChargedEssenceOfHatred
+	671: true, // BurningEssenceOfTerror
+	672: true, // FesteringEssenceOfDestruction
+}
+
+// classifyDLCTabItem determines which DLC stash tab an item belongs to
+// based on its txt file number. Items with ownerNPC=0xFFFFFFFF and no
+// vendor flag are DLC tab items; the game auto-sorts them by category.
+func classifyDLCTabItem(txtFileNo uint) item.LocationType {
+	if desc, ok := item.Desc[int(txtFileNo)]; ok {
+		if desc.Type == item.TypeRune {
+			return item.LocationRunesTab
+		}
+		if gemTypes[desc.Type] {
+			return item.LocationGemsTab
+		}
+	}
+	if materialIDs[txtFileNo] {
+		return item.LocationMaterialsTab
+	}
+	// Fallback: unknown DLC item — treat as materials tab
+	return item.LocationMaterialsTab
 }

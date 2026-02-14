@@ -250,7 +250,11 @@ func (r Rule) Evaluate(it data.Item) (RuleResult, error) {
 		case "class":
 			stage1Props["class"] = int(it.Desc().Tier())
 		case "name":
-			stage1Props["name"] = it.ID
+			if descID, ok := item.DescIDByName(string(it.Name)); ok {
+				stage1Props["name"] = descID
+			} else {
+				stage1Props["name"] = it.ID
+			}
 		case "flag":
 			// 0x400000 (eth) | 0x4000000 (runeword) kolbot style
 			currentFlag := 0
@@ -487,7 +491,8 @@ func replaceStringPropertiesInStage1(stage1 string) (string, error) {
 		case "class":
 			replaceWith = strings.ReplaceAll(prop[0], prop[4], fmt.Sprintf("%d", classAliases[prop[4]]))
 		case "name":
-			replaceWith = strings.ReplaceAll(prop[0], prop[4], fmt.Sprintf("%d", item.GetIDByName(prop[4])))
+			descID, _ := item.DescIDByName(prop[4])
+			replaceWith = strings.ReplaceAll(prop[0], prop[4], fmt.Sprintf("%d", descID))
 		case "flag":
 			val := 0
 			switch strings.ToLower(prop[4]) {

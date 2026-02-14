@@ -3,209 +3,217 @@
 package item
 
 const (
-	TypeNone              = "none"
-	TypeShield            = "shie"
-	TypeArmor             = "tors"
-	TypeGold              = "gold"
-	TypeBowQuiver         = "bowq"
-	TypeCrossbowQuiver    = "xboq"
-	TypePlayerBodyPart    = "play"
-	TypeHerb              = "herb"
-	TypePotion            = "poti"
-	TypeRing              = "ring"
-	TypeElixir            = "elix"
-	TypeAmulet            = "amul"
-	TypeCharm             = "char"
-	TypeBoots             = "boot"
-	TypeGloves            = "glov"
-	TypeBook              = "book"
-	TypeBelt              = "belt"
-	TypeGem               = "gem"
-	TypeTorch             = "torc"
-	TypeScroll            = "scro"
-	TypeScepter           = "scep"
-	TypeWand              = "wand"
-	TypeStaff             = "staf"
-	TypeBow               = "bow"
-	TypeAxe               = "axe"
-	TypeClub              = "club"
-	TypeSword             = "swor"
-	TypeHammer            = "hamm"
-	TypeKnife             = "knif"
-	TypeSpear             = "spea"
-	TypePolearm           = "pole"
-	TypeCrossbow          = "xbow"
-	TypeMace              = "mace"
-	TypeHelm              = "helm"
-	TypeMissilePotion     = "tpot"
-	TypeQuest             = "ques"
-	TypeBodyPart          = "body"
-	TypeKey               = "key"
-	TypeThrowingKnife     = "tkni"
-	TypeThrowingAxe       = "taxe"
-	TypeJavelin           = "jave"
-	TypeWeapon            = "weap"
-	TypeMeleeWeapon       = "mele"
-	TypeMissileWeapon     = "miss"
-	TypeThrownWeapon      = "thro"
-	TypeComboWeapon       = "comb"
-	TypeAnyArmor          = "armo"
-	TypeAnyShield         = "shld"
-	TypeMiscellaneous     = "misc"
-	TypeSocketFiller      = "sock"
-	TypeSecondHand        = "seco"
-	TypeStavesAndRods     = "rod"
-	TypeMissile           = "misl"
-	TypeBlunt             = "blun"
-	TypeJewel             = "jewl"
-	TypeClassSpecific     = "clas"
-	TypeAmazonItem        = "amaz"
-	TypeBarbarianItem     = "barb"
-	TypeNecromancerItem   = "necr"
-	TypePaladinItem       = "pala"
-	TypeSorceressItem     = "sorc"
-	TypeAssassinItem      = "assn"
-	TypeDruidItem         = "drui"
-	TypeHandtoHand        = "h2h"
-	TypeOrb               = "orb"
-	TypeVoodooHeads       = "head"
-	TypeAuricShields      = "ashd"
-	TypePrimalHelm        = "phlm"
-	TypePelt              = "pelt"
-	TypeCloak             = "cloa"
-	TypeRune              = "rune"
-	TypeCirclet           = "circ"
-	TypeHealingPotion     = "hpot"
-	TypeManaPotion        = "mpot"
-	TypeRejuvPotion       = "rpot"
-	TypeStaminaPotion     = "spot"
-	TypeAntidotePotion    = "apot"
-	TypeThawingPotion     = "wpot"
-	TypeSmallCharm        = "scha"
-	TypeMediumCharm       = "mcha"
-	TypeLargeCharm        = "lcha"
-	TypeAmazonBow         = "abow"
-	TypeAmazonSpear       = "aspe"
-	TypeAmazonJavelin     = "ajav"
-	TypeHandtoHand2       = "h2h2"
-	TypeMagicBowQuiv      = "mboq"
-	TypeMagicXbowQuiv     = "mxbq"
-	TypeChippedGem        = "gem0"
-	TypeFlawedGem         = "gem1"
-	TypeStandardGem       = "gem2"
-	TypeFlawlessGem       = "gem3"
-	TypePerfectGem        = "gem4"
-	TypeAmethyst          = "gema"
-	TypeDiamond           = "gemd"
-	TypeEmerald           = "geme"
-	TypeRuby              = "gemr"
-	TypeSapphire          = "gems"
-	TypeTopaz             = "gemt"
-	TypeSkull             = "gemz"
-	TypeSwordsandKnives   = "blde"
-	TypeSpearsandPolearms = "sppl"
+	TypeNone               = "none"
+	TypeShield             = "shie"
+	TypeArmor              = "tors"
+	TypeGold               = "gold"
+	TypeBowQuiver          = "bowq"
+	TypeCrossbowQuiver     = "xboq"
+	TypePlayerBodyPart     = "play"
+	TypeHerb               = "herb"
+	TypePotion             = "poti"
+	TypeRing               = "ring"
+	TypeElixir             = "elix"
+	TypeAmulet             = "amul"
+	TypeCharm              = "char"
+	TypeBoots              = "boot"
+	TypeGloves             = "glov"
+	TypeBook               = "book"
+	TypeBelt               = "belt"
+	TypeGem                = "gem"
+	TypeTorch              = "torc"
+	TypeScroll             = "scro"
+	TypeScepter            = "scep"
+	TypeWand               = "wand"
+	TypeStaff              = "staf"
+	TypeBow                = "bow"
+	TypeAxe                = "axe"
+	TypeClub               = "club"
+	TypeSword              = "swor"
+	TypeHammer             = "hamm"
+	TypeKnife              = "knif"
+	TypeSpear              = "spea"
+	TypePolearm            = "pole"
+	TypeCrossbow           = "xbow"
+	TypeMace               = "mace"
+	TypeHelm               = "helm"
+	TypeMissilePotion      = "tpot"
+	TypeQuest              = "ques"
+	TypeBodyPart           = "body"
+	TypeKey                = "key"
+	TypeThrowingKnife      = "tkni"
+	TypeThrowingAxe        = "taxe"
+	TypeJavelin            = "jave"
+	TypeWeapon             = "weap"
+	TypeMeleeWeapon        = "mele"
+	TypeMissileWeapon      = "miss"
+	TypeThrownWeapon       = "thro"
+	TypeComboWeapon        = "comb"
+	TypeAnyArmor           = "armo"
+	TypeAnyShield          = "shld"
+	TypeMiscellaneous      = "misc"
+	TypeSocketFiller       = "sock"
+	TypeSecondHand         = "seco"
+	TypeStavesAndRods      = "rod"
+	TypeMissile            = "misl"
+	TypeBlunt              = "blun"
+	TypeJewel              = "jewl"
+	TypeClassSpecific      = "clas"
+	TypeAmazonItem         = "amaz"
+	TypeBarbarianItem      = "barb"
+	TypeNecromancerItem    = "necr"
+	TypePaladinItem        = "pala"
+	TypeSorceressItem      = "sorc"
+	TypeAssassinItem       = "assn"
+	TypeDruidItem          = "drui"
+	TypeWarlockItem        = "warl"
+	TypeHandtoHand         = "h2h"
+	TypeOrb                = "orb"
+	TypeVoodooHeads        = "head"
+	TypeAuricShields       = "ashd"
+	TypePrimalHelm         = "phlm"
+	TypePelt               = "pelt"
+	TypeCloak              = "cloa"
+	TypeRune               = "rune"
+	TypeCirclet            = "circ"
+	TypeHealingPotion      = "hpot"
+	TypeManaPotion         = "mpot"
+	TypeRejuvPotion        = "rpot"
+	TypeStaminaPotion      = "spot"
+	TypeAntidotePotion     = "apot"
+	TypeThawingPotion      = "wpot"
+	TypeSmallCharm         = "scha"
+	TypeMediumCharm        = "mcha"
+	TypeLargeCharm         = "lcha"
+	TypeAmazonBow          = "abow"
+	TypeAmazonSpear        = "aspe"
+	TypeAmazonJavelin      = "ajav"
+	TypeHandtoHand2        = "h2h2"
+	TypeMagicBowQuiv       = "mboq"
+	TypeMagicXbowQuiv      = "mxbq"
+	TypeChippedGem         = "gem0"
+	TypeFlawedGem          = "gem1"
+	TypeStandardGem        = "gem2"
+	TypeFlawlessGem        = "gem3"
+	TypePerfectGem         = "gem4"
+	TypeAmethyst           = "gema"
+	TypeDiamond            = "gemd"
+	TypeEmerald            = "geme"
+	TypeRuby               = "gemr"
+	TypeSapphire           = "gems"
+	TypeTopaz              = "gemt"
+	TypeSkull              = "gemz"
+	TypeSwordsandKnives    = "blde"
+	TypeSpearsandPolearms  = "sppl"
+	TypeGrimoire           = "grim"
+	TypeColossalJewel      = "cjwl"
+	TypeCraftedSunderCharm = "csch"
 )
 
 var ItemTypes = map[string]Type{
-	TypeNone:              {ID: 0, Name: "None", Code: "none", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeShield:            {ID: 1, Name: "Shield", Code: "shie", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeArmor:             {ID: 2, Name: "Armor", Code: "tors", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocTorso}},
-	TypeGold:              {ID: 3, Name: "Gold", Code: "gold", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeBowQuiver:         {ID: 4, Name: "Bow Quiver", Code: "bowq", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeCrossbowQuiver:    {ID: 5, Name: "Crossbow Quiver", Code: "xboq", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypePlayerBodyPart:    {ID: 6, Name: "Player Body Part", Code: "play", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeHerb:              {ID: 7, Name: "Herb", Code: "herb", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypePotion:            {ID: 8, Name: "Potion", Code: "poti", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
-	TypeRing:              {ID: 9, Name: "Ring", Code: "ring", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightRing, LocLeftRing}},
-	TypeElixir:            {ID: 10, Name: "Elixir", Code: "elix", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
-	TypeAmulet:            {ID: 11, Name: "Amulet", Code: "amul", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocNeck}},
-	TypeCharm:             {ID: 12, Name: "Charm", Code: "char", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeBoots:             {ID: 13, Name: "Boots", Code: "boot", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocFeet}},
-	TypeGloves:            {ID: 14, Name: "Gloves", Code: "glov", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocGloves}},
-	TypeBook:              {ID: 15, Name: "Book", Code: "book", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeBelt:              {ID: 16, Name: "Belt", Code: "belt", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocBelt}},
-	TypeGem:               {ID: 17, Name: "Gem", Code: "gem", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeTorch:             {ID: 18, Name: "Torch", Code: "torc", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeScroll:            {ID: 19, Name: "Scroll", Code: "scro", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
-	TypeScepter:           {ID: 20, Name: "Scepter", Code: "scep", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeWand:              {ID: 21, Name: "Wand", Code: "wand", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeStaff:             {ID: 22, Name: "Staff", Code: "staf", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeBow:               {ID: 23, Name: "Bow", Code: "bow", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeAxe:               {ID: 24, Name: "Axe", Code: "axe", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeClub:              {ID: 25, Name: "Club", Code: "club", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeSword:             {ID: 26, Name: "Sword", Code: "swor", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeHammer:            {ID: 27, Name: "Hammer", Code: "hamm", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeKnife:             {ID: 28, Name: "Knife", Code: "knif", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeSpear:             {ID: 29, Name: "Spear", Code: "spea", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypePolearm:           {ID: 30, Name: "Polearm", Code: "pole", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeCrossbow:          {ID: 31, Name: "Crossbow", Code: "xbow", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeMace:              {ID: 32, Name: "Mace", Code: "mace", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeHelm:              {ID: 33, Name: "Helm", Code: "helm", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocHead}},
-	TypeMissilePotion:     {ID: 34, Name: "Missile Potion", Code: "tpot", Throwable: true, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeQuest:             {ID: 35, Name: "Quest", Code: "ques", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeBodyPart:          {ID: 36, Name: "Body Part", Code: "body", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeKey:               {ID: 37, Name: "Key", Code: "key", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeThrowingKnife:     {ID: 38, Name: "Throwing Knife", Code: "tkni", Throwable: true, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeThrowingAxe:       {ID: 39, Name: "Throwing Axe", Code: "taxe", Throwable: true, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeJavelin:           {ID: 40, Name: "Javelin", Code: "jave", Throwable: true, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeWeapon:            {ID: 41, Name: "Weapon", Code: "weap", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeMeleeWeapon:       {ID: 42, Name: "Melee Weapon", Code: "mele", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeMissileWeapon:     {ID: 43, Name: "Missile Weapon", Code: "miss", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeThrownWeapon:      {ID: 44, Name: "Thrown Weapon", Code: "thro", Throwable: true, Beltable: false, BodyLocs: []LocationType{}},
-	TypeComboWeapon:       {ID: 45, Name: "Combo Weapon", Code: "comb", Throwable: true, Beltable: false, BodyLocs: []LocationType{}},
-	TypeAnyArmor:          {ID: 46, Name: "Any Armor", Code: "armo", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeAnyShield:         {ID: 47, Name: "Any Shield", Code: "shld", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeMiscellaneous:     {ID: 48, Name: "Miscellaneous", Code: "misc", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeSocketFiller:      {ID: 49, Name: "Socket Filler", Code: "sock", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeSecondHand:        {ID: 50, Name: "Second Hand", Code: "seco", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeStavesAndRods:     {ID: 51, Name: "Staves And Rods", Code: "rod", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeMissile:           {ID: 52, Name: "Missile", Code: "misl", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeBlunt:             {ID: 53, Name: "Blunt", Code: "blun", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeJewel:             {ID: 54, Name: "Jewel", Code: "jewl", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeClassSpecific:     {ID: 55, Name: "Class Specific", Code: "clas", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeAmazonItem:        {ID: 56, Name: "Amazon Item", Code: "amaz", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeBarbarianItem:     {ID: 57, Name: "Barbarian Item", Code: "barb", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeNecromancerItem:   {ID: 58, Name: "Necromancer Item", Code: "necr", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypePaladinItem:       {ID: 59, Name: "Paladin Item", Code: "pala", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeSorceressItem:     {ID: 60, Name: "Sorceress Item", Code: "sorc", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeAssassinItem:      {ID: 61, Name: "Assassin Item", Code: "assn", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeDruidItem:         {ID: 62, Name: "Druid Item", Code: "drui", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeHandtoHand:        {ID: 63, Name: "Hand to Hand", Code: "h2h", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeOrb:               {ID: 64, Name: "Orb", Code: "orb", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeVoodooHeads:       {ID: 65, Name: "Voodoo Heads", Code: "head", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeAuricShields:      {ID: 66, Name: "Auric Shields", Code: "ashd", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypePrimalHelm:        {ID: 67, Name: "Primal Helm", Code: "phlm", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocHead}},
-	TypePelt:              {ID: 68, Name: "Pelt", Code: "pelt", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocHead}},
-	TypeCloak:             {ID: 69, Name: "Cloak", Code: "cloa", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocTorso}},
-	TypeRune:              {ID: 70, Name: "Rune", Code: "rune", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeCirclet:           {ID: 71, Name: "Circlet", Code: "circ", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocHead}},
-	TypeHealingPotion:     {ID: 72, Name: "Healing Potion", Code: "hpot", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
-	TypeManaPotion:        {ID: 73, Name: "Mana Potion", Code: "mpot", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
-	TypeRejuvPotion:       {ID: 74, Name: "Rejuv Potion", Code: "rpot", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
-	TypeStaminaPotion:     {ID: 75, Name: "Stamina Potion", Code: "spot", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
-	TypeAntidotePotion:    {ID: 76, Name: "Antidote Potion", Code: "apot", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
-	TypeThawingPotion:     {ID: 77, Name: "Thawing Potion", Code: "wpot", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
-	TypeSmallCharm:        {ID: 78, Name: "Small Charm", Code: "scha", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeMediumCharm:       {ID: 79, Name: "Medium Charm", Code: "mcha", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeLargeCharm:        {ID: 80, Name: "Large Charm", Code: "lcha", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeAmazonBow:         {ID: 81, Name: "Amazon Bow", Code: "abow", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeAmazonSpear:       {ID: 82, Name: "Amazon Spear", Code: "aspe", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeAmazonJavelin:     {ID: 83, Name: "Amazon Javelin", Code: "ajav", Throwable: true, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeHandtoHand2:       {ID: 84, Name: "Hand to Hand 2", Code: "h2h2", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeMagicBowQuiv:      {ID: 85, Name: "Magic Bow Quiv", Code: "mboq", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeMagicXbowQuiv:     {ID: 86, Name: "Magic Xbow Quiv", Code: "mxbq", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
-	TypeChippedGem:        {ID: 87, Name: "Chipped Gem", Code: "gem0", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeFlawedGem:         {ID: 88, Name: "Flawed Gem", Code: "gem1", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeStandardGem:       {ID: 89, Name: "Standard Gem", Code: "gem2", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeFlawlessGem:       {ID: 90, Name: "Flawless Gem", Code: "gem3", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypePerfectGem:        {ID: 91, Name: "Perfect Gem", Code: "gem4", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeAmethyst:          {ID: 92, Name: "Amethyst", Code: "gema", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeDiamond:           {ID: 93, Name: "Diamond", Code: "gemd", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeEmerald:           {ID: 94, Name: "Emerald", Code: "geme", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeRuby:              {ID: 95, Name: "Ruby", Code: "gemr", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeSapphire:          {ID: 96, Name: "Sapphire", Code: "gems", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeTopaz:             {ID: 97, Name: "Topaz", Code: "gemt", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeSkull:             {ID: 98, Name: "Skull", Code: "gemz", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeSwordsandKnives:   {ID: 99, Name: "Swords and Knives", Code: "blde", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
-	TypeSpearsandPolearms: {ID: 100, Name: "Spears and Polearms", Code: "sppl", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeNone:               {ID: 0, Name: "None", Code: "none", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeShield:             {ID: 1, Name: "Shield", Code: "shie", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeArmor:              {ID: 2, Name: "Armor", Code: "tors", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocTorso}},
+	TypeGold:               {ID: 3, Name: "Gold", Code: "gold", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeBowQuiver:          {ID: 4, Name: "Bow Quiver", Code: "bowq", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeCrossbowQuiver:     {ID: 5, Name: "Crossbow Quiver", Code: "xboq", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypePlayerBodyPart:     {ID: 6, Name: "Player Body Part", Code: "play", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeHerb:               {ID: 7, Name: "Herb", Code: "herb", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypePotion:             {ID: 8, Name: "Potion", Code: "poti", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
+	TypeRing:               {ID: 9, Name: "Ring", Code: "ring", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightRing, LocLeftRing}},
+	TypeElixir:             {ID: 10, Name: "Elixir", Code: "elix", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
+	TypeAmulet:             {ID: 11, Name: "Amulet", Code: "amul", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocNeck}},
+	TypeCharm:              {ID: 12, Name: "Charm", Code: "char", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeBoots:              {ID: 13, Name: "Boots", Code: "boot", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocFeet}},
+	TypeGloves:             {ID: 14, Name: "Gloves", Code: "glov", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocGloves}},
+	TypeBook:               {ID: 15, Name: "Book", Code: "book", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeBelt:               {ID: 16, Name: "Belt", Code: "belt", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocBelt}},
+	TypeGem:                {ID: 17, Name: "Gem", Code: "gem", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeTorch:              {ID: 18, Name: "Torch", Code: "torc", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeScroll:             {ID: 19, Name: "Scroll", Code: "scro", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
+	TypeScepter:            {ID: 20, Name: "Scepter", Code: "scep", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeWand:               {ID: 21, Name: "Wand", Code: "wand", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeStaff:              {ID: 22, Name: "Staff", Code: "staf", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeBow:                {ID: 23, Name: "Bow", Code: "bow", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeAxe:                {ID: 24, Name: "Axe", Code: "axe", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeClub:               {ID: 25, Name: "Club", Code: "club", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeSword:              {ID: 26, Name: "Sword", Code: "swor", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeHammer:             {ID: 27, Name: "Hammer", Code: "hamm", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeKnife:              {ID: 28, Name: "Knife", Code: "knif", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeSpear:              {ID: 29, Name: "Spear", Code: "spea", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypePolearm:            {ID: 30, Name: "Polearm", Code: "pole", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeCrossbow:           {ID: 31, Name: "Crossbow", Code: "xbow", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeMace:               {ID: 32, Name: "Mace", Code: "mace", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeHelm:               {ID: 33, Name: "Helm", Code: "helm", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocHead}},
+	TypeMissilePotion:      {ID: 34, Name: "Missile Potion", Code: "tpot", Throwable: true, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeQuest:              {ID: 35, Name: "Quest", Code: "ques", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeBodyPart:           {ID: 36, Name: "Body Part", Code: "body", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeKey:                {ID: 37, Name: "Key", Code: "key", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeThrowingKnife:      {ID: 38, Name: "Throwing Knife", Code: "tkni", Throwable: true, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeThrowingAxe:        {ID: 39, Name: "Throwing Axe", Code: "taxe", Throwable: true, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeJavelin:            {ID: 40, Name: "Javelin", Code: "jave", Throwable: true, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeWeapon:             {ID: 41, Name: "Weapon", Code: "weap", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeMeleeWeapon:        {ID: 42, Name: "Melee Weapon", Code: "mele", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeMissileWeapon:      {ID: 43, Name: "Missile Weapon", Code: "miss", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeThrownWeapon:       {ID: 44, Name: "Thrown Weapon", Code: "thro", Throwable: true, Beltable: false, BodyLocs: []LocationType{}},
+	TypeComboWeapon:        {ID: 45, Name: "Combo Weapon", Code: "comb", Throwable: true, Beltable: false, BodyLocs: []LocationType{}},
+	TypeAnyArmor:           {ID: 46, Name: "Any Armor", Code: "armo", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeAnyShield:          {ID: 47, Name: "Any Shield", Code: "shld", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeMiscellaneous:      {ID: 48, Name: "Miscellaneous", Code: "misc", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeSocketFiller:       {ID: 49, Name: "Socket Filler", Code: "sock", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeSecondHand:         {ID: 50, Name: "Second Hand", Code: "seco", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeStavesAndRods:      {ID: 51, Name: "Staves And Rods", Code: "rod", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeMissile:            {ID: 52, Name: "Missile", Code: "misl", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeBlunt:              {ID: 53, Name: "Blunt", Code: "blun", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeJewel:              {ID: 54, Name: "Jewel", Code: "jewl", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeClassSpecific:      {ID: 55, Name: "Class Specific", Code: "clas", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeAmazonItem:         {ID: 56, Name: "Amazon Item", Code: "amaz", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeBarbarianItem:      {ID: 57, Name: "Barbarian Item", Code: "barb", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeNecromancerItem:    {ID: 58, Name: "Necromancer Item", Code: "necr", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypePaladinItem:        {ID: 59, Name: "Paladin Item", Code: "pala", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeSorceressItem:      {ID: 60, Name: "Sorceress Item", Code: "sorc", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeAssassinItem:       {ID: 61, Name: "Assassin Item", Code: "assn", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeDruidItem:          {ID: 62, Name: "Druid Item", Code: "drui", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeWarlockItem:        {ID: 63, Name: "Warlock Item", Code: "warl", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeHandtoHand:         {ID: 64, Name: "Hand to Hand", Code: "h2h", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeOrb:                {ID: 65, Name: "Orb", Code: "orb", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeVoodooHeads:        {ID: 66, Name: "Voodoo Heads", Code: "head", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeAuricShields:       {ID: 67, Name: "Auric Shields", Code: "ashd", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypePrimalHelm:         {ID: 68, Name: "Primal Helm", Code: "phlm", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocHead}},
+	TypePelt:               {ID: 69, Name: "Pelt", Code: "pelt", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocHead}},
+	TypeCloak:              {ID: 70, Name: "Cloak", Code: "cloa", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocTorso}},
+	TypeRune:               {ID: 71, Name: "Rune", Code: "rune", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeCirclet:            {ID: 72, Name: "Circlet", Code: "circ", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocHead}},
+	TypeHealingPotion:      {ID: 73, Name: "Healing Potion", Code: "hpot", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
+	TypeManaPotion:         {ID: 74, Name: "Mana Potion", Code: "mpot", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
+	TypeRejuvPotion:        {ID: 75, Name: "Rejuv Potion", Code: "rpot", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
+	TypeStaminaPotion:      {ID: 76, Name: "Stamina Potion", Code: "spot", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
+	TypeAntidotePotion:     {ID: 77, Name: "Antidote Potion", Code: "apot", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
+	TypeThawingPotion:      {ID: 78, Name: "Thawing Potion", Code: "wpot", Throwable: false, Beltable: true, BodyLocs: []LocationType{}},
+	TypeSmallCharm:         {ID: 79, Name: "Small Charm", Code: "scha", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeMediumCharm:        {ID: 80, Name: "Medium Charm", Code: "mcha", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeLargeCharm:         {ID: 81, Name: "Large Charm", Code: "lcha", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeAmazonBow:          {ID: 82, Name: "Amazon Bow", Code: "abow", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeAmazonSpear:        {ID: 83, Name: "Amazon Spear", Code: "aspe", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeAmazonJavelin:      {ID: 84, Name: "Amazon Javelin", Code: "ajav", Throwable: true, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeHandtoHand2:        {ID: 85, Name: "Hand to Hand 2", Code: "h2h2", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeMagicBowQuiv:       {ID: 86, Name: "Magic Bow Quiv", Code: "mboq", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeMagicXbowQuiv:      {ID: 87, Name: "Magic Xbow Quiv", Code: "mxbq", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeChippedGem:         {ID: 88, Name: "Chipped Gem", Code: "gem0", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeFlawedGem:          {ID: 89, Name: "Flawed Gem", Code: "gem1", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeStandardGem:        {ID: 90, Name: "Standard Gem", Code: "gem2", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeFlawlessGem:        {ID: 91, Name: "Flawless Gem", Code: "gem3", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypePerfectGem:         {ID: 92, Name: "Perfect Gem", Code: "gem4", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeAmethyst:           {ID: 93, Name: "Amethyst", Code: "gema", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeDiamond:            {ID: 94, Name: "Diamond", Code: "gemd", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeEmerald:            {ID: 95, Name: "Emerald", Code: "geme", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeRuby:               {ID: 96, Name: "Ruby", Code: "gemr", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeSapphire:           {ID: 97, Name: "Sapphire", Code: "gems", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeTopaz:              {ID: 98, Name: "Topaz", Code: "gemt", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeSkull:              {ID: 99, Name: "Skull", Code: "gemz", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeSwordsandKnives:    {ID: 100, Name: "Swords and Knives", Code: "blde", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeSpearsandPolearms:  {ID: 101, Name: "Spears and Polearms", Code: "sppl", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeGrimoire:           {ID: 102, Name: "Grimoire", Code: "grim", Throwable: false, Beltable: false, BodyLocs: []LocationType{LocRightArm, LocLeftArm}},
+	TypeColossalJewel:      {ID: 103, Name: "Colossal Jewel", Code: "cjwl", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
+	TypeCraftedSunderCharm: {ID: 104, Name: "Crafted Sunder Charm", Code: "csch", Throwable: false, Beltable: false, BodyLocs: []LocationType{}},
 }

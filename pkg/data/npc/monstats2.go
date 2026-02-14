@@ -626,6 +626,15 @@ var MonStats2ByID = map[ID]MonStats2{
 	736: {ID: 736, ClassID: "darkelder", Height: 3, SizeX: 2, SizeY: 2, PixHeight: 72},
 	737: {ID: 737, ClassID: "pig", Height: 0, SizeX: 0, SizeY: 0, PixHeight: 96},
 	738: {ID: 738, ClassID: "seagull", Height: 0, SizeX: 0, SizeY: 0, PixHeight: 96},
+	742: {ID: 742, ClassID: "wargoatman", Height: 3, SizeX: 2, SizeY: 2, PixHeight: 96},
+	743: {ID: 743, ClassID: "warbighead", Height: 3, SizeX: 3, SizeY: 3, PixHeight: 96},
+	744: {ID: 744, ClassID: "warputriddefiler", Height: 3, SizeX: 2, SizeY: 2, PixHeight: 112},
+	745: {ID: 745, ClassID: "colossal2", Height: 3, SizeX: 2, SizeY: 2, PixHeight: 96},
+	746: {ID: 746, ClassID: "colossal1", Height: 3, SizeX: 2, SizeY: 2, PixHeight: 96},
+	747: {ID: 747, ClassID: "colossal3", Height: 3, SizeX: 2, SizeY: 2, PixHeight: 96},
+	748: {ID: 748, ClassID: "colbarbwhirl", Height: 3, SizeX: 2, SizeY: 2, PixHeight: 96},
+	749: {ID: 749, ClassID: "colbarbthrow", Height: 3, SizeX: 2, SizeY: 2, PixHeight: 96},
+	750: {ID: 750, ClassID: "colbarbfrenzy", Height: 3, SizeX: 2, SizeY: 2, PixHeight: 96},
 }
 
 func MonStats2ForID(id ID) (MonStats2, bool) {

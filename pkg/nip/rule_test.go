@@ -36,7 +36,7 @@ func TestRule_Evaluate(t *testing.T) {
 			},
 			args: args{
 				item: data.Item{
-					ID:         603,
+					ID:         618,
 					Name:       "SmAlLCharM",
 					Quality:    item.QualityMagic,
 					Identified: true,

@@ -32,7 +32,7 @@ package skill
 
 var Desc = map[SkillDesc]Description{
 {{- range $key, $value := . }}
-	{{- if and (contains (index $value "str name") "kill") (extractInt (index $value "str name")) }}
+	{{- if index $value "str name" }}
 	{{- if ne (index $value "skilldesc") "townportal" }}
 	"{{ $value.skilldesc }}": {Page: {{ $value.SkillPage }}, Row: {{ $value.SkillRow }}, Column: {{ $value.SkillColumn }}, ListRow: {{ $value.ListRow }}, IconCel: {{ $value.IconCel }}},
 	{{- end }}
@@ -242,7 +242,7 @@ type UniqueName string
 const (
 	None UniqueName = ""
 {{- range $key, $value := . }}
-	{{- if and (ne $value.index "") (ne $value.enabled "0") (ne (index $value "lvl req") "") }}
+	{{- if and (ne $value.index "") (ne $value.spawnable "0") (ne (index $value "lvl req") "") }}
 	{{- if eq $value.index "Rainbow Facet" }}
 		{{- if contains $value.prop4 "death-skill" }}
 	RainbowFacet{{ replace $value.par4 " " "" }}Death UniqueName = "Rainbow Facet ({{ $value.par4 }} Death)"
@@ -266,7 +266,7 @@ type UniqueItemInfo struct {
 
 var UniqueItems = map[UniqueName]UniqueItemInfo{
 {{- range $key, $value := . }}
-	{{- if and (ne $value.index "") (ne $value.enabled "0") (ne (index $value "lvl req") "") }}
+	{{- if and (ne $value.index "") (ne $value.spawnable "0") (ne (index $value "lvl req") "") }}
 	{{- if eq $value.index "Rainbow Facet" }}
 		{{- if contains $value.prop4 "death-skill" }}
 	RainbowFacet{{ replace $value.par4 " " "" }}Death: {Name: "Rainbow Facet", Code: "{{ $value.code }}", LevelReq: {{ index $value "lvl req" }}, Rarity: {{ $value.rarity }}, ID: {{ index $value "*ID" }}},
