@@ -121,11 +121,17 @@ type Drop struct {
 }
 
 func (i Item) Desc() item.Description {
-	id := i.ID
-	if item.ExpChar >= 3 && id >= item.ExpCharItemIDThreshold {
-		id += item.ExpCharItemIDOffset
+	if descID, ok := item.DescIDByName(string(i.Name)); ok {
+		if desc, found := item.Desc[descID]; found {
+			return desc
+		}
 	}
-	return item.Desc[id]
+
+	if desc, found := item.Desc[i.ID]; found {
+		return desc
+	}
+
+	return item.Description{}
 }
 
 func (i Item) Type() item.Type {

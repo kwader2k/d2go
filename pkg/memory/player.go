@@ -7,6 +7,7 @@ import (
 
 	"github.com/hectorgimenez/d2go/pkg/data"
 	"github.com/hectorgimenez/d2go/pkg/data/area"
+	"github.com/hectorgimenez/d2go/pkg/data/game"
 	"github.com/hectorgimenez/d2go/pkg/data/skill"
 	"github.com/hectorgimenez/d2go/pkg/data/state"
 )
@@ -40,7 +41,7 @@ func (gd *GameReader) GetRawPlayerUnits() RawPlayerUnits {
 			expChar := gd.Process.ReadUInt(expCharPtr+0x5C, Uint16)
 			gd.ExpChar = uint16(expChar)
 			isMainPlayer := gd.Process.ReadUInt(inventoryAddr+0x30, Uint16)
-			if expChar >= 2 {
+			if expChar >= uint(game.CharLoD) {
 				isMainPlayer = gd.Process.ReadUInt(inventoryAddr+0x70, Uint16)
 			}
 			isCorpse := gd.Process.ReadUInt(playerUnit+0x1AE, Uint8)

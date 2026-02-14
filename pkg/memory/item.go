@@ -14,7 +14,6 @@ import (
 )
 
 func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverData) data.Inventory {
-	item.SetExpChar(gd.ExpChar)
 	mainPlayer := rawPlayerUnits.GetMainPlayer()
 	baseAddr := gd.Process.moduleBaseAddressPtr + gd.offset.UnitTable + (4 * 1024)
 	unitTableBuffer := gd.Process.ReadBytesFromMemory(baseAddr, 128*8)
@@ -132,7 +131,7 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 			itm := &data.Item{
 				ID:      int(txtFileNo),
 				UnitID:  data.UnitID(unitID),
-				Name:    item.GetNameByEnum(txtFileNo),
+				Name:    item.GetNameByEnumWithExpChar(gd.ExpChar, txtFileNo),
 				Quality: item.Quality(itemQuality),
 				Position: data.Position{
 					X: int(itemX),
