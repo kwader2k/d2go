@@ -149,6 +149,7 @@ const (
 	Barbarian
 	Druid
 	Assassin
+	Warlock
 )
 
 type Corpse struct {
