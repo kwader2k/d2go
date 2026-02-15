@@ -393,6 +393,36 @@ const (
 	ShamanFireEx
 	ImpFireMissileEx
 	FixedSiegeBeastStomp
+	SummonGoatman
+	DemonicMastery
+	DeathMark
+	SummonTainted
+	SummonDefiler
+	BloodOath
+	Engorge
+	BloodBoil
+	Consume
+	BindDemon
+	Levitate
+	EldritchBlast
+	HexBane
+	HexSiphon
+	PsychicWard
+	EchoingStrike
+	HexPurge
+	BladeWarp
+	Cleave
+	MirroredBlades
+	SigilLethargy
+	RingOfFire
+	MiasmaBolt
+	SigilRancor
+	EnhancedEntropy
+	FlameWave
+	MiasmaChains
+	SigilDeath
+	Apocalypse
+	Abyss
 	Unset ID = -1
 )
 
@@ -755,5 +785,35 @@ var SkillNames = map[ID]string{
 	ShamanFireEx:             "ShamanFireEx",
 	ImpFireMissileEx:         "ImpFireMissileEx",
 	FixedSiegeBeastStomp:     "FixedSiegeBeastStomp",
+	SummonGoatman:            "SummonGoatman",
+	DemonicMastery:           "DemonicMastery",
+	DeathMark:                "DeathMark",
+	SummonTainted:            "SummonTainted",
+	SummonDefiler:            "SummonDefiler",
+	BloodOath:                "BloodOath",
+	Engorge:                  "Engorge",
+	BloodBoil:                "BloodBoil",
+	Consume:                  "Consume",
+	BindDemon:                "BindDemon",
+	Levitate:                 "Levitate",
+	EldritchBlast:            "EldritchBlast",
+	HexBane:                  "HexBane",
+	HexSiphon:                "HexSiphon",
+	PsychicWard:              "PsychicWard",
+	EchoingStrike:            "EchoingStrike",
+	HexPurge:                 "HexPurge",
+	BladeWarp:                "BladeWarp",
+	Cleave:                   "Cleave",
+	MirroredBlades:           "MirroredBlades",
+	SigilLethargy:            "SigilLethargy",
+	RingOfFire:               "RingOfFire",
+	MiasmaBolt:               "MiasmaBolt",
+	SigilRancor:              "SigilRancor",
+	EnhancedEntropy:          "EnhancedEntropy",
+	FlameWave:                "FlameWave",
+	MiasmaChains:             "MiasmaChains",
+	SigilDeath:               "SigilDeath",
+	Apocalypse:               "Apocalypse",
+	Abyss:                    "Abyss",
 	Unset:                    "Unset",
 }
