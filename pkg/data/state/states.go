@@ -15,192 +15,234 @@ func (s States) HasState(state State) bool {
 type State uint
 
 const (
-	None State = iota
-	Freeze
-	Poison
-	Resistfire
-	Resistcold
-	Resistlightning
-	Resistmagic
-	Playerbody
-	Resistall
-	Amplifydamage
-	Frozenarmor
-	Cold
-	Inferno
-	Blaze
-	Bonearmor
-	Concentrate
-	Enchant
-	Innersight
-	SkillMove
-	Weaken
-	Chillingarmor
-	Stunned
-	Spiderlay
-	Dimvision
-	Slowed
-	Fetishaura
-	Shout
-	Taunt
-	Conviction
-	Convicted
-	Energyshield
-	Venomclaws
-	Battleorders
-	Might
-	Prayer
-	Holyfire
-	Thorns
-	Defiance
-	Thunderstorm
-	Lightningbolt
-	Blessedaim
-	Stamina
-	Concentration
-	Holywind
-	Holywindcold
-	Cleansing
-	Holyshock
-	Sanctuary
-	Meditation
-	Fanaticism
-	Redemption
-	Battlecommand
-	Preventheal
-	Conversion
-	Uninterruptable
-	Ironmaiden
-	Terror
-	Attract
-	Lifetap
-	Confuse
-	Decrepify
-	Lowerresist
-	Openwounds
-	Dopplezon
-	Criticalstrike
-	Dodge
-	Avoid
-	Penetrate
-	Evade
-	Pierce
-	Warmth
-	Firemastery
-	Lightningmastery
-	Coldmastery
-	Blademastery
-	Axemastery
-	Macemastery
-	Polearmmastery
-	Throwingmastery
-	Spearmastery
-	Increasedstamina
-	Ironskin
-	Increasedspeed
-	Naturalresistance
-	Fingermagecurse
-	Nomanaregen
-	Justhit
-	Slowmissiles
-	Shiverarmor
-	Battlecry
-	Blue
-	Red
-	DeathDelay
-	Valkyrie
-	Frenzy
-	Berserk
-	Revive
-	Itemfullset
-	Sourceunit
-	Redeemed
-	Healthpot
-	Holyshield
-	JustPortaled
-	Monfrenzy
-	CorpseNodraw
-	Alignment
-	Manapot
-	Shatter
-	SyncWarped
-	ConversionSave
-	Pregnant
-	State111
-	Rabies
-	DefenseCurse
-	BloodMana
-	Burning
-	Dragonflight
-	Maul
-	CorpseNoselect
-	Shadowwarrior
-	Feralrage
-	Skilldelay
-	Tigerstrike
-	Cobrastrike
-	Phoenixstrike
-	Fistsoffire
-	Bladesofice
-	Clawsofthunder
-	ShrineArmor
-	ShrineCombat
-	ShrineResistLightning
-	ShrineResistFire
-	ShrineResistCold
-	ShrineResistPoison
-	ShrineSkill
-	ShrineManaRegen
-	ShrineStamina
-	ShrineExperience
-	FenrisRage
-	Wolf
-	Bear
-	Bloodlust
-	Changeclass
-	Attached
-	Hurricane
-	Armageddon
-	Invis
-	Barbs
-	Wolverine
-	Oaksage
-	VineBeast
-	Cyclonearmor
-	Clawmastery
-	CloakOfShadows
-	Recycled
-	Weaponblock
-	Cloaked
-	Quickness
-	Bladeshield
-	Fade
-	Summonresist
-	Oaksagecontrol
-	Wolverinecontrol
-	Barbscontrol
-	Debugcontrol
-	Itemset1
-	Itemset2
-	Itemset3
-	Itemset4
-	Itemset5
-	Itemset6
-	Runeword
-	Restinpeace
-	Corpseexp
-	Whirlwind
-	Fullsetgeneric
-	Monsterset
-	Delerium
-	Antidote
-	Thawing
-	Staminapot
-	PassiveResistfire
-	PassiveResistcold
-	PassiveResistltng
-	Uberminion
-	Cooldown
-	Sharedstash
-	Hidedead
+	None                  State = 0
+	Freeze                State = 1
+	Poison                State = 2
+	Resistfire            State = 3
+	Resistcold            State = 4
+	Resistlightning       State = 5
+	Resistmagic           State = 6
+	Playerbody            State = 7
+	Resistall             State = 8
+	Amplifydamage         State = 9
+	Frozenarmor           State = 10
+	Cold                  State = 11
+	Inferno               State = 12
+	Blaze                 State = 13
+	Bonearmor             State = 14
+	Concentrate           State = 15
+	Enchant               State = 16
+	Innersight            State = 17
+	SkillMove             State = 18
+	Weaken                State = 19
+	Chillingarmor         State = 20
+	Stunned               State = 21
+	Spiderlay             State = 22
+	Dimvision             State = 23
+	Slowed                State = 24
+	Fetishaura            State = 25
+	Shout                 State = 26
+	Taunt                 State = 27
+	Conviction            State = 28
+	Convicted             State = 29
+	Energyshield          State = 30
+	Venomclaws            State = 31
+	Battleorders          State = 32
+	Might                 State = 33
+	Prayer                State = 34
+	Holyfire              State = 35
+	Thorns                State = 36
+	Defiance              State = 37
+	Thunderstorm          State = 38
+	Lightningbolt         State = 39
+	Blessedaim            State = 40
+	Stamina               State = 41
+	Concentration         State = 42
+	Holywind              State = 43
+	Holywindcold          State = 44
+	Cleansing             State = 45
+	Holyshock             State = 46
+	Sanctuary             State = 47
+	Meditation            State = 48
+	Fanaticism            State = 49
+	Redemption            State = 50
+	Battlecommand         State = 51
+	Preventheal           State = 52
+	Conversion            State = 53
+	Uninterruptable       State = 54
+	Ironmaiden            State = 55
+	Terror                State = 56
+	Attract               State = 57
+	Lifetap               State = 58
+	Confuse               State = 59
+	Decrepify             State = 60
+	Lowerresist           State = 61
+	Openwounds            State = 62
+	Dopplezon             State = 63
+	Criticalstrike        State = 64
+	Dodge                 State = 65
+	Avoid                 State = 66
+	Penetrate             State = 67
+	Evade                 State = 68
+	Pierce                State = 69
+	Warmth                State = 70
+	Firemastery           State = 71
+	Lightningmastery      State = 72
+	Coldmastery           State = 73
+	Blademastery          State = 74
+	Axemastery            State = 75
+	Macemastery           State = 76
+	Polearmmastery        State = 77
+	Throwingmastery       State = 78
+	Spearmastery          State = 79
+	Increasedstamina      State = 80
+	Ironskin              State = 81
+	Increasedspeed        State = 82
+	Naturalresistance     State = 83
+	Fingermagecurse       State = 84
+	Nomanaregen           State = 85
+	Justhit               State = 86
+	Slowmissiles          State = 87
+	Shiverarmor           State = 88
+	Battlecry             State = 89
+	Blue                  State = 90
+	Red                   State = 91
+	DeathDelay            State = 92
+	Valkyrie              State = 93
+	Frenzy                State = 94
+	Berserk               State = 95
+	Revive                State = 96
+	Itemfullset           State = 97
+	Sourceunit            State = 98
+	Redeemed              State = 99
+	Healthpot             State = 100
+	Holyshield            State = 101
+	JustPortaled          State = 102
+	Monfrenzy             State = 103
+	CorpseNodraw          State = 104
+	Alignment             State = 105
+	Manapot               State = 106
+	Shatter               State = 107
+	SyncWarped            State = 108
+	ConversionSave        State = 109
+	Pregnant              State = 110
+	State111              State = 111
+	Rabies                State = 112
+	DefenseCurse          State = 113
+	BloodMana             State = 114
+	Burning               State = 115
+	Dragonflight          State = 116
+	Maul                  State = 117
+	CorpseNoselect        State = 118
+	Shadowwarrior         State = 119
+	Feralrage             State = 120
+	Skilldelay            State = 121
+	Tigerstrike           State = 122
+	Cobrastrike           State = 123
+	Phoenixstrike         State = 124
+	Fistsoffire           State = 125
+	Bladesofice           State = 126
+	Clawsofthunder        State = 127
+	ShrineArmor           State = 128
+	ShrineCombat          State = 129
+	ShrineResistLightning State = 130
+	ShrineResistFire      State = 131
+	ShrineResistCold      State = 132
+	ShrineResistPoison    State = 133
+	ShrineSkill           State = 134
+	ShrineManaRegen       State = 135
+	ShrineStamina         State = 136
+	ShrineExperience      State = 137
+	FenrisRage            State = 138
+	Wolf                  State = 139
+	Bear                  State = 140
+	Bloodlust             State = 141
+	Changeclass           State = 142
+	Attached              State = 143
+	Hurricane             State = 144
+	Armageddon            State = 145
+	Invis                 State = 146
+	Barbs                 State = 147
+	Wolverine             State = 148
+	Oaksage               State = 149
+	VineBeast             State = 150
+	Cyclonearmor          State = 151
+	Clawmastery           State = 152
+	CloakOfShadows        State = 153
+	Recycled              State = 154
+	Weaponblock           State = 155
+	Cloaked               State = 156
+	Quickness             State = 157
+	Bladeshield           State = 158
+	Fade                  State = 159
+	Summonresist          State = 160
+	Oaksagecontrol        State = 161
+	Wolverinecontrol      State = 162
+	Barbscontrol          State = 163
+	Debugcontrol          State = 164
+	Itemset1              State = 165
+	Itemset2              State = 166
+	Itemset3              State = 167
+	Itemset4              State = 168
+	Itemset5              State = 169
+	Itemset6              State = 170
+	Runeword              State = 171
+	Restinpeace           State = 172
+	Corpseexp             State = 173
+	Whirlwind             State = 174
+	Fullsetgeneric        State = 175
+	Monsterset            State = 176
+	Delerium              State = 177
+	Antidote              State = 178
+	Thawing               State = 179
+	Staminapot            State = 180
+	PassiveResistfire     State = 181
+	PassiveResistcold     State = 182
+	PassiveResistltng     State = 183
+	Uberminion            State = 184
+	Cooldown              State = 185
+	Sharedstash           State = 186
+	Hidedead              State = 187
+	Impale                State = 188
+	Desecrated            State = 189
+	Markbear              State = 190
+	Markwolf              State = 191
+	Sigillethargy         State = 192
+	Sigilrancor           State = 193
+	Sigildeath            State = 194
+	Bloodoath             State = 195
+	DemonicMastery        State = 196
+	LevitateMastery       State = 197
+	Hexbane               State = 198
+	Hexbanedebuff         State = 199
+	Hexsiphon             State = 200
+	Hexsiphondebuff       State = 201
+	Hexpurge              State = 202
+	Mindbarrier           State = 203
+	ShadowMastery         State = 204
+	Sigil                 State = 205
+	Psychicward           State = 206
+	BindDemon             State = 207
+	Consume               State = 208
+	Advancedstash         State = 209
+	Healthlink            State = 210
+	Engorge               State = 211
+	DeathMark             State = 212
+	Healthlinkcaster      State = 213
+	Warlockdemonground    State = 214
+	Warlockdemontorso     State = 215
+	SkillChanneling       State = 216
+	Hexpurgedebuff        State = 217
+	Chroniclebacklight    State = 218
+	Chroniclefootprints   State = 219
+	Chronicleportal       State = 220
+	Eldritchblastperiodic State = 221
+	Lightningenchant      State = 222
+	Coldenchant           State = 223
+	Talicfirepierce       State = 224
+	Madawclightpierce     State = 225
+	Korliccoldpierce      State = 226
+	BindDemonUnderling    State = 227
+	Herald                State = 228
+	Apocalypse            State = 229
 )
