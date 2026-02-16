@@ -126,7 +126,7 @@ const (
 	SyncWarped            State = 108
 	ConversionSave        State = 109
 	Pregnant              State = 110
-	State111              State = 111
+	GolemMastery          State = 111
 	Rabies                State = 112
 	DefenseCurse          State = 113
 	BloodMana             State = 114

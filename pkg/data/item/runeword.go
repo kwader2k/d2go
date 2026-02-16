@@ -5,6 +5,7 @@ type RunewordName string
 const (
 	RunewordNone             RunewordName = ""
 	RunewordAncientsPledge   RunewordName = "Ancients' Pledge"
+	RunewordAuthority        RunewordName = "Authority"
 	RunewordBeast            RunewordName = "Beast"
 	RunewordBlack            RunewordName = "Black"
 	RunewordBone             RunewordName = "Bone"
@@ -97,10 +98,15 @@ const (
 	RunewordHearth           RunewordName = "Hearth"
 	RunewordCure             RunewordName = "Cure"
 	RunewordBulwark          RunewordName = "Bulwark"
+	RunewordCoven            RunewordName = "Coven"
+	RunewordRitual           RunewordName = "Ritual"
+	RunewordVigilance        RunewordName = "Vigilance"
+	RunewordVoid             RunewordName = "Void"
 )
 
 var RunewordIDMap = map[int16]RunewordName{
 	20507: RunewordAncientsPledge,
+	20509: RunewordAuthority,
 	20510: RunewordBeast,
 	20512: RunewordBlack,
 	20514: RunewordBone,
@@ -178,6 +184,7 @@ var RunewordIDMap = map[int16]RunewordName{
 	20653: RunewordTreachery,
 	20656: RunewordUnbendingWill,
 	20659: RunewordVenom,
+	20662: RunewordVoid,
 	20661: RunewordVoiceOfReason,
 	20665: RunewordWealth,
 	20667: RunewordWhite,
@@ -193,4 +200,7 @@ var RunewordIDMap = map[int16]RunewordName{
 	27366: RunewordHearth,
 	27367: RunewordCure,
 	27368: RunewordBulwark,
+	27369: RunewordCoven,
+	27370: RunewordVigilance,
+	27371: RunewordRitual,
 }

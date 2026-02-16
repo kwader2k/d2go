@@ -32,10 +32,10 @@ const (
 	Crusher
 	WailingBeast
 	GargantuanBeast
-	SandRaer
+	SandRaider
 	Marauder
 	Invader
-	Infel
+	Infidel
 	Assailant
 	Gorgon
 	Gorgon2
@@ -128,8 +128,8 @@ const (
 	Arach
 	SandFisher
 	PoisonSpinner
-	FlameSper
-	SperMagus
+	FlameSpider
+	SpiderMagus
 	ThornedHulk
 	BrambleHulk
 	Thrasher
@@ -342,7 +342,7 @@ const (
 	BloodHookNest
 	BloodWingNest
 	Guard
-	MiniSper
+	MiniSpider
 	BonePrison
 	BonePrison2
 	BonePrison3
@@ -453,9 +453,9 @@ const (
 	SnowYeti2
 	SnowYeti3
 	SnowYeti4
-	WolfRer
-	WolfRer2
-	WolfRer3
+	WolfRider
+	WolfRider2
+	WolfRider3
 	MinionExp
 	SlayerExp
 	IceBoar
@@ -549,11 +549,11 @@ const (
 	BaalThrone
 	BaalCrab
 	BaalTaunt
-	PutrDefiler
-	PutrDefiler2
-	PutrDefiler3
-	PutrDefiler4
-	PutrDefiler5
+	PutridDefiler
+	PutridDefiler2
+	PutridDefiler3
+	PutridDefiler4
+	PutridDefiler5
 	PainWorm
 	PainWorm2
 	PainWorm3
@@ -603,8 +603,8 @@ const (
 	TombViper2
 	SerpentMagus2
 	Marauder2
-	Infel2
-	SandRaer2
+	Infidel2
+	SandRaider2
 	Invader2
 	Assailant2
 	DeathMauler6
@@ -737,4 +737,21 @@ const (
 	DarkLord3
 	Specter3
 	BurningSoul3
+	Horse
+	HellBovine2
+	PlagueBearer2
+	Pig
+	Seagull
+	BerserkSlayer2
+	FrenziedHellSpawn2
+	InsaneHellSpawn2
+	WarGoatman
+	Tainted3
+	WarDefiler
+	AncientBarbarian4
+	AncientBarbarian5
+	AncientBarbarian6
+	DefenderSpirit
+	GuardianSpirit
+	ProtectorSpirit
 )
