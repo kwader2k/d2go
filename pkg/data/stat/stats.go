@@ -28,6 +28,9 @@ func (i Stats) FindStat(id ID, layer int) (Data, bool) {
 
 	return Data{}, false
 }
+func (s ID) String() string {
+	return StringStats[s]
+}
 
 const (
 	Strength ID = iota
@@ -242,8 +245,8 @@ const (
 	Unused209
 	Unused210
 	Unused211
-	Unused212
 	Unused213
+	Unused212
 	DefensePerLevel
 	ArmorPercentPerLevel
 	LifePerLevel
@@ -391,6 +394,13 @@ const (
 	PassiveMagicPierce
 	SkillCooldown
 	SkillMissileDamageScale
+	Psychicward
+	Psychicwardmax
+	SkillChannelingTick
+	CustomizationIndex
+	MagicDamageMaxPerLevel
+	PassiveDamagePierce
+	HeraldTier
 )
 
 var StringStats = []string{
@@ -606,8 +616,8 @@ var StringStats = []string{
 	"unused209",
 	"unused210",
 	"unused211",
-	"unused212",
 	"unused213",
+	"unused212",
 	"defenseperlevel",
 	"armorpercentperlevel",
 	"lifeperlevel",
@@ -755,429 +765,694 @@ var StringStats = []string{
 	"passivemagicpierce",
 	"skillcooldown",
 	"skillmissiledamagescale",
+	"psychicward",
+	"psychicwardmax",
+	"skillchannelingtick",
+	"customizationindex",
+	"magicdamagemaxperlevel",
+	"passivedamagepierce",
+	"heraldtier",
 }
 
-func (s ID) String() string {
-	return StringStats[s]
-}
-
-// Map of [Stat ID] -> [layer] -> [Stat String]
+// StatStringMap maps [Stat ID] -> [layer] -> [Stat String].
+// Format strings use "#" as a placeholder for the stat value.
 var StatStringMap = map[int]map[int]string{
-	0:  {0: "+# to Strength"},  // strength
-	1:  {0: "+# to Energy"},    // energy
-	2:  {0: "+# to Dexterity"}, // dexterity
-	3:  {0: "+# to Vitality"},  // vitality
+	0:  {0: "+# to Strength"},
+	1:  {0: "+# to Energy"},
+	2:  {0: "+# to Dexterity"},
+	3:  {0: "+# to Vitality"},
 	4:  {0: "Stat Points: #"},
 	5:  {0: "New Skills: #"},
 	6:  {0: "Hit Points: #"},
-	7:  {0: "+# to Life"}, // maxhp
+	7:  {0: "+# to Life"},
 	8:  {0: "Mana: #"},
-	9:  {0: "+# to Mana"}, // maxmana
+	9:  {0: "+# to Mana"},
 	10: {0: "Stamina: #"},
-	11: {0: "+# Maximum Stamina"}, // maxstamina
+	11: {0: "+# Maximum Stamina"},
 	12: {0: "Level: #"},
 	13: {0: "Experience: #"},
 	14: {0: "Gold: #"},
 	15: {0: "Gold in Bank: #"},
-	16: {0: "+#% Enhanced Defense"},            // enhanceddefense
-	17: {0: "+#% Enhanced Damage (Max)"},       // enhanceddamagemax
-	18: {0: "+#% Enhanced Damage (Min)"},       // enhanceddamagemin
-	19: {0: "+# to Attack Rating"},             // tohit
-	20: {0: "#% Increased Chance of Blocking"}, // toblock
+	16: {0: "+#% Enhanced Defense"},
+	17: {0: "+#% Enhanced Damage (Max)"},
+	18: {0: "+#% Enhanced Damage (Min)"},
+	19: {0: "+# to Attack Rating"},
+	20: {0: "#% Increased Chance of Blocking"},
 	21: {
-		0: "#-# Damage",           // mindamage
-		1: "+# to Minimum Damage", // plusmindamage
+		0: "#-# Damage",
+		1: "+# to Minimum Damage",
 	},
 	22: {
-		0: "#",                    // maxdamage
-		1: "+# to Maximum Damage", // plusmaxdamage
+		0: "#",
+		1: "+# to Maximum Damage",
 	},
-	23: {0: "#"}, //minimum dmg for 2hand weapons - secondarymindamage
-	24: {0: "#"}, // maximum dmg for 2hand weapons - secondarymaxdamage
+	23: {0: "#"},
+	24: {0: "#"},
 	25: {0: "damagepercent ????"},
 	26: {0: "manarecovery ????"},
-	27: {0: "Regenerate Mana #%"},   // manarecoverybonus
-	28: {0: "Heal Stamina Plus #%"}, // staminarecoverybonus
+	27: {0: "Regenerate Mana #%"},
+	28: {0: "Heal Stamina Plus #%"},
 	29: {0: "lastexp ????"},
 	30: {0: "nextexp ????"},
-	31: {0: "+# Defense"},                      // plusdefense
-	32: {0: "# Defense vs. Missile"},           // armorclassvsmissile
-	33: {0: "# Defense vs. Melee"},             // armorclassvsmelee
-	34: {0: "Damage Reduced by #"},             // damageresist
-	35: {0: "Magic Damage Reduced by #"},       // magicdamageresist
-	36: {0: "Damage Reduced by #%"},            // damageresist
-	37: {0: "Magic Resist +#%"},                // magicresist
-	38: {0: "+#% to Maximum Magic Resist"},     // maxmagicresist
-	39: {0: "Fire Resist +#%"},                 // fireresist
-	40: {0: "+#% to Maximum Fire Resist"},      // maxfireresist
-	41: {0: "Lightning Resist +#%"},            // lightresist
-	42: {0: "+#% to Maximum Lightning Resist"}, // maxlightresist
-	43: {0: "Cold Resist +#%"},                 // coldresist
-	44: {0: "+#% to Maximum Cold Resist"},      // maxcoldresist
-	45: {0: "Poison Resist +#%"},               // poisonresist
-	46: {0: "+#% to Maximum Poison Resist"},    // maxpoisonresist
+	31: {0: "+# Defense"},
+	32: {0: "# Defense vs. Missile"},
+	33: {0: "# Defense vs. Melee"},
+	34: {0: "Damage Reduced by #"},
+	35: {0: "Magic Damage Reduced by #"},
+	36: {0: "Damage Reduced by #%"},
+	37: {0: "Magic Resist +#%"},
+	38: {0: "+#% to Maximum Magic Resist"},
+	39: {0: "Fire Resist +#%"},
+	40: {0: "+#% to Maximum Fire Resist"},
+	41: {0: "Lightning Resist +#%"},
+	42: {0: "+#% to Maximum Lightning Resist"},
+	43: {0: "Cold Resist +#%"},
+	44: {0: "+#% to Maximum Cold Resist"},
+	45: {0: "Poison Resist +#%"},
+	46: {0: "+#% to Maximum Poison Resist"},
 	47: {0: "damageaura ????"},
-	48: {0: "+# to Minimum Fire Damage"},      // firemindam
-	49: {0: "+# to Maximum Fire Damage"},      // firemaxdam
-	50: {0: "Adds #-# Lightning Damage"},      // lightmindam
-	51: {0: "+# to Maximum Lightning Damage"}, // lightmaxdam
-	52: {0: "Adds #-# Magic Damage"},          // magicmindam
-	53: {0: "+# to Maximum Magic Damage"},     // magicmaxdam
-	54: {0: "Adds #-# Cold Damage"},           // coldmindam
-	55: {0: "+# to Maximum Cold Damage"},      // coldmaxdam
-	56: {0: "Half Freeze Duration"},           // coldlength
+	48: {0: "+# to Minimum Fire Damage"},
+	49: {0: "+# to Maximum Fire Damage"},
+	50: {0: "Adds #-# Lightning Damage"},
+	51: {0: "+# to Maximum Lightning Damage"},
+	52: {0: "Adds #-# Magic Damage"},
+	53: {0: "+# to Maximum Magic Damage"},
+	54: {0: "Adds #-# Cold Damage"},
+	55: {0: "+# to Maximum Cold Damage"},
+	56: {0: "Half Freeze Duration"},
 	57: {
-		0: "+# to Poison Damage",         //poisonmindam
-		1: "+# to Maximum Poison Damage", //poisondamage
+		0: "+# to Poison Damage",
+		1: "+# to Maximum Poison Damage",
 	},
-	58: {0: "+# to Maximum Poison Damage"}, // poisonmaxdam
-	59: {0: "Poison Length Reduced by #%"}, // poisonlength
-	60: {0: "#% Life stolen per hit"},      // lifeleech
+	58: {0: "+# to Maximum Poison Damage"},
+	59: {0: "Poison Length Reduced by #%"},
+	60: {0: "#% Life stolen per hit"},
 	61: {0: "lifedrainmaxdam ????"},
-	62: {0: "#% Mana stolen per hit"}, // manaleech
+	62: {0: "#% Mana stolen per hit"},
 	63: {0: "manadrainmaxdam ????"},
 	64: {0: "stamdrainmindam ????"},
 	65: {0: "stamdrainmaxdam ????"},
 	66: {0: "stunlength ????"},
 	67: {0: "#% Velocity"},
-	68: {0: "#"}, // attackrate
+	68: {0: "#"},
 	69: {0: "otheranimrate ????"},
 	70: {0: "Quantity: #"},
 	71: {0: "Value: #"},
-	72: {0: "Durability: # of #"},                      // durability
-	73: {0: "# Max Durability"},                        // maxdurability
-	74: {0: "Replenish Life +#"},                       // hpregen
-	75: {0: "Increase Maximum Durability #%"},          //itemmaxdurabilitypercent
-	76: {0: "Increase Maximum Life #%"},                //itemmaxmanapercent
-	77: {0: "Increase Maximum Mana #%"},                //itemmaxmanapercent
-	78: {0: "Attacker Takes Damage of #"},              //itemattackertakesdamage
-	79: {0: "#% Extra Gold from Monsters"},             //itemgoldbonus
-	80: {0: "#% Better Chance of Getting Magic Items"}, //itemmagicbonus
-	81: {0: "Knockback"},                               //itemknockback
+	72: {0: "Durability: # of #"},
+	73: {0: "# Max Durability"},
+	74: {0: "+# Replenish Life"},
+	75: {0: "Increase Maximum Durability #%"},
+	76: {0: "Increase Maximum Life #%"},
+	77: {0: "Increase Maximum Mana #%"},
+	78: {0: "Attacker Takes Damage of #"},
+	79: {0: "#% Extra Gold from Monsters"},
+	80: {0: "#% Better Chance of Getting Magic Items"},
+	81: {0: "+# Knockback"},
 	82: {0: "itemtimeduration ????"},
 	83: {
-		0: "+# to Amazon Skill Levels",      //amazonskills
-		1: "+# to Sorceress Skill Levels",   //sorceressskills
-		2: "+# to Necromancer Skill Levels", //necromancerskills
-		3: "+# to Paladin Skill Levels",     //paladinskills
-		4: "+# to Barbarian Skill Levels",   //barbarianskills
-		5: "+# to Druid Skill Levels",       //druidskills
-		6: "+# to Assassin Skill Levels",    //assassinskills
+		0: "+# to Amazon Skill Levels",
+		1: "+# to Sorceress Skill Levels",
+		2: "+# to Necromancer Skill Levels",
+		3: "+# to Paladin Skill Levels",
+		4: "+# to Barbarian Skill Levels",
+		5: "+# to Druid Skill Levels",
+		6: "+# to Assassin Skill Levels",
+		7: "+# to Warlock Skill Levels",
 	},
 	84: {0: "unsentparam1 ????"},
-	85: {0: "+#% to Experience Gained"},     //itemaddexperience
-	86: {0: "+# Life after each Kill"},      //itemhealafterkill
-	87: {0: "Reduces all Vendor Prices #%"}, //itemreducedprices
+	85: {0: "+#% to Experience Gained"},
+	86: {0: "+# Life after each Kill"},
+	87: {0: "Reduces all Vendor Prices #%"},
 	88: {0: "itemdoubleherbduration ????"},
-	89: {0: "+# to Light Radius"}, //itemlightradius
+	89: {0: "+# to Light Radius"},
 	90: {0: "itemlightcolor ????"},
-	91: {0: "Requirements -#%"},           //itemreqpercent
-	92: {0: "Required Level: #"},          //itemlevelreq
-	93: {0: "+#% Increased Attack Speed"}, //ias
+	91: {0: "Requirements -#%"},
+	92: {0: "Required Level: #"},
+	93: {0: "+#% Increased Attack Speed"},
 	94: {0: "itemlevelreqpct ????"},
 	95: {0: "lastblockframe ????"},
-	96: {0: "+#% Faster Run/Walk"}, //frw
+	96: {0: "+#% Faster Run/Walk"},
 	97: {
-		0:   "+# to [Skill]",            // itemnonclassskill
-		9:   "+# To Critical Strike",    // plusskillcriticalstrike
-		22:  "+# To Guided Arrow",       // plusskillguidedarrow
-		54:  "+# To Teleport",           // plusskillteleport
-		149: "+# To Battle Orders",      // plusskillbattleorders
-		155: "+# To Battle Command",     // plusskillbattlecommand
-		146: "+# To Battle Cry",         // plusskillbattlecry
-		223: "+# To Werewolf",           // plusskillwerewolf
-		224: "+# To Lycanthropy",        // plusskilllycanthropy
-		227: "+# To Summon Spirit Wolf", // plusskillsummonspiritwolf
-		232: "+# To Feral Rage",         // plusskillferalrage
+		0:   "+# to [Skill]",
+		6:   "+# To Magic Arrow",
+		7:   "+# To Fire Arrow",
+		8:   "+# To Inner Sight",
+		9:   "+# To Critical Strike",
+		10:  "+# To Jab",
+		11:  "+# To Cold Arrow",
+		12:  "+# To Multiple Shot",
+		13:  "+# To Dodge",
+		14:  "+# To Power Strike",
+		15:  "+# To Poison Javelin",
+		16:  "+# To Exploding Arrow",
+		17:  "+# To Slow Missiles",
+		18:  "+# To Avoid",
+		19:  "+# To Impale",
+		20:  "+# To Lightning Bolt",
+		21:  "+# To Ice Arrow",
+		22:  "+# To Guided Arrow",
+		23:  "+# To Penetrate",
+		24:  "+# To Charged Strike",
+		25:  "+# To Plague Javelin",
+		26:  "+# To Strafe",
+		27:  "+# To Immolation Arrow",
+		28:  "+# To Decoy",
+		29:  "+# To Evade",
+		30:  "+# To Fend",
+		31:  "+# To Freezing Arrow",
+		32:  "+# To Valkyrie",
+		33:  "+# To Pierce",
+		34:  "+# To Lightning Strike",
+		35:  "+# To Lightning Fury",
+		36:  "+# To Fire Bolt",
+		37:  "+# To Warmth",
+		38:  "+# To Charged Bolt",
+		39:  "+# To Ice Bolt",
+		40:  "+# To Frozen Armor",
+		41:  "+# To Inferno",
+		42:  "+# To Static Field",
+		43:  "+# To Telekinesis",
+		44:  "+# To Frost Nova",
+		45:  "+# To Ice Blast",
+		46:  "+# To Blaze",
+		47:  "+# To Fire Ball",
+		48:  "+# To Nova",
+		49:  "+# To Lightning",
+		50:  "+# To Shiver Armor",
+		51:  "+# To Fire Wall",
+		52:  "+# To Enchant",
+		53:  "+# To Chain Lightning",
+		54:  "+# To Teleport",
+		55:  "+# To Glacial Spike",
+		56:  "+# To Meteor",
+		57:  "+# To Thunder Storm",
+		58:  "+# To Energy Shield",
+		59:  "+# To Blizzard",
+		60:  "+# To Chilling Armor",
+		61:  "+# To Fire Mastery",
+		62:  "+# To Hydra",
+		63:  "+# To Lightning Mastery",
+		64:  "+# To Frozen Orb",
+		65:  "+# To Cold Mastery",
+		66:  "+# To Amplify Damage",
+		67:  "+# To Teeth",
+		68:  "+# To Bone Armor",
+		69:  "+# To Skeleton Mastery",
+		70:  "+# To Raise Skeleton",
+		71:  "+# To Dim Vision",
+		72:  "+# To Weaken",
+		73:  "+# To Poison Dagger",
+		74:  "+# To Corpse Explosion",
+		75:  "+# To Clay Golem",
+		76:  "+# To Iron Maiden",
+		77:  "+# To Terror",
+		78:  "+# To Bone Wall",
+		79:  "+# To Golem Mastery",
+		80:  "+# To Raise Skeletal Mage",
+		81:  "+# To Confuse",
+		82:  "+# To Life Tap",
+		83:  "+# To Poison Explosion",
+		84:  "+# To Bone Spear",
+		85:  "+# To Blood Golem",
+		86:  "+# To Attract",
+		87:  "+# To Decrepify",
+		88:  "+# To Bone Prison",
+		89:  "+# To Summon Resist",
+		90:  "+# To Iron Golem",
+		91:  "+# To Lower Resist",
+		92:  "+# To Poison Nova",
+		93:  "+# To Bone Spirit",
+		94:  "+# To Fire Golem",
+		95:  "+# To Revive",
+		96:  "+# To Sacrifice",
+		97:  "+# To Smite",
+		98:  "+# To Might",
+		99:  "+# To Prayer",
+		100: "+# To Resist Fire",
+		101: "+# To Holy Bolt",
+		102: "+# To Holy Fire",
+		103: "+# To Thorns",
+		104: "+# To Defiance",
+		105: "+# To Resist Cold",
+		106: "+# To Zeal",
+		107: "+# To Charge",
+		108: "+# To Blessed Aim",
+		109: "+# To Cleansing",
+		110: "+# To Resist Lightning",
+		111: "+# To Vengeance",
+		112: "+# To Blessed Hammer",
+		113: "+# To Concentration",
+		114: "+# To Holy Freeze",
+		115: "+# To Vigor",
+		116: "+# To Conversion",
+		117: "+# To Holy Shield",
+		118: "+# To Holy Shock",
+		119: "+# To Sanctuary",
+		120: "+# To Meditation",
+		121: "+# To Fist of the Heavens",
+		122: "+# To Fanaticism",
+		123: "+# To Conviction",
+		124: "+# To Redemption",
+		125: "+# To Salvation",
+		126: "+# To Bash",
+		127: "+# To Sword Mastery",
+		128: "+# To Axe Mastery",
+		129: "+# To Mace Mastery",
+		130: "+# To Howl",
+		131: "+# To Find Potion",
+		132: "+# To Leap",
+		133: "+# To Double Swing",
+		134: "+# To Pole Arm Mastery",
+		135: "+# To Throwing Mastery",
+		136: "+# To Spear Mastery",
+		137: "+# To Taunt",
+		138: "+# To Shout",
+		139: "+# To Stun",
+		140: "+# To Double Throw",
+		141: "+# To Increased Stamina",
+		142: "+# To Find Item",
+		143: "+# To Leap Attack",
+		144: "+# To Concentrate",
+		145: "+# To Iron Skin",
+		146: "+# To Battle Cry",
+		147: "+# To Frenzy",
+		148: "+# To Increased Speed",
+		149: "+# To Battle Orders",
+		150: "+# To Grim Ward",
+		151: "+# To Whirlwind",
+		152: "+# To Berserk",
+		153: "+# To Natural Resistance",
+		154: "+# To War Cry",
+		155: "+# To Battle Command",
+		221: "+# To Raven",
+		222: "+# To Werewolf",
+		223: "+# To Werewolf",
+		224: "+# To Lycanthropy",
+		225: "+# To Firestorm",
+		226: "+# To Oak Sage",
+		227: "+# To Summon Spirit Wolf",
+		228: "+# To Werebear",
+		229: "+# To Molten Boulder",
+		230: "+# To Arctic Blast",
+		231: "+# To Carrion Vine",
+		232: "+# To Feral Rage",
+		233: "+# To Maul",
+		234: "+# To Fissure",
+		235: "+# To Cyclone Armor",
+		236: "+# To Heart of Wolverine",
+		237: "+# To Summon Dire Wolf",
+		238: "+# To Rabies",
+		239: "+# To Fire Claws",
+		240: "+# To Twister",
+		241: "+# To Solar Creeper",
+		242: "+# To Hunger",
+		243: "+# To Shock Wave",
+		244: "+# To Volcano",
+		245: "+# To Tornado",
+		246: "+# To Spirit of Barbs",
+		247: "+# To Summon Grizzly",
+		248: "+# To Fury",
+		249: "+# To Armageddon",
+		250: "+# To Hurricane",
+		251: "+# To Fire Blast",
+		252: "+# To Claw Mastery",
+		253: "+# To Psychic Hammer",
+		254: "+# To Tiger Strike",
+		255: "+# To Dragon Talon",
+		256: "+# To Shock Web",
+		257: "+# To Blade Sentinel",
+		258: "+# To Burst of Speed",
+		259: "+# To Fists of Fire",
+		260: "+# To Dragon Claw",
+		261: "+# To Charged Bolt Sentry",
+		262: "+# To Wake of Fire",
+		263: "+# To Weapon Block",
+		264: "+# To Cloak of Shadows",
+		265: "+# To Cobra Strike",
+		266: "+# To Blade Fury",
+		267: "+# To Fade",
+		268: "+# To Shadow Warrior",
+		269: "+# To Claws of Thunder",
+		270: "+# To Dragon Tail",
+		271: "+# To Lightning Sentry",
+		272: "+# To Wake of Inferno",
+		273: "+# To Mind Blast",
+		274: "+# To Blades of Ice",
+		275: "+# To Dragon Flight",
+		276: "+# To Death Sentry",
+		277: "+# To Blade Shield",
+		278: "+# To Venom",
+		279: "+# To Shadow Master",
+		280: "+# To Phoenix Strike",
+		373: "+# To Summon Goatman",
+		374: "+# To Demonic Mastery",
+		375: "+# To Death Mark",
+		376: "+# To Summon Tainted",
+		377: "+# To Summon Defiler",
+		378: "+# To Blood Oath",
+		379: "+# To Engorge",
+		380: "+# To Blood Boil",
+		381: "+# To Consume",
+		382: "+# To Bind Demon",
+		383: "+# To Levitate",
+		384: "+# To Eldritch Blast",
+		385: "+# To Hex Bane",
+		386: "+# To Hex Siphon",
+		387: "+# To Psychic Ward",
+		388: "+# To Echoing Strike",
+		389: "+# To Hex Purge",
+		390: "+# To Blade Warp",
+		391: "+# To Cleave",
+		392: "+# To Mirrored Blades",
+		393: "+# To Sigil Lethargy",
+		394: "+# To Ring of Fire",
+		395: "+# To Miasma Bolt",
+		396: "+# To Sigil Rancor",
+		397: "+# To Enhanced Entropy",
+		398: "+# To Flame Wave",
+		399: "+# To Miasma Chains",
+		400: "+# To Sigil Death",
+		401: "+# To Apocalypse",
+		402: "+# To Abyss",
 	},
 	98:  {0: "state ????"},
-	99:  {0: "+#% Faster Hit Recovery"}, // fhr
+	99:  {0: "+#% Faster Hit Recovery"},
 	100: {0: "monsterplayercount ????"},
 	101: {0: "skillpoisonoverridelength ????"},
-	102: {0: "+#% Faster Block Rate"}, //fbr
+	102: {0: "+#% Faster Block Rate"},
 	103: {0: "skillbypassundead ????"},
 	104: {0: "skillbypassdemons ????"},
-	105: {0: "+#% Faster Cast Rate"}, //fcr
+	105: {0: "+#% Faster Cast Rate"},
 	106: {0: "skillbypassbeasts ????"},
 	107: {
-		0:   "+# to [Skill] ([Class] only)",              //itemsingleskill
-		6:   "+# to Magic Arrow (Amazon only)",           //itemsmagicarrow
-		7:   "+# to Fire Arrow (Amazon only)",            //skillmagicarrow
-		8:   "+# to Inner Sight (Amazon only)",           //skillinnersight
-		9:   "+# to Critical Strike (Amazon only)",       //skillcriticalstrike
-		10:  "+# to Jab (Amazon only)",                   //skilljab
-		11:  "+# to Cold Arrow (Amazon only)",            //skillcoldarrow
-		12:  "+# to Multiple Shot (Amazon only)",         //skillmultipleshot
-		13:  "+# to Dodge (Amazon only)",                 //skilldodge
-		14:  "+# to Power Strike (Amazon only)",          //skillpowerstrike
-		15:  "+# to Poison Javelin (Amazon only)",        //skillpoisonjavelin
-		16:  "+# to Exploding Arrow (Amazon only)",       //skillexplodingarrow
-		17:  "+# to Slow Missiles (Amazon only)",         //skillslowmissiles
-		18:  "+# to Avoid (Amazon only)",                 //skillavoid
-		19:  "+# to Impale (Amazon only)",                //skillimpale
-		20:  "+# to Lightning Bolt (Amazon only)",        //skilllightningbolt
-		21:  "+# to Ice Arrow (Amazon only)",             //skillicearrow
-		22:  "+# to Guided Arrow (Amazon only)",          //skillguidedarrow
-		23:  "+# to Penetrate (Amazon only)",             //skillpenetrate
-		24:  "+# to Charged Strike (Amazon only)",        //skillchargedstrike
-		25:  "+# to Plague Javelin (Amazon only)",        //skillplaguejavelin
-		26:  "+# to Strafe (Amazon only)",                //skillstrafe
-		27:  "+# to Immolation Arrow (Amazon only)",      //skillimmolationarrow
-		28:  "+# to Decoy (Amazon only)",                 //skilldecoy
-		29:  "+# to Evade (Amazon only)",                 //skillevade
-		30:  "+# to Fend (Amazon only)",                  //skillfend
-		31:  "+# to Freezing Arrow (Amazon only)",        //skillfreezingarrow
-		32:  "+# to Valkyrie (Amazon only)",              //skillvalkyrie
-		33:  "+# to Pierce (Amazon only)",                //skillpierce
-		34:  "+# to Lightning Strike (Amazon only)",      //skilllightningstrike
-		35:  "+# to Lightning Fury (Amazon only)",        //skilllightningfury
-		36:  "+# to Fire Bolt (Sorceress only)",          //skillfirebolt
-		37:  "+# to Warmth (Sorceress only)",             //skillwarmth
-		38:  "+# to Charged Bolt (Sorceress only)",       //skillchargedbolt
-		39:  "+# to Ice Bolt (Sorceress only)",           //skillicebolt
-		40:  "+# to Frozen Armor (Sorceress only)",       //skillfrozenarmor
-		41:  "+# to Inferno (Sorceress only)",            //skillinferno
-		42:  "+# to Static Field (Sorceress only)",       //skillstaticfield
-		43:  "+# to Telekinesis (Sorceress only)",        //skilltelekinesis
-		44:  "+# to Frost Nova (Sorceress only)",         //skillfrostnova
-		45:  "+# to Ice Blast (Sorceress only)",          //skilliceblast
-		46:  "+# to Blaze (Sorceress only)",              //skillblaze
-		47:  "+# to Fireball (Sorceress only)",           //skillfireball
-		48:  "+# to Nova (Sorceress only)",               //skillnova
-		49:  "+# to Lightning (Sorceress only)",          //skilllightning
-		50:  "+# to Shiver Armor (Sorceress only)",       //skillshiverarmor
-		51:  "+# to Firewall (Sorceress only)",           //skillfirewall
-		52:  "+# to Enchant (Sorceress only)",            //skillenchant
-		53:  "+# to Chain Lightning (Sorceress only)",    //skillchainlightning
-		54:  "+# to Teleport (Sorceress only)",           //skillteleport
-		55:  "+# to Glacial Spike (Sorceress only)",      //skillglacialspike
-		56:  "+# to Meteor (Sorceress only)",             //skillmeteor
-		57:  "+# to Thunderstorm (Sorceress only)",       //skillthunderstorm
-		58:  "+# to Energy Shield (Sorceress only)",      //skillenergyshield
-		59:  "+# to Blizzard (Sorceress only)",           //skillblizzard
-		60:  "+# to Chilling Armor (Sorceress only)",     //skillchillingarmor
-		61:  "+# to Fire Mastery (Sorceress only)",       //skillfiremastery
-		62:  "+# to Hydra (Sorceress only)",              //skillhydra
-		63:  "+# to Lightning Mastery (Sorceress only)",  //skilllightningmastery
-		64:  "+# to Frozen Orb (Sorceress only)",         //skillfrozenorb
-		65:  "+# to Cold Mastery (Sorceress only)",       //skillcoldmastery
-		66:  "+# to Amplify Damage (Necromancer only)",   //skillamplifydamage
-		67:  "+# to Teeth (Necromancer only)",            //skillteeth
-		68:  "+# to Bone Armor (Necromancer only)",       //skillbonearmor
-		69:  "+# to Skeleton Mastery (Necromancer only)", //skillskeletonmastery
-		70:  "+# to Raise Skeleton (Necromancer only)",   //skillraiseskeleton
-		71:  "+# to Dim Vision (Necromancer only)",       //skilldimvision
-		72:  "+# to Weaken (Necromancer only)",           //skillweaken
-		73:  "+# to Poison Dagger (Necromancer only)",    //skillpoisondagger
-		74:  "+# to Corpse Explosion (Necromancer only)", //skillcorpseexplosion
-		75:  "+# to Clay Golem (Necromancer only)",       //skillclaygolem
-		76:  "+# to Iron Maiden (Necromancer only)",      //skillironmaiden
-		77:  "+# to Terror (Necromancer only)",           //skillterror
-		78:  "+# to Bone Wall (Necromancer only)",        //skillbonewall
-		79:  "+# to Golem Mastery (Necromancer only)",    //skillgolemmastery
-		80:  "+# to Skeletal Mage (Necromancer only)",    //skillskeletalmage
-		81:  "+# to Confuse (Necromancer only)",          //skillconfuse
-		82:  "+# to Life Tap (Necromancer only)",         //skilllifetap
-		83:  "+# to Poison Explosion (Necromancer only)", //skillpoisonexplosion
-		84:  "+# to Bone Spear (Necromancer only)",       //skillbonespear
-		85:  "+# to Blood Golem (Necromancer only)",      //skillbloodgolem
-		86:  "+# to Attract (Necromancer only)",          //skillattract
-		87:  "+# to Decrepify (Necromancer only)",        //skilldecrepify
-		88:  "+# to Bone Prison (Necromancer only)",      //skillboneprison
-		89:  "+# to Summon Resist (Necromancer only)",    //skillsummonresist
-		90:  "+# to Iron Golem (Necromancer only)",       //skillirongolem
-		91:  "+# to Lower Resist (Necromancer only)",     //skilllowerresist
-		92:  "+# to Poison Nova (Necromancer only)",      //skillpoisonnova
-		93:  "+# to Bone Spirit (Necromancer only)",      //skillbonespirit
-		94:  "+# to Fire Golem (Necromancer only)",       //skillfiregolem
-		95:  "+# to Revive (Necromancer only)",           //skillrevive
-		96:  "+# to Sacrifice (Paladin only)",            //skillsacrifice
-		97:  "+# to Smite (Paladin only)",                //skillsmite
-		98:  "+# to Might (Paladin only)",                //skillmight
-		99:  "+# to Prayer (Paladin only)",               //skillprayer
-		100: "+# to Resist Fire (Paladin only)",          //skillresistfire
-		101: "+# to Holy Bolt (Paladin only)",            //skillholybolt
-		102: "+# to Holy Fire (Paladin only)",            //skillholyfire
-		103: "+# to Thorns (Paladin only)",               //skillthorns
-		104: "+# to Defiance (Paladin only)",             //skilldefiance
-		105: "+# to Resist Cold (Paladin only)",          //skillresistcold
-		106: "+# to Zeal (Paladin only)",                 //skillzeal
-		107: "+# to Charge (Paladin only)",               //skillcharge
-		108: "+# to Blessed Aim (Paladin only)",          //skillblessedaim
-		109: "+# to Cleansing (Paladin only)",            //skillcleansing
-		110: "+# to Resist Lightning (Paladin only)",     //skillresistlightning
-		111: "+# to Vengeance (Paladin only)",            //skillvengeance
-		112: "+# to Blessed Hammer (Paladin only)",       //skillblessedhammer
-		113: "+# to Concentration (Paladin only)",        //skillconcentration
-		114: "+# to Holy Freeze (Paladin only)",          //skillholyfreeze
-		115: "+# to Vigor (Paladin only)",                //skillvigor
-		116: "+# to Conversion (Paladin only)",           //skillconversion
-		117: "+# to Holy Shield (Paladin only)",          //skillholyshield
-		118: "+# to Holy Shock (Paladin only)",           //skillholyshock
-		119: "+# to Sanctuary (Paladin only)",            //skillsanctuary
-		120: "+# to Meditation (Paladin only)",           //skillmeditation
-		121: "+# to Fist of the Heavens (Paladin only)",  //skillfistoftheheavens
-		122: "+# to Fanaticism (Paladin only)",           //skillfanaticism
-		123: "+# to Conviction (Paladin only)",           //skillconviction
-		124: "+# to Redemption (Paladin only)",           //skillredemption
-		125: "+# to Salvation (Paladin only)",            //skillsalvation
-		126: "+# to Bash (Barbarian only)",               //skillbash
-		127: "+# to Sword Mastery (Barbarian only)",      //skillswordmastery
-		128: "+# to Axe Mastery (Barbarian only)",        //skillaxemastery
-		129: "+# to Mace Mastery (Barbarian only)",       //skillmacemastery
-		130: "+# to Howl (Barbarian only)",               //skillhowl
-		131: "+# to Find Potion (Barbarian only)",        //skillfindpotion
-		132: "+# to Leap (Barbarian only)",               //skillleap
-		133: "+# to Double Swing (Barbarian only)",       //skilldoubleswing
-		134: "+# to Polearm Mastery (Barbarian only)",    //skillpolearmmastery
-		135: "+# to Throwing Mastery (Barbarian only)",   //skillthrowingmastery
-		136: "+# to Spear Mastery (Barbarian only)",      //skillspearmastery
-		137: "+# to Taunt (Barbarian only)",              //skilltaunt
-		138: "+# to Shout (Barbarian only)",              //skillshout
-		139: "+# to Stun (Barbarian only)",               //skillstun
-		140: "+# to Double Throw (Barbarian only)",       //skilldoublethrow
-		141: "+# to Increased Stamina (Barbarian only)",  //skillincreasedstamina
-		142: "+# to Find Item (Barbarian only)",          //skillfinditem
-		143: "+# to Leap Attack (Barbarian only)",        //skillleapattack
-		144: "+# to Concentrate (Barbarian only)",        //skillconcentrate
-		145: "+# to Iron Skin (Barbarian only)",          //skillironskin
-		146: "+# to Battle Cry (Barbarian only)",         //skillbattlecry
-		147: "+# to Frenzy (Barbarian only)",             //skillfrenzy
-		148: "+# to Increased Speed (Barbarian only)",    //skillincreasedspeed
-		149: "+# to Battle Orders (Barbarian only)",      //skillbattleorders
-		150: "+# to Grim Ward (Barbarian only)",          //skillgrimward
-		151: "+# to Whirlwind (Barbarian only)",          //skillwhirlwind
-		152: "+# to Berserk (Barbarian only)",            //skillberserk
-		153: "+# to Natural Resistance (Barbarian only)", //skillnaturalresistance
-		154: "+# to War Cry (Barbarian only)",            //skillwarcry
-		155: "+# to Battle Command (Barbarian only)",     //skillbattlecommand
-		221: "+# to Raven (Druid only)",                  //skillraven
-		222: "+# to Poison Creeper (Druid only)",         //skillpoisoncreeper
-		223: "+# to Werewolf (Druid only)",               //skillwerewolf
-		224: "+# to Lycanthropy (Druid only)",            //skilllycanthropy
-		225: "+# to Firestorm (Druid only)",              //skillfirestorm
-		226: "+# to Oak Sage (Druid only)",               //skilloaksage
-		227: "+# to Summon Spirit Wolf (Druid only)",     //skillsummonspiritwolf
-		228: "+# to Werebear (Druid only)",               //skillwerebear
-		229: "+# to Molten Boulder (Druid only)",         //skillmoltenboulder
-		230: "+# to Arctic Blast (Druid only)",           //skillarcticblast
-		231: "+# to Carrion Vine (Druid only)",           //skillcarrionvine
-		232: "+# to Feral Rage (Druid only)",             //skillferalrage
-		233: "+# to Maul (Druid only)",                   //skillmaul
-		234: "+# to Fissure (Druid only)",                //skillfissure
-		235: "+# to Cyclone Armor (Druid only)",          //skillcyclonearmor
-		236: "+# to Heart of Wolverine (Druid only)",     //skillheartofwolverine
-		237: "+# to Summon Dire Wolf (Druid only)",       //skillsummondirewolf
-		238: "+# to Rabies (Druid only)",                 //skillrabies
-		239: "+# to Fire Claws (Druid only)",             //skillfireclaws
-		240: "+# to Twister (Druid only)",                //skilltwister
-		241: "+# to Solar Creeper (Druid only)",          //skillsolarcreeper
-		242: "+# to Hunger (Druid only)",                 //skillhunger
-		243: "+# to Shockwave (Druid only)",              //skillshockwave
-		244: "+# to Volcano (Druid only)",                //skillvolcano
-		245: "+# to Tornado (Druid only)",                //skilltornado
-		246: "+# to Spirit of Barbs (Druid only)",        //skillspiritofbarbs
-		247: "+# to Summon Grizzly (Druid only)",         //skillsummongrizzly
-		248: "+# to Fury (Druid only)",                   //skillfury
-		249: "+# to Armageddon (Druid only)",             //skillarmageddon
-		250: "+# to Hurricane (Druid only)",              //skillhurricane
-		251: "+# to Fire Blast (Assassin only)",          //skillfireblast
-		252: "+# to Claw Mastery (Assassin only)",        //skillclawmastery
-		253: "+# to Psychic Hammer (Assassin only)",      //skillpsychichammer
-		254: "+# to Tiger Strike (Assassin only)",        //skilltigerstrike
-		255: "+# to Dragon Talon (Assassin only)",        //skilldragontalon
-		256: "+# to Shock Web (Assassin only)",           //skillshockweb
-		257: "+# to Blades Sentinel (Assassin only)",     //skillbladesentinel
-		258: "+# to Burst of Speed (Assassin only)",      //skillburstofspeed
-		259: "+# to Fists of Fire (Assassin only)",       //skillfistsoffire
-		260: "+# to Dragon Claw (Assassin only)",         //skilldragonclaw
-		261: "+# to Charged Bolt Sentry (Assassin only)", //skillchargedboltsentry
-		262: "+# to Wake of Fire (Assassin only)",        //skillwakeoffire
-		263: "+# to Weapon Block (Assassin only)",        //skillweaponblock
-		264: "+# to Cloak of Shadows (Assassin only)",    //skillcloakofshadows
-		265: "+# to Cobra Strike (Assassin only)",        //skillcobrastrike
-		266: "+# to Blade Fury (Assassin only)",          //skillbladefury
-		267: "+# to Fade (Assassin only)",                //skillfade
-		268: "+# to Shadow Warrior (Assassin only)",      //skillshadowwarrior
-		269: "+# to Claws of Thunder (Assassin only)",    //skillclawsofthunder
-		270: "+# to Dragon Tail (Assassin only)",         //skilldragontail
-		271: "+# to Lightning Sentry (Assassin only)",    //skilllightningsentry
-		272: "+# to Wake of Inferno (Assassin only)",     //skillwakeofinferno
-		273: "+# to Mind Blast (Assassin only)",          //skillmindblast
-		274: "+# to Blades of Ice (Assassin only)",       //skillbladesofice
-		275: "+# to Dragon Flight (Assassin only)",       //skilldragonflight
-		276: "+# to Death Sentry (Assassin only)",        //skilldeathsentry
-		277: "+# to Blade Shield (Assassin only)",        //skillbladeshield
-		278: "+# to Venom (Assassin only)",               //skillvenom
-		279: "+# to Shadow Master (Assassin only)",       //skillshadowmaster
-		280: "+# to Phoenix Strike (Assassin only)",      //skillphoenixstrike
+		0:   "+# to [Skill] ([Class] only)",
+		6:   "+# to Magic Arrow (Amazon only)",
+		7:   "+# to Fire Arrow (Amazon only)",
+		8:   "+# to Inner Sight (Amazon only)",
+		9:   "+# to Critical Strike (Amazon only)",
+		10:  "+# to Jab (Amazon only)",
+		11:  "+# to Cold Arrow (Amazon only)",
+		12:  "+# to Multiple Shot (Amazon only)",
+		13:  "+# to Dodge (Amazon only)",
+		14:  "+# to Power Strike (Amazon only)",
+		15:  "+# to Poison Javelin (Amazon only)",
+		16:  "+# to Exploding Arrow (Amazon only)",
+		17:  "+# to Slow Missiles (Amazon only)",
+		18:  "+# to Avoid (Amazon only)",
+		19:  "+# to Impale (Amazon only)",
+		20:  "+# to Lightning Bolt (Amazon only)",
+		21:  "+# to Ice Arrow (Amazon only)",
+		22:  "+# to Guided Arrow (Amazon only)",
+		23:  "+# to Penetrate (Amazon only)",
+		24:  "+# to Charged Strike (Amazon only)",
+		25:  "+# to Plague Javelin (Amazon only)",
+		26:  "+# to Strafe (Amazon only)",
+		27:  "+# to Immolation Arrow (Amazon only)",
+		28:  "+# to Decoy (Amazon only)",
+		29:  "+# to Evade (Amazon only)",
+		30:  "+# to Fend (Amazon only)",
+		31:  "+# to Freezing Arrow (Amazon only)",
+		32:  "+# to Valkyrie (Amazon only)",
+		33:  "+# to Pierce (Amazon only)",
+		34:  "+# to Lightning Strike (Amazon only)",
+		35:  "+# to Lightning Fury (Amazon only)",
+		36:  "+# to Fire Bolt (Sorceress only)",
+		37:  "+# to Warmth (Sorceress only)",
+		38:  "+# to Charged Bolt (Sorceress only)",
+		39:  "+# to Ice Bolt (Sorceress only)",
+		40:  "+# to Frozen Armor (Sorceress only)",
+		41:  "+# to Inferno (Sorceress only)",
+		42:  "+# to Static Field (Sorceress only)",
+		43:  "+# to Telekinesis (Sorceress only)",
+		44:  "+# to Frost Nova (Sorceress only)",
+		45:  "+# to Ice Blast (Sorceress only)",
+		46:  "+# to Blaze (Sorceress only)",
+		47:  "+# to Fire Ball (Sorceress only)",
+		48:  "+# to Nova (Sorceress only)",
+		49:  "+# to Lightning (Sorceress only)",
+		50:  "+# to Shiver Armor (Sorceress only)",
+		51:  "+# to Fire Wall (Sorceress only)",
+		52:  "+# to Enchant (Sorceress only)",
+		53:  "+# to Chain Lightning (Sorceress only)",
+		54:  "+# to Teleport (Sorceress only)",
+		55:  "+# to Glacial Spike (Sorceress only)",
+		56:  "+# to Meteor (Sorceress only)",
+		57:  "+# to Thunder Storm (Sorceress only)",
+		58:  "+# to Energy Shield (Sorceress only)",
+		59:  "+# to Blizzard (Sorceress only)",
+		60:  "+# to Chilling Armor (Sorceress only)",
+		61:  "+# to Fire Mastery (Sorceress only)",
+		62:  "+# to Hydra (Sorceress only)",
+		63:  "+# to Lightning Mastery (Sorceress only)",
+		64:  "+# to Frozen Orb (Sorceress only)",
+		65:  "+# to Cold Mastery (Sorceress only)",
+		66:  "+# to Amplify Damage (Necromancer only)",
+		67:  "+# to Teeth (Necromancer only)",
+		68:  "+# to Bone Armor (Necromancer only)",
+		69:  "+# to Skeleton Mastery (Necromancer only)",
+		70:  "+# to Raise Skeleton (Necromancer only)",
+		71:  "+# to Dim Vision (Necromancer only)",
+		72:  "+# to Weaken (Necromancer only)",
+		73:  "+# to Poison Dagger (Necromancer only)",
+		74:  "+# to Corpse Explosion (Necromancer only)",
+		75:  "+# to Clay Golem (Necromancer only)",
+		76:  "+# to Iron Maiden (Necromancer only)",
+		77:  "+# to Terror (Necromancer only)",
+		78:  "+# to Bone Wall (Necromancer only)",
+		79:  "+# to Golem Mastery (Necromancer only)",
+		80:  "+# to Raise Skeletal Mage (Necromancer only)",
+		81:  "+# to Confuse (Necromancer only)",
+		82:  "+# to Life Tap (Necromancer only)",
+		83:  "+# to Poison Explosion (Necromancer only)",
+		84:  "+# to Bone Spear (Necromancer only)",
+		85:  "+# to Blood Golem (Necromancer only)",
+		86:  "+# to Attract (Necromancer only)",
+		87:  "+# to Decrepify (Necromancer only)",
+		88:  "+# to Bone Prison (Necromancer only)",
+		89:  "+# to Summon Resist (Necromancer only)",
+		90:  "+# to Iron Golem (Necromancer only)",
+		91:  "+# to Lower Resist (Necromancer only)",
+		92:  "+# to Poison Nova (Necromancer only)",
+		93:  "+# to Bone Spirit (Necromancer only)",
+		94:  "+# to Fire Golem (Necromancer only)",
+		95:  "+# to Revive (Necromancer only)",
+		96:  "+# to Sacrifice (Paladin only)",
+		97:  "+# to Smite (Paladin only)",
+		98:  "+# to Might (Paladin only)",
+		99:  "+# to Prayer (Paladin only)",
+		100: "+# to Resist Fire (Paladin only)",
+		101: "+# to Holy Bolt (Paladin only)",
+		102: "+# to Holy Fire (Paladin only)",
+		103: "+# to Thorns (Paladin only)",
+		104: "+# to Defiance (Paladin only)",
+		105: "+# to Resist Cold (Paladin only)",
+		106: "+# to Zeal (Paladin only)",
+		107: "+# to Charge (Paladin only)",
+		108: "+# to Blessed Aim (Paladin only)",
+		109: "+# to Cleansing (Paladin only)",
+		110: "+# to Resist Lightning (Paladin only)",
+		111: "+# to Vengeance (Paladin only)",
+		112: "+# to Blessed Hammer (Paladin only)",
+		113: "+# to Concentration (Paladin only)",
+		114: "+# to Holy Freeze (Paladin only)",
+		115: "+# to Vigor (Paladin only)",
+		116: "+# to Conversion (Paladin only)",
+		117: "+# to Holy Shield (Paladin only)",
+		118: "+# to Holy Shock (Paladin only)",
+		119: "+# to Sanctuary (Paladin only)",
+		120: "+# to Meditation (Paladin only)",
+		121: "+# to Fist of the Heavens (Paladin only)",
+		122: "+# to Fanaticism (Paladin only)",
+		123: "+# to Conviction (Paladin only)",
+		124: "+# to Redemption (Paladin only)",
+		125: "+# to Salvation (Paladin only)",
+		126: "+# to Bash (Barbarian only)",
+		127: "+# to Sword Mastery (Barbarian only)",
+		128: "+# to Axe Mastery (Barbarian only)",
+		129: "+# to Mace Mastery (Barbarian only)",
+		130: "+# to Howl (Barbarian only)",
+		131: "+# to Find Potion (Barbarian only)",
+		132: "+# to Leap (Barbarian only)",
+		133: "+# to Double Swing (Barbarian only)",
+		134: "+# to Pole Arm Mastery (Barbarian only)",
+		135: "+# to Throwing Mastery (Barbarian only)",
+		136: "+# to Spear Mastery (Barbarian only)",
+		137: "+# to Taunt (Barbarian only)",
+		138: "+# to Shout (Barbarian only)",
+		139: "+# to Stun (Barbarian only)",
+		140: "+# to Double Throw (Barbarian only)",
+		141: "+# to Increased Stamina (Barbarian only)",
+		142: "+# to Find Item (Barbarian only)",
+		143: "+# to Leap Attack (Barbarian only)",
+		144: "+# to Concentrate (Barbarian only)",
+		145: "+# to Iron Skin (Barbarian only)",
+		146: "+# to Battle Cry (Barbarian only)",
+		147: "+# to Frenzy (Barbarian only)",
+		148: "+# to Increased Speed (Barbarian only)",
+		149: "+# to Battle Orders (Barbarian only)",
+		150: "+# to Grim Ward (Barbarian only)",
+		151: "+# to Whirlwind (Barbarian only)",
+		152: "+# to Berserk (Barbarian only)",
+		153: "+# to Natural Resistance (Barbarian only)",
+		154: "+# to War Cry (Barbarian only)",
+		155: "+# to Battle Command (Barbarian only)",
+		221: "+# to Raven (Druid only)",
+		222: "+# to Werewolf (Druid only)",
+		223: "+# to Werewolf (Druid only)",
+		224: "+# to Lycanthropy (Druid only)",
+		225: "+# to Firestorm (Druid only)",
+		226: "+# to Oak Sage (Druid only)",
+		227: "+# to Summon Spirit Wolf (Druid only)",
+		228: "+# to Werebear (Druid only)",
+		229: "+# to Molten Boulder (Druid only)",
+		230: "+# to Arctic Blast (Druid only)",
+		231: "+# to Carrion Vine (Druid only)",
+		232: "+# to Feral Rage (Druid only)",
+		233: "+# to Maul (Druid only)",
+		234: "+# to Fissure (Druid only)",
+		235: "+# to Cyclone Armor (Druid only)",
+		236: "+# to Heart of Wolverine (Druid only)",
+		237: "+# to Summon Dire Wolf (Druid only)",
+		238: "+# to Rabies (Druid only)",
+		239: "+# to Fire Claws (Druid only)",
+		240: "+# to Twister (Druid only)",
+		241: "+# to Solar Creeper (Druid only)",
+		242: "+# to Hunger (Druid only)",
+		243: "+# to Shock Wave (Druid only)",
+		244: "+# to Volcano (Druid only)",
+		245: "+# to Tornado (Druid only)",
+		246: "+# to Spirit of Barbs (Druid only)",
+		247: "+# to Summon Grizzly (Druid only)",
+		248: "+# to Fury (Druid only)",
+		249: "+# to Armageddon (Druid only)",
+		250: "+# to Hurricane (Druid only)",
+		251: "+# to Fire Blast (Assassin only)",
+		252: "+# to Claw Mastery (Assassin only)",
+		253: "+# to Psychic Hammer (Assassin only)",
+		254: "+# to Tiger Strike (Assassin only)",
+		255: "+# to Dragon Talon (Assassin only)",
+		256: "+# to Shock Web (Assassin only)",
+		257: "+# to Blade Sentinel (Assassin only)",
+		258: "+# to Burst of Speed (Assassin only)",
+		259: "+# to Fists of Fire (Assassin only)",
+		260: "+# to Dragon Claw (Assassin only)",
+		261: "+# to Charged Bolt Sentry (Assassin only)",
+		262: "+# to Wake of Fire (Assassin only)",
+		263: "+# to Weapon Block (Assassin only)",
+		264: "+# to Cloak of Shadows (Assassin only)",
+		265: "+# to Cobra Strike (Assassin only)",
+		266: "+# to Blade Fury (Assassin only)",
+		267: "+# to Fade (Assassin only)",
+		268: "+# to Shadow Warrior (Assassin only)",
+		269: "+# to Claws of Thunder (Assassin only)",
+		270: "+# to Dragon Tail (Assassin only)",
+		271: "+# to Lightning Sentry (Assassin only)",
+		272: "+# to Wake of Inferno (Assassin only)",
+		273: "+# to Mind Blast (Assassin only)",
+		274: "+# to Blades of Ice (Assassin only)",
+		275: "+# to Dragon Flight (Assassin only)",
+		276: "+# to Death Sentry (Assassin only)",
+		277: "+# to Blade Shield (Assassin only)",
+		278: "+# to Venom (Assassin only)",
+		279: "+# to Shadow Master (Assassin only)",
+		280: "+# to Phoenix Strike (Assassin only)",
+		373: "+# to Summon Goatman (Warlock only)",
+		374: "+# to Demonic Mastery (Warlock only)",
+		375: "+# to Death Mark (Warlock only)",
+		376: "+# to Summon Tainted (Warlock only)",
+		377: "+# to Summon Defiler (Warlock only)",
+		378: "+# to Blood Oath (Warlock only)",
+		379: "+# to Engorge (Warlock only)",
+		380: "+# to Blood Boil (Warlock only)",
+		381: "+# to Consume (Warlock only)",
+		382: "+# to Bind Demon (Warlock only)",
+		383: "+# to Levitate (Warlock only)",
+		384: "+# to Eldritch Blast (Warlock only)",
+		385: "+# to Hex Bane (Warlock only)",
+		386: "+# to Hex Siphon (Warlock only)",
+		387: "+# to Psychic Ward (Warlock only)",
+		388: "+# to Echoing Strike (Warlock only)",
+		389: "+# to Hex Purge (Warlock only)",
+		390: "+# to Blade Warp (Warlock only)",
+		391: "+# to Cleave (Warlock only)",
+		392: "+# to Mirrored Blades (Warlock only)",
+		393: "+# to Sigil Lethargy (Warlock only)",
+		394: "+# to Ring of Fire (Warlock only)",
+		395: "+# to Miasma Bolt (Warlock only)",
+		396: "+# to Sigil Rancor (Warlock only)",
+		397: "+# to Enhanced Entropy (Warlock only)",
+		398: "+# to Flame Wave (Warlock only)",
+		399: "+# to Miasma Chains (Warlock only)",
+		400: "+# to Sigil Death (Warlock only)",
+		401: "+# to Apocalypse (Warlock only)",
+		402: "+# to Abyss (Warlock only)",
 	},
-	108: {0: "Slain Monsters Rest in Peace"}, //itemrestinpeace
+	108: {0: "+# Slain Monsters Rest in Peace"},
 	109: {0: "curseresistance ????"},
-	110: {0: "Poison Length Reduced by #%"},        //itempoisonlengthresist
-	111: {0: "Damage +#"},                          //itemnormaldamage
-	112: {0: "Hit Causes Monster to Flee #%"},      //itemhowl
-	113: {0: "Hit Blinds Target +#"},               //itemstupidity
-	114: {0: "#% Damage Taken Goes To Mana"},       //itemdamagetomana
-	115: {0: "Ignore Target's Defense"},            //itemignoretargetac
-	116: {0: "-#% Target Defense"},                 //itemfractionaltargetac
-	117: {0: "Prevent Monster Heal"},               //itempreventheal
-	118: {0: "Half Freeze Duration"},               //itemhalffreezeduration
-	119: {0: " #% Bonus to Attack Rating"},         //itemtohitpercent
-	120: {0: "-# to Monster Defense Per Hit"},      //itemdamagetargetac
-	121: {0: "+#% Damage to Demons"},               //itemdemondamagepercent
-	122: {0: "+#% Damage to Undead"},               //itemundeaddamagepercent
-	123: {0: "+# to Attack Rating against Demons"}, //itemdemontohit
-	124: {0: "+# to Attack Rating against Undead"}, //itemundeadtohit
+	110: {0: "Poison Length Reduced by #%"},
+	111: {0: "Damage +#"},
+	112: {0: "Hit Causes Monster to Flee #%"},
+	113: {0: "Hit Blinds Target +#"},
+	114: {0: "#% Damage Taken Goes To Mana"},
+	115: {0: "Ignore Target's Defense"},
+	116: {0: "-#% Target Defense"},
+	117: {0: "Prevent Monster Heal"},
+	118: {0: "Half Freeze Duration"},
+	119: {0: " #% Bonus to Attack Rating"},
+	120: {0: "-# to Monster Defense Per Hit"},
+	121: {0: "+#% Damage to Demons"},
+	122: {0: "+#% Damage to Undead"},
+	123: {0: "+# to Attack Rating against Demons"},
+	124: {0: "+# to Attack Rating against Undead"},
 	125: {0: "itemthrowable ????"},
-	126: {0: "+# to Fire Skills"},                    //itemelemskill
-	127: {0: "+# to All Skills"},                     //itemallskills
-	128: {0: "Attacker Takes Lightning Damage of #"}, //itemattackertakeslightdamage
+	126: {0: "+# to Fire Skills"},
+	127: {0: "+# to All Skills"},
+	128: {0: "Attacker Takes Lightning Damage of #"},
 	129: {0: "ironmaidenlevel ????"},
 	130: {0: "lifetaplevel ????"},
 	131: {0: "thornspercent ????"},
 	132: {0: "bonearmor ????"},
 	133: {0: "bonearmormax ????"},
-	134: {0: "Freezes Target +#"},             //itemfreeze
-	135: {0: "#% Chance of Open Wounds"},      //itemopenwounds
-	136: {0: "#% Chance of Crushing Blow"},    //itemcrushingblow
-	137: {0: "+# Kick Damage"},                //itemkickdamage
-	138: {0: "+# to Mana after each Kill"},    //itemmanaafterkill
-	139: {0: "+# Life after each Demon Kill"}, //itemhealafterdemonkill
+	134: {0: "Freezes Target +#"},
+	135: {0: "#% Chance of Open Wounds"},
+	136: {0: "#% Chance of Crushing Blow"},
+	137: {0: "+# Kick Damage"},
+	138: {0: "+# to Mana after each Kill"},
+	139: {0: "+# Life after each Demon Kill"},
 	140: {0: "itemextrablood"},
-	141: {0: "#% Deadly Strike"},    //itemdeadlystrike
-	142: {0: "+# Fire Absorb"},      //itemabsorbfire
-	143: {0: "Fire Absorb #%"},      //itemabsorbfirepercent
-	144: {0: "+# Lightning Absorb"}, //itemabsorblight
-	145: {0: "Lightning Absorb #%"}, //itemabsorblightpercent
-	146: {0: "Magic Absorb #%"},     //itemabsorbmagic
-	147: {0: "+# Magic Absorb"},     //itemabsorbmagic
-	148: {0: "Cold Absorb #%"},      //itemabsorbcoldpercent
-	149: {0: "+# Cold Absorb"},      //itemabsorbcold
-	150: {0: "Slows Target by #%"},  //itemslow
+	141: {0: "#% Deadly Strike"},
+	142: {0: "+# Fire Absorb"},
+	143: {0: "Fire Absorb #%"},
+	144: {0: "+# Lightning Absorb"},
+	145: {0: "Lightning Absorb #%"},
+	146: {0: "Magic Absorb #%"},
+	147: {0: "+# Magic Absorb"},
+	148: {0: "Cold Absorb #%"},
+	149: {0: "+# Cold Absorb"},
+	150: {0: "Slows Target by #%"},
 	151: {
-		0:   "Level # [Skill] Aura When Equipped",       // itemaura
-		98:  "Level # Might Aura When Equipped",         // mightaura
-		102: "Level # Holy Fire Aura When Equipped",     // holyfireaura
-		103: "Level # Thorns Aura When Equipped",        // thornsaura
-		104: "Level # Defiance Aura When Equipped",      // defianceaura
-		113: "Level # Concentration Aura When Equipped", // concentrationaura
-		114: "Level # Holy Freeze Aura When Equipped",   // holyfreezeaura
-		115: "Level # Vigor Aura When Equipped",         // vigoraura
-		118: "Level # Holy Shock Aura When Equipped",    // holyshockaura
-		119: "Level # Sanctuary Aura When Equipped",     // sanctuaryaura
-		120: "Level # Meditation Aura When Equipped",    // meditationaura
-		122: "Level # Fanaticism Aura When Equipped",    // fanaticismaura
-		123: "Level # Conviction Aura When Equipped",    // convictionaura
-		124: "Level # Redemption Aura When Equipped",    // redemptionaura
+		0:   "Level # [Skill] Aura When Equipped",
+		98:  "Level # Might Aura When Equipped",
+		102: "Level # Holy Fire Aura When Equipped",
+		103: "Level # Thorns Aura When Equipped",
+		104: "Level # Defiance Aura When Equipped",
+		113: "Level # Concentration Aura When Equipped",
+		114: "Level # Holy Freeze Aura When Equipped",
+		115: "Level # Vigor Aura When Equipped",
+		118: "Level # Holy Shock Aura When Equipped",
+		119: "Level # Sanctuary Aura When Equipped",
+		120: "Level # Meditation Aura When Equipped",
+		122: "Level # Fanaticism Aura When Equipped",
+		123: "Level # Conviction Aura When Equipped",
+		124: "Level # Redemption Aura When Equipped",
 	},
-	152: {0: "Indestructible"},                  // itemindestructible
-	153: {0: "Cannot be Frozen"},                // itemcannotbefrozen
-	154: {0: "#% Slower Stamina Drain"},         // itemstaminadrainpct
-	155: {0: "Reanimate As: [Returned]"},        // itemreanimate
-	156: {0: "Piercing Attack"},                 // itempierce
-	157: {0: "Fires Magic Arrows"},              // itemmagicarrow
-	158: {0: "Fires Explosive Arrows or Bolts"}, // itemexplosivearrow
+	152: {0: "Indestructible"},
+	153: {0: "Cannot be Frozen"},
+	154: {0: "#% Slower Stamina Drain"},
+	155: {0: "Reanimate As: [Returned]"},
+	156: {0: "Piercing Attack"},
+	157: {0: "Fires Magic Arrows"},
+	158: {0: "Fires Explosive Arrows or Bolts"},
 	159: {0: "# To Minimum Damage"},
 	160: {0: "+# Maximum Damage"},
 	161: {0: "itemskillhandofathena ????"},
@@ -1206,53 +1481,56 @@ var StatStringMap = map[int]map[int]string{
 	184: {0: "unused184 ????"},
 	185: {0: "unused185 ????"},
 	186: {0: "unused186 ????"},
-	187: {0: "Monster Cold Immunity is Sundered"}, //itempiercecoldimmunity
+	187: {0: "Monster Cold Immunity is Sundered"},
 	188: {
-		0:  "+# to Bow and Crossbow Skills (Amazon only)",     // bowandcrossbowskilltab
-		1:  "+# to Passive and Magic Skills (Amazon only)",    // passiveandmagicskilltab
-		2:  "+# to Javelin and Spears Skills (Amazon only)",   // javelinandspearskilltab
-		8:  "+# to Fire Skills (Sorceress only)",              // fireskilltab
-		9:  "+# to Lightning Skills (Sorceress only)",         // lightningskilltab
-		10: "+# to Cold Skills (Sorceress only)",              // coldskilltab
-		16: "+# to Curses Skills (Necromancer only)",          // cursesskilltab
-		17: "+# to Poison and Bone Skills (Necromancer only)", // poisonandboneskilltab
-		18: "+# to Summoning Skills (Necromancer only)",       // necromancersummoningskilltab
-		24: "+# to Paladin Combat Skills (Paladin only)",      // palicombatskilltab
-		25: "+# to Offensive Aura Skills (Paladin only)",      // offensiveaurasskilltab
-		26: "+# to Defensive Aura Skills (Paladin only)",      // defensiveaurasskilltab
-		32: "+# to Barbarian Combat Skills (Barbarian only)",  // barbcombatskilltab
-		33: "+# to Mastery Skills (Barbarian only)",           // masteryesskilltab
-		34: "+# to War Cry Skills (Barbarian only)",           // warcriesskilltab
-		40: "+# to Druid Summoning Skills (Druid only)",       // druidsummoningskilltab
-		41: "+# to Shapeshifting Skills (Druid only)",         // shapeshiftingskilltab
-		42: "+# to Elemental Skills (Druid only)",             // elementalskilltab
-		48: "+# to Traps Skills (Assassin only)",              // trapsskilltab
-		49: "+# to Shadow Discipline Skills (Assassin only)",  // shadowdisciplinesskilltab
-		50: "+# to Martial Arts Skills (Assassin only)",       // martialartsskilltab
+		0:  "+# to Bow and Crossbow Skills (Amazon only)",
+		1:  "+# to Passive and Magic Skills (Amazon only)",
+		2:  "+# to Javelin and Spears Skills (Amazon only)",
+		8:  "+# to Fire Skills (Sorceress only)",
+		9:  "+# to Lightning Skills (Sorceress only)",
+		10: "+# to Cold Skills (Sorceress only)",
+		16: "+# to Curses Skills (Necromancer only)",
+		17: "+# to Poison and Bone Skills (Necromancer only)",
+		18: "+# to Summoning Skills (Necromancer only)",
+		24: "+# to Paladin Combat Skills (Paladin only)",
+		25: "+# to Offensive Aura Skills (Paladin only)",
+		26: "+# to Defensive Aura Skills (Paladin only)",
+		32: "+# to Barbarian Combat Skills (Barbarian only)",
+		33: "+# to Mastery Skills (Barbarian only)",
+		34: "+# to War Cry Skills (Barbarian only)",
+		40: "+# to Druid Summoning Skills (Druid only)",
+		41: "+# to Shapeshifting Skills (Druid only)",
+		42: "+# to Elemental Skills (Druid only)",
+		48: "+# to Traps Skills (Assassin only)",
+		49: "+# to Shadow Discipline Skills (Assassin only)",
+		50: "+# to Martial Arts Skills (Assassin only)",
+		56: "+# to Demon Skills (Warlock only)",
+		57: "+# to Eldritch Skills (Warlock only)",
+		58: "+# to Chaos Skills (Warlock only)",
 	},
-	189: {0: "Monster Fire Immunity is Sundered"},      // itempiercefireimmunity
-	190: {0: "Monster Lightning Immunity is Sundered"}, // itempiercelightimmunity
-	191: {0: "Monster Poison Immunity is Sundered"},    // itempiercepoisonimmunity
-	192: {0: "Monster Physical Immunity is Sundered"},  // itempiercedamageimmunity
-	193: {0: "Monster Magic Immunity is Sundered"},     // itempiercemagicimmunity
+	189: {0: "Monster Fire Immunity is Sundered"},
+	190: {0: "Monster Lightning Immunity is Sundered"},
+	191: {0: "Monster Poison Immunity is Sundered"},
+	192: {0: "Monster Physical Immunity is Sundered"},
+	193: {0: "Monster Magic Immunity is Sundered"},
 	194: {0: "Socketed (#)"},
 	195: {
-		1:    "#% Chance to cast level # [Skill] on attack", //itemskillonattack
+		1:    "#% Chance to cast level # [Skill] on attack",
 		2:    "itemskillonattacklevel ????",
 		3395: "#% Chance to cast level 3 Chain Lightning on attack",
 	},
 	196: {
-		1: "#% Chance to cast level # [Skill] when you Kill an Enemy", //itemskillonkill
+		1: "#% Chance to cast level # [Skill] when you Kill an Enemy",
 		2: "itemskillonkilllevel ????",
 	},
 	197: {
-		1: "#% Chance to cast level # [Skill] when you Die", //itemskillondeath
+		1: "#% Chance to cast level # [Skill] when you Die",
 		2: "itemskillondeathlevel ????",
 	},
 	198: {
-		1:    "#% Chance to cast level # [Skill] on striking", //itemskillonhit
+		1:    "#% Chance to cast level # [Skill] on striking",
 		2:    "itemskillonhitlevel ????",
-		4225: "Amplify Damage on Hit", //amplifydamageonhit
+		4225: "Amplify Damage on Hit",
 	},
 	199: {
 		1: "#% Chance to cast level # [Skill] when you Level-Up",
@@ -1260,7 +1538,7 @@ var StatStringMap = map[int]map[int]string{
 	},
 	200: {0: "unused200 ????"},
 	201: {
-		1:    "#% Chance to cast level # [Skill] when struck", //itemskillongethit
+		1:    "#% Chance to cast level # [Skill] when struck",
 		2:    "itemskillongethitlevel ????",
 		5903: "#% Chance to cast level 15 Poison Nova when struck",
 		7751: "#% Chance to cast level 7 Fist of Heavens when struck",
@@ -1282,47 +1560,47 @@ var StatStringMap = map[int]map[int]string{
 	211: {0: "unused210 ????"},
 	212: {0: "unused211 ????"},
 	213: {0: "unused212 ????"},
-	214: {0: "+# Defense (Based on Character Level)"},                              // itemarmorperlevel
-	215: {0: "+#% Enhanced Defense (Based on Character Level)"},                    // itemarmorpercentperlevel
-	216: {0: "+# to Life (Based on Character Level)"},                              // itemmanaperlevel
-	217: {0: "+# to Mana (Based on Character Level)"},                              // itemmanaperlevel
-	218: {0: "+# to Maximum Damage (Based on Character Level)"},                    // itemmaxdamageperlevel
-	219: {0: "+#% Enhanced Maximum Damage (Based on Character Level)"},             // itemmaxdamagepercentperlevel
-	220: {0: "+# to Strength (Based on Character Level)"},                          // itemstrengthperlevel
-	221: {0: "+# to Dexterity (Based on Character Level)"},                         // itemdexterityperlevel
-	222: {0: "+# to Energy (Based on Character Level)"},                            // itemenergyperlevel
-	223: {0: "+# to Vitality (Based on Character Level)"},                          // itemvitalityperlevel
-	224: {0: "+# to Attack Rating (Based on Character Level)"},                     // itemtohitperlevel
-	225: {0: "#% Bonus to Attack Rating (Based on Character Level)"},               // itemtohitpercentperlevel
-	226: {0: "+# to Maximum Cold Damage (Based on Character Level)"},               // itemcolddamagemaxperlevel
-	227: {0: "+# to Maximum Fire Damage (Based on Character Level)"},               // itemfiredamagemaxperlevel
-	228: {0: "+# to Maximum Lightning Damage (Based on Character Level)"},          // itemltngdamagemaxperlevel
-	229: {0: "+# to Maximum Poison Damage (Based on Character Level)"},             // itempoisdamagemaxperlevel
-	230: {0: "Cold Resist +#% (Based on Character Level)"},                         // itemresistcoldperlevel
-	231: {0: "Fire Resist +#% (Based on Character Level)"},                         // itemresistfireperlevel
-	232: {0: "Lightning Resist +#% (Based on Character Level)"},                    // itemresistltngperlevel
-	233: {0: "Poison Resist +#% (Based on Character Level)"},                       // itemresistpoisperlevel
-	234: {0: "Absorbs Cold Damage (Based on Character Level)"},                     // itemabsorbcoldperlevel
-	235: {0: "Absorbs Fire Damage (Based on Character Level)"},                     // itemabsorbfireperlevel
-	236: {0: "Absorbs Lightning Damage (Based on Character Level)"},                // itemabsorbltngperlevel
-	237: {0: "Absorbs Poison Damage (Based on Character Level)"},                   // itemabsorbpoisperlevel
-	238: {0: "Attacker Takes Damage of # (Based on Character Level)"},              // itemthornsperlevel
-	239: {0: "#% Extra Gold from Monsters (Based on Character Level)"},             // itemfindgoldperlevel
-	240: {0: "#% Better Chance of Getting Magic Items (Based on Character Level)"}, // itemfindmagicperlevel
-	241: {0: "Heal Stamina Plus #% (Based on Character Level)"},                    // itemregenstaminaperlevel
-	242: {0: "+# Maximum Stamina (Based on Character Level)"},                      // itemstaminaperlevel
-	243: {0: "+#% Damage to Demons (Based on Character Level)"},                    // itemdamagedemonperlevel
-	244: {0: "+#% Damage to Undead (Based on Character Level)"},                    // itemdamageundeadperlevel
-	245: {0: "+# to Attack Rating against Demons (Based on Character Level)"},      // itemtohitdemonperlevel
-	246: {0: "+# to Attack Rating against Undead (Based on Character Level)"},      // itemtohitundeadperlevel
-	247: {0: "#% Chance of Crushing Blow (Based on Character Level)"},              // itemcrushingblowperlevel
-	248: {0: "#% Chance of Open Wounds (Based on Character Level)"},                // itemopenwoundsperlevel
-	249: {0: "+# Kick Damage (Based on Character Level)"},                          // itemkickdamageperlevel
-	250: {0: "#% Deadly Strike (Based on Character Level)"},                        // itemdeadlystrikeperlevel
+	214: {0: "+# Defense (Based on Character Level)"},
+	215: {0: "+#% Enhanced Defense (Based on Character Level)"},
+	216: {0: "+# to Life (Based on Character Level)"},
+	217: {0: "+# to Mana (Based on Character Level)"},
+	218: {0: "+# to Maximum Damage (Based on Character Level)"},
+	219: {0: "+#% Enhanced Maximum Damage (Based on Character Level)"},
+	220: {0: "+# to Strength (Based on Character Level)"},
+	221: {0: "+# to Dexterity (Based on Character Level)"},
+	222: {0: "+# to Energy (Based on Character Level)"},
+	223: {0: "+# to Vitality (Based on Character Level)"},
+	224: {0: "+# to Attack Rating (Based on Character Level)"},
+	225: {0: "#% Bonus to Attack Rating (Based on Character Level)"},
+	226: {0: "+# to Maximum Cold Damage (Based on Character Level)"},
+	227: {0: "+# to Maximum Fire Damage (Based on Character Level)"},
+	228: {0: "+# to Maximum Lightning Damage (Based on Character Level)"},
+	229: {0: "+# to Maximum Poison Damage (Based on Character Level)"},
+	230: {0: "Cold Resist +#% (Based on Character Level)"},
+	231: {0: "Fire Resist +#% (Based on Character Level)"},
+	232: {0: "Lightning Resist +#% (Based on Character Level)"},
+	233: {0: "Poison Resist +#% (Based on Character Level)"},
+	234: {0: "Absorbs Cold Damage (Based on Character Level)"},
+	235: {0: "Absorbs Fire Damage (Based on Character Level)"},
+	236: {0: "Absorbs Lightning Damage (Based on Character Level)"},
+	237: {0: "Absorbs Poison Damage (Based on Character Level)"},
+	238: {0: "Attacker Takes Damage of # (Based on Character Level)"},
+	239: {0: "#% Extra Gold from Monsters (Based on Character Level)"},
+	240: {0: "#% Better Chance of Getting Magic Items (Based on Character Level)"},
+	241: {0: "Heal Stamina Plus #% (Based on Character Level)"},
+	242: {0: "+# Maximum Stamina (Based on Character Level)"},
+	243: {0: "+#% Damage to Demons (Based on Character Level)"},
+	244: {0: "+#% Damage to Undead (Based on Character Level)"},
+	245: {0: "+# to Attack Rating against Demons (Based on Character Level)"},
+	246: {0: "+# to Attack Rating against Undead (Based on Character Level)"},
+	247: {0: "#% Chance of Crushing Blow (Based on Character Level)"},
+	248: {0: "#% Chance of Open Wounds (Based on Character Level)"},
+	249: {0: "+# Kick Damage (Based on Character Level)"},
+	250: {0: "#% Deadly Strike (Based on Character Level)"},
 	251: {0: "itemfindgemsperlevel ????"},
-	252: {0: "Repairs 1 durability in # seconds"}, // itemreplenishdurability
-	253: {0: "Replenishes quantity"},              // itemreplenishquantity
-	254: {0: "Increased Stack Size"},              // itemextrastack
+	252: {0: "Repairs 1 durability in # seconds"},
+	253: {0: "Replenishes quantity"},
+	254: {0: "Increased Stack Size"},
 	255: {0: "itemfinditem ????"},
 	256: {0: "itemslashdamage ????"},
 	257: {0: "itemslashdamagepercent ????"},
@@ -1336,47 +1614,47 @@ var StatStringMap = map[int]map[int]string{
 	265: {0: "itemabsorbslashpercent ????"},
 	266: {0: "itemabsorbcrushpercent ????"},
 	267: {0: "itemabsorbthrustpercent ????"},
-	268: {0: "+# Defense (Increases near [Day/Dusk/Night/Dawn])"},                              // itemarmorbytime
-	269: {0: "+#% Enhanced Defense (Increases near [Day/Dusk/Night/Dawn])"},                    // itemarmorpercentbytime
-	270: {0: "+# to Life (Increases near [Day/Dusk/Night/Dawn])"},                              // itemhpbytime
-	271: {0: "+# to Mana (Increases near [Day/Dusk/Night/Dawn])"},                              // itemmanabytime
-	272: {0: "+# to Maximum Damage (Increases near [Day/Dusk/Night/Dawn])"},                    // itemmaxdamagebytime
-	273: {0: "+#% Enhanced Maximum Damage (Increases near [Day/Dusk/Night/Dawn])"},             // itemmaxdamagepercentbytime
-	274: {0: "+# to Strength (Increases near [Day/Dusk/Night/Dawn])"},                          // itemstrengthbytime
-	275: {0: "+# to Dexterity (Increases near [Day/Dusk/Night/Dawn])"},                         // itemdexteritybytime
-	276: {0: "+# to Energy (Increases near [Day/Dusk/Night/Dawn])"},                            // itemenergybytime
-	277: {0: "+# to Vitality (Increases near [Day/Dusk/Night/Dawn])"},                          // itemvitalitybytime
-	278: {0: "+# to Attack Rating (Increases near [Day/Dusk/Night/Dawn])"},                     // itemtohitbytime
-	279: {0: "+#% Bonus to Attack Rating (Increases near [Day/Dusk/Night/Dawn])"},              // itemtohitpercentbytime
-	280: {0: "+# to Maximum Cold Damage (Increases near [Day/Dusk/Night/Dawn])"},               // itemcolddamagemaxbytime
-	281: {0: "+# to Maximum Fire Damage (Increases near [Day/Dusk/Night/Dawn])"},               // itemfiredamagemaxbytime
-	282: {0: "+# to Maximum Lightning Damage (Increases near [Day/Dusk/Night/Dawn])"},          // itemltngdamagemaxbytime
-	283: {0: "+# to Maximum Poison Damage (Increases near [Day/Dusk/Night/Dawn])"},             // itempoisdamagemaxbytime
-	284: {0: "Cold Resist +#% (Increases near [Day/Dusk/Night/Dawn])"},                         // itemresistcoldbytime
-	285: {0: "Fire Resist +#% (Increases near [Day/Dusk/Night/Dawn])"},                         // itemresistfirebytime
-	286: {0: "Lightning Resist +#% (Increases near [Day/Dusk/Night/Dawn])"},                    // itemresistltngbytime
-	287: {0: "Poison Resist +#% (Increases near [Day/Dusk/Night/Dawn])"},                       // itemresistpoisbytime
-	288: {0: "Absorbs Cold Damage (Increases near [Day/Dusk/Night/Dawn])"},                     // itemabsorbcoldbytime
-	289: {0: "Absorbs Fire Damage (Increases near [Day/Dusk/Night/Dawn])"},                     // itemabsorbfirebytime
-	290: {0: "Absorbs Lightning Damage (Increases near [Day/Dusk/Night/Dawn])"},                // itemabsorbltngbytime
-	291: {0: "Absorbs Poison Damage (Increases near [Day/Dusk/Night/Dawn])"},                   // itemabsorbpoisbytime
-	292: {0: "#% Extra Gold from Monsters (Increases near [Day/Dusk/Night/Dawn])"},             // itemfindgoldbytime
-	293: {0: "#% Better Chance of Getting Magic Items (Increases near [Day/Dusk/Night/Dawn])"}, // itemfindmagicbytime
-	294: {0: "Heal Stamina Plus #% (Increases near [Day/Dusk/Night/Dawn])"},                    // itemregenstaminabytime
-	295: {0: "+# Maximum Stamina (Increases near [Day/Dusk/Night/Dawn])"},                      // itemstaminabytime
-	296: {0: "+#% Damage to Demons (Increases near [Day/Dusk/Night/Dawn])"},                    // itemdamagedemonbytime
-	297: {0: "+#% Damage to Undead (Increases near [Day/Dusk/Night/Dawn])"},                    // itemdamageundeadbytime
-	298: {0: "+# to Attack Rating against Demons (Increases near [Day/Dusk/Night/Dawn])"},      // itemtohitdemonbytime
-	299: {0: "+# to Attack Rating against Undead (Increases near [Day/Dusk/Night/Dawn])"},      // itemtohitundeadbytime
-	300: {0: "#% Chance of Crushing Blow (Increases near [Day/Dusk/Night/Dawn])"},              // itemcrushingblowbytime
-	301: {0: "#% Chance of Open Wounds (Increases near [Day/Dusk/Night/Dawn])"},                // itemopenwoundsbytime
-	302: {0: "+# Kick Damage (Increases near [Day/Dusk/Night/Dawn])"},                          // itemkickdamagebytime
-	303: {0: "#% Deadly Strike (Increases near [Day/Dusk/Night/Dawn])"},                        // itemdeadlystrikebytime
+	268: {0: "+# Defense (Increases near [Day/Dusk/Night/Dawn])"},
+	269: {0: "+#% Enhanced Defense (Increases near [Day/Dusk/Night/Dawn])"},
+	270: {0: "+# to Life (Increases near [Day/Dusk/Night/Dawn])"},
+	271: {0: "+# to Mana (Increases near [Day/Dusk/Night/Dawn])"},
+	272: {0: "+# to Maximum Damage (Increases near [Day/Dusk/Night/Dawn])"},
+	273: {0: "+#% Enhanced Maximum Damage (Increases near [Day/Dusk/Night/Dawn])"},
+	274: {0: "+# to Strength (Increases near [Day/Dusk/Night/Dawn])"},
+	275: {0: "+# to Dexterity (Increases near [Day/Dusk/Night/Dawn])"},
+	276: {0: "+# to Energy (Increases near [Day/Dusk/Night/Dawn])"},
+	277: {0: "+# to Vitality (Increases near [Day/Dusk/Night/Dawn])"},
+	278: {0: "+# to Attack Rating (Increases near [Day/Dusk/Night/Dawn])"},
+	279: {0: "+#% Bonus to Attack Rating (Increases near [Day/Dusk/Night/Dawn])"},
+	280: {0: "+# to Maximum Cold Damage (Increases near [Day/Dusk/Night/Dawn])"},
+	281: {0: "+# to Maximum Fire Damage (Increases near [Day/Dusk/Night/Dawn])"},
+	282: {0: "+# to Maximum Lightning Damage (Increases near [Day/Dusk/Night/Dawn])"},
+	283: {0: "+# to Maximum Poison Damage (Increases near [Day/Dusk/Night/Dawn])"},
+	284: {0: "Cold Resist +#% (Increases near [Day/Dusk/Night/Dawn])"},
+	285: {0: "Fire Resist +#% (Increases near [Day/Dusk/Night/Dawn])"},
+	286: {0: "Lightning Resist +#% (Increases near [Day/Dusk/Night/Dawn])"},
+	287: {0: "Poison Resist +#% (Increases near [Day/Dusk/Night/Dawn])"},
+	288: {0: "Absorbs Cold Damage (Increases near [Day/Dusk/Night/Dawn])"},
+	289: {0: "Absorbs Fire Damage (Increases near [Day/Dusk/Night/Dawn])"},
+	290: {0: "Absorbs Lightning Damage (Increases near [Day/Dusk/Night/Dawn])"},
+	291: {0: "Absorbs Poison Damage (Increases near [Day/Dusk/Night/Dawn])"},
+	292: {0: "#% Extra Gold from Monsters (Increases near [Day/Dusk/Night/Dawn])"},
+	293: {0: "#% Better Chance of Getting Magic Items (Increases near [Day/Dusk/Night/Dawn])"},
+	294: {0: "Heal Stamina Plus #% (Increases near [Day/Dusk/Night/Dawn])"},
+	295: {0: "+# Maximum Stamina (Increases near [Day/Dusk/Night/Dawn])"},
+	296: {0: "+#% Damage to Demons (Increases near [Day/Dusk/Night/Dawn])"},
+	297: {0: "+#% Damage to Undead (Increases near [Day/Dusk/Night/Dawn])"},
+	298: {0: "+# to Attack Rating against Demons (Increases near [Day/Dusk/Night/Dawn])"},
+	299: {0: "+# to Attack Rating against Undead (Increases near [Day/Dusk/Night/Dawn])"},
+	300: {0: "#% Chance of Crushing Blow (Increases near [Day/Dusk/Night/Dawn])"},
+	301: {0: "#% Chance of Open Wounds (Increases near [Day/Dusk/Night/Dawn])"},
+	302: {0: "+# Kick Damage (Increases near [Day/Dusk/Night/Dawn])"},
+	303: {0: "#% Deadly Strike (Increases near [Day/Dusk/Night/Dawn])"},
 	304: {0: "itemfindgemsbytime ????"},
-	305: {0: "-#% to Enemy Cold Resistance"},      // itempiercecold
-	306: {0: "-#% to Enemy Fire Resistance"},      // itempiercefire
-	307: {0: "-#% to Enemy Lightning Resistance"}, // itempierceltng
-	308: {0: "-#% to Enemy Poison Resistance"},    // itempiercepois
+	305: {0: "-#% to Enemy Cold Resistance"},
+	306: {0: "-#% to Enemy Fire Resistance"},
+	307: {0: "-#% to Enemy Lightning Resistance"},
+	308: {0: "-#% to Enemy Poison Resistance"},
 	309: {0: "itemdamagevsmonster ????"},
 	310: {0: "itemdamagepercentvsmonster ????"},
 	311: {0: "itemtohitvsmonster ????"},
@@ -1397,14 +1675,14 @@ var StatStringMap = map[int]map[int]string{
 	326: {0: "poisoncount ????"},
 	327: {0: "damageframerate ????"},
 	328: {0: "pierceidx ????"},
-	329: {0: "+#% to Fire Skill Damage"},          // passivefiremastery
-	330: {0: "+#% to Lightning Skill Damage"},     // passiveltngmastery
-	331: {0: "+#% to Cold Skill Damage"},          // passivecoldmastery
-	332: {0: "+#% to Poison Skill Damage"},        // passivepoismastery
-	333: {0: "-#% to Enemy Fire Resistance"},      // passivefirepierce
-	334: {0: "-#% to Enemy Lightning Resistance"}, // passiveltngpierce
-	335: {0: "-#% to Enemy Cold Resistance"},      // passivecoldpierce
-	336: {0: "-#% to Enemy Poison Resistance"},    // passivepoispierce
+	329: {0: "+#% to Fire Skill Damage"},
+	330: {0: "+#% to Lightning Skill Damage"},
+	331: {0: "+#% to Cold Skill Damage"},
+	332: {0: "+#% to Poison Skill Damage"},
+	333: {0: "-#% to Enemy Fire Resistance"},
+	334: {0: "-#% to Enemy Lightning Resistance"},
+	335: {0: "-#% to Enemy Cold Resistance"},
+	336: {0: "-#% to Enemy Poison Resistance"},
 	337: {0: "passivecriticalstrike ????"},
 	338: {0: "passivedodge ????"},
 	339: {0: "passiveavoid ????"},
