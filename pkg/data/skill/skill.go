@@ -393,6 +393,21 @@ const (
 	ShamanFireEx
 	ImpFireMissileEx
 	FixedSiegeBeastStomp
+	Loot
+	TownPortal
+	EmoteWheel
+	SwapWeapons
+	Map
+	ShowItems
+	RunToggle
+	MonHolyFreeze
+	MonLeap
+	MonLeapAttack
+	MonHolyFire
+	MonHolyShock
+	CubeLoot
+	MarkOfTheBear
+	MarkOfTheWolf
 	SummonGoatman
 	DemonicMastery
 	DeathMark
@@ -423,6 +438,33 @@ const (
 	SigilDeath
 	Apocalypse
 	Abyss
+	SigilDeathExplosion
+	HexPurgeExplosion
+	HealthLink
+	ColdFissure
+	KorlicsLeapAttack
+	ColdEnchant
+	LightningEnchant
+	TalicsWhirlwind
+	TownportalOSkill
+	FireTwisters
+	ColossalVolcano
+	ColossalThunderStorm
+	UberAncientsHeal
+	GoatmanStun
+	GoatmanFrenzy
+	GoatmanBerserk
+	GoatmanCleave
+	TaintedResistFire
+	TaintedFireBolt
+	TaintedFireBall
+	TalicsFirePierce
+	MadawcsLightningPierce
+	KorlicsColdPierce
+	ChargedBoltDisk
+	KorlicsBash
+	HeraldThorns
+
 	Unset ID = -1
 )
 
@@ -785,6 +827,21 @@ var SkillNames = map[ID]string{
 	ShamanFireEx:             "ShamanFireEx",
 	ImpFireMissileEx:         "ImpFireMissileEx",
 	FixedSiegeBeastStomp:     "FixedSiegeBeastStomp",
+	Loot:                     "Loot",
+	TownPortal:               "TownPortal",
+	EmoteWheel:               "EmoteWheel",
+	SwapWeapons:              "SwapWeapons",
+	Map:                      "Map",
+	ShowItems:                "ShowItems",
+	RunToggle:                "RunToggle",
+	MonHolyFreeze:            "MonHolyFreeze",
+	MonLeap:                  "MonLeap",
+	MonLeapAttack:            "MonLeapAttack",
+	MonHolyFire:              "MonHolyFire",
+	MonHolyShock:             "MonHolyShock",
+	CubeLoot:                 "CubeLoot",
+	MarkOfTheBear:            "MarkOfTheBear",
+	MarkOfTheWolf:            "MarkOfTheWolf",
 	SummonGoatman:            "SummonGoatman",
 	DemonicMastery:           "DemonicMastery",
 	DeathMark:                "DeathMark",
@@ -815,5 +872,31 @@ var SkillNames = map[ID]string{
 	SigilDeath:               "SigilDeath",
 	Apocalypse:               "Apocalypse",
 	Abyss:                    "Abyss",
+	SigilDeathExplosion:      "SigilDeathExplosion",
+	HexPurgeExplosion:        "HexPurgeExplosion",
+	HealthLink:               "HealthLink",
+	ColdFissure:              "ColdFissure",
+	KorlicsLeapAttack:        "KorlicsLeapAttack",
+	ColdEnchant:              "ColdEnchant",
+	LightningEnchant:         "LightningEnchant",
+	TalicsWhirlwind:          "TalicsWhirlwind",
+	TownportalOSkill:         "TownportalOSkill",
+	FireTwisters:             "FireTwisters",
+	ColossalVolcano:          "ColossalVolcano",
+	ColossalThunderStorm:     "ColossalThunderStorm",
+	UberAncientsHeal:         "UberAncientsHeal",
+	GoatmanStun:              "GoatmanStun",
+	GoatmanFrenzy:            "GoatmanFrenzy",
+	GoatmanBerserk:           "GoatmanBerserk",
+	GoatmanCleave:            "GoatmanCleave",
+	TaintedResistFire:        "TaintedResistFire",
+	TaintedFireBolt:          "TaintedFireBolt",
+	TaintedFireBall:          "TaintedFireBall",
+	TalicsFirePierce:         "TalicsFirePierce",
+	MadawcsLightningPierce:   "MadawcsLightningPierce",
+	KorlicsColdPierce:        "KorlicsColdPierce",
+	ChargedBoltDisk:          "ChargedBoltDisk",
+	KorlicsBash:              "KorlicsBash",
+	HeraldThorns:             "HeraldThorns",
 	Unset:                    "Unset",
 }
