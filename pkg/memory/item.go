@@ -42,8 +42,8 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 	stashedGold := [6]int{mainPlayerStashedGold.Value, 0, 0, 0, 0, 0}
 
 	for i, puKey := range stashPlayerUnitOrder {
-		if i > 4 {
-			break // max 5 shared stash pages
+		if i > 5 {
+			break // max 6 shared stash pages
 		}
 		if stashGold, found := stashPlayerUnits[puKey].BaseStats.FindStat(stat.StashGold, 0); found {
 			stashedGold[i+1] = stashGold.Value
