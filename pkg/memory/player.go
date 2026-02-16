@@ -185,7 +185,8 @@ func (gd *GameReader) getSkills(skillListPtr uintptr) map[skill.ID]skill.Points 
 		skillTxtPtr := uintptr(gd.Process.ReadUInt(skillPtr, Uint64))
 		skillTxt := uintptr(gd.Process.ReadUInt(skillTxtPtr, Uint16))
 		lvl := gd.Process.ReadUInt(skillPtr+0x40, Uint16)
-		charges := gd.Process.ReadUInt(skillPtr+0x48, Uint16)
+		qty := gd.Process.ReadUInt(skillPtr+0x48, Uint16)
+		charges := gd.Process.ReadUInt(skillPtr+0x50, Uint16)
 
 		shouldSetSkill := true
 		existingSkill, exists := skills[skill.ID(skillTxt)]
@@ -197,8 +198,9 @@ func (gd *GameReader) getSkills(skillListPtr uintptr) map[skill.ID]skill.Points 
 
 		if shouldSetSkill {
 			skills[skill.ID(skillTxt)] = skill.Points{
-				Level:   lvl,
-				Charges: charges,
+				Level:    lvl,
+				Quantity: qty,
+				Charges:  charges,
 			}
 		}
 
