@@ -111,6 +111,7 @@ type Item struct {
 	InTradeOrStoreScreen bool
 	IsInSocket           bool
 	UniqueSetID          int32
+	StackedQuantity      int
 }
 
 type Drop struct {

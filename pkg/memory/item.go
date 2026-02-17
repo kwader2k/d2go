@@ -369,19 +369,9 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 			statsListExPtr := uintptr(ReadUIntFromBuffer(itemDataBuffer, 0x88, Uint64))
 			itm.BaseStats, itm.Stats = gd.getItemStats(statsListExPtr)
 
-			// // Read stack quantity from UnitData+0x9C (DLC tabs store quantity here instead of in stats)
-			// stackQty := gd.Process.ReadUInt(unitDataPtr+0x9C, Uint32)
-			// found := false
-			// for i := range itm.Stats {
-			// 	if itm.Stats[i].ID == stat.Quantity && itm.Stats[i].Layer == 0 {
-			// 		itm.Stats[i].Value = int(stackQty)
-			// 		found = true
-			// 		break
-			// 	}
-			// }
-			// if !found && stackQty > 0 {
-			// 	itm.Stats = append(itm.Stats, stat.Data{ID: stat.Quantity, Value: int(stackQty), Layer: 0})
-			// }
+			// stack quantity as item property
+			stackQty := gd.Process.ReadUInt(unitDataPtr+0x9C, Uint32)
+			itm.StackedQuantity = int(stackQty)
 
 			// Process socket information
 			if location == item.LocationSocket {
