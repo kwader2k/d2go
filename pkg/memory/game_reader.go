@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -46,6 +48,8 @@ type CharacterFlags struct {
 var WidgetStateFlags = map[string]uint64{
 	"WeaponSwap": 0xF2D7CF8E9CC08212,
 }
+
+var firstNumberText = regexp.MustCompile(`\d[\d,]*`)
 
 func NewGameReader(process *Process) *GameReader {
 	return &GameReader{
@@ -364,8 +368,7 @@ func (gd *GameReader) GetCharacterList() []string {
 	return characterNames
 }
 
-// GetMercList returns the list of mercenaries available for hire in the Hire Menu
-// Only works if the Hire Menu is open in legacy graphics mode
+// GetMercList returns the list of mercenaries available for hire in the Hire Menu.
 func (gd *GameReader) GetMercList() []MercOption {
 	panel := gd.GetPanel("HireMenuPanel", "ListContainer", "View", "Container")
 
@@ -376,13 +379,30 @@ func (gd *GameReader) GetMercList() []MercOption {
 	mercOptions := make([]MercOption, panel.NumChildren)
 
 	for i := 0; i < panel.NumChildren; i++ {
-		merc := panel.PanelChildren[fmt.Sprintf("ListItem%d", i)].PanelChildren["TextBox"].ExtraText3
+		row := panel.PanelChildren[fmt.Sprintf("ListItem%d", i)]
+		merc := row.PanelChildren["TextBox"].ExtraText3
 
 		var name, skillName string
 		var level, life, def, cost int
 
 		n, err := fmt.Sscanf(merc, "%s - Lvl: %d  Life: %d  Def: %d  Cost: %d\n", &name, &level, &life, &def, &cost)
 		if err != nil || n < 5 {
+			// HD (non-legacy)
+			option := MercOption{
+				Index: i,
+				Name:  GetText(row.PanelChildren["HireName"]),
+			}
+			if option.Name == "" {
+				option.Name = GetText(row.PanelChildren["Name"])
+			}
+			option.Level, _ = strconv.Atoi(firstNumberText.FindString(GetText(row.PanelChildren["HireLevel"])))
+			option.Cost, _ = strconv.Atoi(GetText(row.PanelChildren["CostContainer"].PanelChildren["HireCost"]))
+
+			if sk, ok := gd.mercSkillFromPanel(row.PanelChildren["Skill1"]); ok {
+				option.Skill = sk
+			}
+
+			mercOptions[i] = option
 			continue
 		}
 
@@ -414,6 +434,18 @@ func (gd *GameReader) GetMercList() []MercOption {
 	}
 
 	return mercOptions
+}
+
+func (gd *GameReader) mercSkillFromPanel(p data.Panel) (skill.Skill, bool) {
+	if p.PanelPtr == 0 {
+		return skill.Skill{}, false
+	}
+	id := skill.ID(gd.ReadUInt(p.PanelPtr+0x960, Uint32))
+	if id <= 0 {
+		return skill.Skill{}, false
+	}
+	sk, ok := skill.Skills[id]
+	return sk, ok
 }
 
 // IsBlocking checks if there's a blocking popup or loading screen present
