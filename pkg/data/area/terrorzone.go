@@ -17,6 +17,7 @@ var CanBeTerrorized = map[ID]bool{
 	HoleLevel1:               true,
 	HoleLevel2:               true,
 	ForgottenTower:           true,
+	TamoeHighland:            true,
 	Barracks:                 true,
 	JailLevel1:               true,
 	JailLevel2:               true,
