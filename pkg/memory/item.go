@@ -69,7 +69,7 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 	}
 	socketedItemsMap := make(map[data.UnitID][]socketInfo, 120) // Up to ~120 items could be socketable
 	baseItemsMap := make(map[data.UnitID]*data.Item, 120)       // Same number of potential base items
-	allItems := make([]*data.Item, 0, 480)                      // max capacity: 400 (stashes) + 40 (inv) + 12 (cube) + 12 (equipped) + 16 (belt)
+	allItems := make([]*data.Item, 0, 800)                      // max capacity: 600 (stashes) + 91 (DLC tabs) + 40 (inv) + 12 (cube) + 12 (equipped) + 16 (belt) + headroom
 
 	// Pre-allocate buffers for repeated use
 	var itemDataBuffer = make([]byte, 144)
