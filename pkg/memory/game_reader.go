@@ -325,6 +325,12 @@ func (gd *GameReader) GetSelectedCharacterName() string {
 	return gd.Process.ReadStringFromMemory(gd.Process.moduleBaseAddressPtr+gd.offset.SelectedCharName, 0)
 }
 
+func (gd *GameReader) GetExpChar() uint {
+	expCharPtr := uintptr(gd.Process.ReadUInt(gd.moduleBaseAddressPtr+gd.offset.Expansion, Uint64))
+	expChar := gd.Process.ReadUInt(expCharPtr+0x5C, Uint16)
+	return expChar
+}
+
 func (gd *GameReader) LegacyGraphics() bool {
 	return gd.ReadUInt(gd.Process.moduleBaseAddressPtr+gd.offset.LegacyGraphics, Uint8) != 0
 }
