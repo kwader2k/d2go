@@ -82,7 +82,7 @@ func (m Monsters) FindOne(id npc.ID, t MonsterType) (Monster, bool) {
 func (m Monsters) Enemies(filters ...MonsterFilter) []Monster {
 	monsters := make([]Monster, 0)
 	for _, mo := range m {
-		if !mo.IsMerc() && !mo.IsSkip() && !mo.IsGoodNPC() && !mo.IsPet() && mo.Stats[stat.Life] > 0 && mo.Stats[stat.Alignment] == 0 {
+		if !mo.IsMerc() && !mo.IsSkip() && !mo.IsGoodNPC() && !mo.IsPet() && mo.Stats[stat.Life] > 0 {
 			monsters = append(monsters, mo)
 		}
 	}
