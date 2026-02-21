@@ -162,7 +162,7 @@ func (m Monster) IsMerc() bool {
 
 func (m Monster) IsPet() bool {
 	// Necromancer revive.
-	if m.States.HasState(state.Revive) {
+	if m.States.HasState(state.Revive) || m.States.HasState(state.BindDemon) {
 		return true
 	}
 
@@ -171,7 +171,7 @@ func (m Monster) IsPet() bool {
 		npc.OakSage, npc.DruBear, npc.DruPlaguePoppy, npc.VineCreature,
 		npc.DruCycleOfLife, npc.ClayGolem, npc.BloodGolem, npc.IronGolem,
 		npc.FireGolem, npc.NecroSkeleton, npc.NecroMage, npc.Valkyrie, npc.Decoy,
-		npc.ShadowWarrior, npc.ShadowMaster:
+		npc.ShadowWarrior, npc.ShadowMaster, npc.Tainted3, npc.WarGoatman, npc.WarDefiler:
 		return true
 	}
 
