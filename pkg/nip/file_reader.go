@@ -63,6 +63,10 @@ func ParseNIPFile(filePath string) (Rules, error) {
 			return nil, fmt.Errorf("error reading %s file at line %d: %w", filePath, lineNumber, err)
 		}
 
+		if err := rule.ValidateStage1(); err != nil {
+			return nil, fmt.Errorf("error validating rule on [%s:%d]: %w", filePath, lineNumber, err)
+		}
+
 		if err := rule.ValidateStats(); err != nil {
 			return nil, fmt.Errorf("error validating rule on [%s:%d]: %w", filePath, lineNumber, err)
 		}

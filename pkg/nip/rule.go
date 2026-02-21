@@ -538,6 +538,53 @@ func (r Rule) ValidateStats() error {
 	return nil
 }
 
+// ValidateStage1 checks that all property values in stage1 are valid.
+func (r Rule) ValidateStage1() error {
+	sanitized := sanitizeLine(r.RawLine)
+	parts := strings.SplitN(sanitized, "#", 2)
+	stage1 := strings.TrimSpace(parts[0])
+
+	if stage1 == "" {
+		return nil
+	}
+
+	baseProperties := fixedPropsRegexp.FindAllStringSubmatch(stage1, -1)
+	for _, prop := range baseProperties {
+		property := prop[2]
+		value := prop[4]
+
+		switch property {
+		case "type":
+			if _, found := typeAliases[value]; !found {
+				return fmt.Errorf("stage1 property [%s] has invalid value: %s", property, value)
+			}
+		case "quality":
+			if _, found := qualityAliases[value]; !found {
+				return fmt.Errorf("stage1 property [%s] has invalid value: %s", property, value)
+			}
+		case "class":
+			if _, found := classAliases[value]; !found {
+				return fmt.Errorf("stage1 property [%s] has invalid value: %s", property, value)
+			}
+		case "name":
+			if item.GetIDByName(value) == -1 {
+				return fmt.Errorf("stage1 property [%s] has invalid value: %s", property, value)
+			}
+		case "flag":
+			lowerVal := strings.ToLower(value)
+			if lowerVal != "runeword" && lowerVal != "ethereal" {
+				return fmt.Errorf("stage1 property [%s] has invalid value: %s", property, value)
+			}
+		case "color":
+			return fmt.Errorf("property %s is not supported yet", property)
+		case "prefix", "suffix":
+			// Skip validation - passed through as numeric IDs
+		}
+	}
+
+	return nil
+}
+
 func evaluateClassSkillsSum(it data.Item) int {
 	// Check all class skills stats
 	totalClassSkills := 0
