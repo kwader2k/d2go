@@ -162,7 +162,7 @@ func (m Monster) IsMerc() bool {
 
 func (m Monster) IsPet() bool {
 	// Necromancer revive.
-	if m.States.HasState(state.Revive) || m.States.HasState(state.BindDemon) {
+	if m.States.HasState(state.Revive) || m.States.HasState(state.BindDemon) || m.States.HasState(state.BindDemonUnderling) {
 		return true
 	}
 
