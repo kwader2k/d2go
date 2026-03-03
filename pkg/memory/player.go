@@ -212,7 +212,7 @@ func (gd *GameReader) getSkills(skillListPtr uintptr) map[skill.ID]skill.Points 
 
 func (gd *GameReader) GetStates(statsListExPtr uintptr) state.States {
 	var states state.States
-	for i := 0; i < 6; i++ {
+	for i := 0; i < 8; i++ {
 		offset := i * 4
 		stateByte := gd.Process.ReadUInt(statsListExPtr+0xAF0+uintptr(offset), Uint32)
 
