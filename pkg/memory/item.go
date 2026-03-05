@@ -146,16 +146,16 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 			setProperties(itm, uint32(flags))
 
 			// Read rare affixes
-			rarePrefix := int16(gd.Process.ReadUInt(unitDataPtr+0x42, Uint16))
-			rareSuffix := int16(gd.Process.ReadUInt(unitDataPtr+0x44, Uint16))
+			rarePrefix := int16(ReadUIntFromBuffer(unitDataBuffer, 0x42, Uint16))
+			rareSuffix := int16(ReadUIntFromBuffer(unitDataBuffer, 0x44, Uint16))
 			//autoAffix := int16(gd.Process.ReadUInt(unitDataPtr+0x46, Uint16))
 
 			// Read magic affixes
 			var prefixes [3]int16
 			var suffixes [3]int16
 			for i := 0; i < 3; i++ {
-				prefixes[i] = int16(gd.Process.ReadUInt(unitDataPtr+0x48+uintptr(i*2), Uint16))
-				suffixes[i] = int16(gd.Process.ReadUInt(unitDataPtr+0x4E+uintptr(i*2), Uint16))
+				prefixes[i] = int16(ReadUIntFromBuffer(unitDataBuffer, 0x48+uint(i*2), Uint16))
+				suffixes[i] = int16(ReadUIntFromBuffer(unitDataBuffer, 0x4E+uint(i*2), Uint16))
 			}
 
 			itm.Affixes = data.ItemAffixes{

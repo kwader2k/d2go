@@ -215,7 +215,7 @@ func (gd *GameReader) HoveredData() data.HoverData {
 func (gd *GameReader) getStatsList(statListPtr uintptr) stat.Stats {
 	statsListBuffer := gd.ReadBytesFromMemory(statListPtr, 0x10)
 	statList := ReadUIntFromBuffer(statsListBuffer, 0, Uint64)
-	statCount := ReadUIntFromBuffer(statsListBuffer, 0x08, Uint64)
+	statCount := ReadUIntFromBuffer(statsListBuffer, 0x08, Uint32)
 	if statCount == 0 {
 		return []stat.Data{}
 	}
@@ -228,7 +228,7 @@ func (gd *GameReader) getStatsList(statListPtr uintptr) stat.Stats {
 
 		statLayer := ReadUIntFromBuffer(statBuffer, offset, Uint16)
 		statEnum := ReadUIntFromBuffer(statBuffer, offset+0x2, Uint16)
-		statValue := ReadIntFromBuffer(statBuffer, offset+0x4, Uint32)
+		statValue := ReadIntFromBuffer(statBuffer, offset+0x4, Int32)
 
 		value := statValue
 		switch stat.ID(statEnum) {
