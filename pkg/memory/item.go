@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"log"
 	"slices"
 	"sort"
 	"strings"
@@ -487,12 +488,28 @@ func (gd *GameReader) Inventory(rawPlayerUnits RawPlayerUnits, hover data.HoverD
 			}
 		}
 
-		itm.LevelReq = maxReq
-		// Update stat 92 (LevelRequire) so we can use with .nip
-		for it, s := range itm.Stats {
-			if s.ID == stat.LevelRequire {
-				itm.Stats[it].Value = maxReq
-				break
+		// Trust the game's own LevelRequire stat (92) when available.
+		// D2R's server computes level requirements using internal logic
+		// that differs from max(base, max(affix_levelreq)). Our txt data
+		// is current (verified against CASC), but the engine formula changed.
+		// Fall back to computed value only when stat 92 is absent/zero.
+		if memoryStat, found := itm.Stats.FindStat(stat.LevelRequire, 0); found && memoryStat.Value > 0 {
+			if memoryStat.Value != maxReq {
+				log.Printf("LevelReq: %s (%s) q=%d — memory stat92=%d, computed=%d, using memory",
+					itm.Name, itm.Desc().Code, itm.Quality, memoryStat.Value, maxReq)
+			}
+			itm.LevelReq = memoryStat.Value
+		} else {
+			if maxReq > 0 {
+				log.Printf("LevelReq: %s (%s) q=%d — no memory stat92, using computed=%d",
+					itm.Name, itm.Desc().Code, itm.Quality, maxReq)
+			}
+			itm.LevelReq = maxReq
+			for it, s := range itm.Stats {
+				if s.ID == stat.LevelRequire {
+					itm.Stats[it].Value = maxReq
+					break
+				}
 			}
 		}
 		inventory.AllItems[i] = *itm
